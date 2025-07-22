@@ -1,2 +1,3 @@
-// src/index.js
-export { default as Subscription } from './components/Subscription.jsx';
+import Subscription from './components/Subscription.jsx';
+export { Subscription };
+export default Subscription;
