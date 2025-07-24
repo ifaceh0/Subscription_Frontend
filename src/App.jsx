@@ -1,14 +1,15 @@
-import { useState } from 'react'
-import Subscription from './components/Subscription'
-
+import { Routes, Route } from 'react-router-dom';
+import Subscription from './components/Subscription';
+import PlanDetails from './components/PlanDetails'; // You need to create this
 
 function App() {
- 
   return (
-    <div>
-      <Subscription />
-    </div>
-  )
-};
+    <Routes>
+      <Route path="/" element={<Subscription />} />
+      <Route path="/plan/:planType" element={<PlanDetails />} />
 
-export default App
+    </Routes>
+  );
+}
+
+export default App;

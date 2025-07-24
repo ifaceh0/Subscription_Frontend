@@ -1,3 +1,5 @@
 import Subscription from './components/Subscription.jsx';
-export { Subscription };
+import PlanDetails from './components/PlanDetails.jsx';
+
+export { Subscription, PlanDetails };
 export default Subscription;

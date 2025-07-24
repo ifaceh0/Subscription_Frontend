@@ -17,7 +17,7 @@
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
-    "react-router-dom": "^6.0.0 || ^7.0.0"
+    "react-router-dom": "^7.7.0"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
@@ -37,7 +37,12 @@
     "vite": "^7.0.4"
   },
   "description": "Reusable global subscription UI",
-  "keywords": ["react", "subscription", "component", "ui"],
+  "keywords": [
+    "react",
+    "subscription",
+    "component",
+    "ui"
+  ],
   "author": "ifaceh",
   "license": "ISC"
 }
