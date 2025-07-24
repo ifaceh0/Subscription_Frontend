@@ -1,12 +1,11 @@
 {
   "name": "global-subscription",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "type": "module",
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "main": "./dist/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./dist/index.js"
   },
   "scripts": {
     "dev": "vite",
