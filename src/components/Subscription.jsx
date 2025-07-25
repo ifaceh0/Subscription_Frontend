@@ -321,7 +321,8 @@ const Subscription = ({
           </div>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={handleRetry}
+            // onClick={handleRetry}
+            onClick={() => window.location.reload()} // CHANGED: Simplified retry logic
             className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
           >
             <RefreshCw className="w-5 h-5" />
@@ -333,10 +334,15 @@ const Subscription = ({
   }
 
   // Process pricing data based on selected types
+  // const mergedPricing = {
+  //   Basic: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 } },
+  //   Pro: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 } },
+  //   Enterprise: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 } },
+  // };
   const mergedPricing = {
-    Basic: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 } },
-    Pro: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 } },
-    Enterprise: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 } },
+    Basic: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } }, // CHANGED: Added planIds
+    Pro: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } }, // CHANGED: Added planIds
+    Enterprise: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } }, // CHANGED: Added planIds
   };
 
   const appType = selectedTypes.length === 2 ? 'BOTH' : selectedTypes[0]?.toUpperCase() || '';
@@ -351,6 +357,7 @@ const Subscription = ({
         const interval = plan.interval.toLowerCase();
         mergedPricing[tier][interval] = plan.discountedPrice;
         mergedPricing[tier].discount[interval] = plan.discountPercent;
+        mergedPricing[tier].planIds[interval] = plan.planId; // CHANGED: Store planId
       }
     });
   });
@@ -365,6 +372,7 @@ const Subscription = ({
       yearly: `${formatPrice(mergedPricing[tier].yearly)} /year`,
     },
     discountPercent: mergedPricing[tier].discount,
+    planIds: mergedPricing[tier].planIds, // CHANGED: Pass planIds
     features:
       tier === 'Basic'
         ? ['Up to 5 users', '5GB storage', 'Basic support', 'Access to core features']
@@ -460,6 +468,7 @@ const Subscription = ({
                       title={plan.title}
                       price={plan.price}
                       discountPercent={plan.discountPercent}
+                      planIds={plan.planIds} // CHANGED: Pass planIds
                       features={plan.features}
                       buttonText={plan.buttonText}
                       color={plan.color}

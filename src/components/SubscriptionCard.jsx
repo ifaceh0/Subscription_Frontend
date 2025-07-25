@@ -118,12 +118,13 @@
 import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const SubscriptionCard = ({ title, price, features, buttonText, color, icon: Icon, billingCycle, selectedTypes, discountPercent }) => {
+const SubscriptionCard = ({ title, price, features, buttonText, color, icon: Icon, billingCycle, selectedTypes, discountPercent, planIds }) => {
   const navigate = useNavigate();
 
   const handleAccessClick = () => {
     navigate(`/plan/${title.toLowerCase()}`, {
       state: {
+        planId: planIds[billingCycle], // CHANGED: Added planId
         planTitle: title,
         billingCycle,
         selectedTypes,
