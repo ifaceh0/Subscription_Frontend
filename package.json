@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "private": false,
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/global-subscription.cjs",
+  "module": "./dist/global-subscription.js",
+  "exports": {
+    "import": "./dist/global-subscription.js",
+    "require": "./dist/global-subscription.cjs"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
