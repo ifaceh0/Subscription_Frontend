@@ -32,9 +32,6 @@ const Success = () => {
           <p className="text-gray-600 mb-4">
             Congratulations! Your subscription has been successfully activated.
           </p>
-          {/* <p className="text-sm text-gray-500 bg-gray-50 p-2 rounded-md">
-            Session ID: <span className="font-mono">{sessionId}</span>
-          </p> */}
           <button
             className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
             onClick={() => window.location.href = '/dashboard'}
