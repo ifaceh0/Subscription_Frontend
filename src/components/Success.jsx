@@ -32,12 +32,12 @@ const Success = () => {
           <p className="text-gray-600 mb-4">
             Congratulations! Your subscription has been successfully activated.
           </p>
-          <button
+          {/* <button
             className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
             onClick={() => window.location.href = '/dashboard'}
           >
             click the link for access the application
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
