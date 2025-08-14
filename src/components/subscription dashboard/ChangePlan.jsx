@@ -10,7 +10,7 @@ const ChangePlan = () => {
   const location = useLocation();
   const { subscriptionDetails } = location.state || {};
   const [billingCycle, setBillingCycle] = useState('monthly');
-  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState(subscriptionDetails?.applications || []);
   const [pricingData, setPricingData] = useState(null);
   const [availableTypes, setAvailableTypes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,11 +20,9 @@ const ChangePlan = () => {
 
   const API_URL = import.meta.env.VITE_API_URL || "https://subscription-backend-e8gq.onrender.com";
 
-  // Fetch application types and plans from backend
   useEffect(() => {
     const fetchApplicationsAndPlans = async () => {
       try {
-        // Fetch applications
         const appResponse = await fetch(`${API_URL}/api/admin/applications`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -35,7 +33,6 @@ const ChangePlan = () => {
         const appData = await appResponse.json();
         const allTypes = appData.map(app => app.name.toLowerCase());
 
-        // Fetch plans
         const planResponse = await fetch(`${API_URL}/api/subscription/plans`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -46,7 +43,6 @@ const ChangePlan = () => {
         const planData = await planResponse.json();
         setPricingData(planData);
 
-        // Filter applications that are associated with valid plans (non-zero priced, not the current subscription)
         const currentPlanId = subscriptionDetails?.planId;
         if (!currentPlanId) {
           console.warn('No planId found in subscriptionDetails:', subscriptionDetails);
@@ -60,7 +56,6 @@ const ChangePlan = () => {
         const filteredTypes = allTypes.filter(type => availableApps.has(type));
         setAvailableTypes(filteredTypes);
 
-        // Debug: Log plans to verify current plan exclusion
         console.log('All Plans:', planData);
         console.log('Current Plan ID:', currentPlanId);
         console.log('Filtered Plans (excluding current):', planData.filter(plan => plan.planId !== currentPlanId));
@@ -78,7 +73,7 @@ const ChangePlan = () => {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
-    setSelectedPlan(null); // Reset selected plan when apps change
+    setSelectedPlan(null);
   };
 
   const handleChangePlan = async () => {
@@ -119,54 +114,15 @@ const ChangePlan = () => {
     }
   };
 
-  if (loading || availableTypes.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 px-6">
-        <div className="flex flex-col items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600"></div>
-          <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 px-6">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="p-8 max-w-md w-full text-center"
-        >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
-            <p className="text-xl font-semibold text-red-600">Error</p>
-          </div>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
-          >
-            <RefreshCw className="w-5 h-5" />
-            Try Again
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
-
   const mergedPricing = {
     Basic: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } },
     Pro: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } },
     Enterprise: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } },
   };
 
-  // Map backend data to frontend pricing structure, excluding only the exact current plan by planId
   const currentPlanId = subscriptionDetails?.planId;
   ['Basic', 'Pro', 'Enterprise'].forEach((tier) => {
     pricingData?.forEach((plan) => {
-      // Skip the exact current plan
       if (plan.planId === currentPlanId) {
         console.log('Excluded current plan:', plan);
         return;
@@ -193,7 +149,7 @@ const ChangePlan = () => {
   });
 
   const formatPrice = (price, interval) => {
-    if (price === 0) return null; // Return null for zero prices to filter them out
+    if (price === 0) return null;
     if (interval === 'monthly') {
       return `$${parseFloat(price).toFixed(2)} /month`;
     } else if (interval === 'quarterly') {
@@ -235,7 +191,44 @@ const ChangePlan = () => {
           : 'bg-blue-600',
       icon: tier === 'Basic' ? User : tier === 'Pro' ? Briefcase : Building2,
     }))
-    .filter((plan) => plan.price[billingCycle]); // Only include plans with a valid price for the selected billing cycle
+    .filter((plan) => plan.price[billingCycle]);
+
+  if (loading || availableTypes.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 px-6">
+        <div className="flex flex-col items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600"></div>
+          <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="p-8 max-w-md w-full text-center"
+        >
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+            <p className="text-xl font-semibold text-red-600">Error</p>
+          </div>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
+          >
+            <RefreshCw className="w-5 h-5" />
+            Try Again
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-100 to-white px-6 py-8">
@@ -243,7 +236,6 @@ const ChangePlan = () => {
         Change Your Subscription Plan
       </h1>
 
-      {/* Billing Cycle Toggle */}
       <div className="flex justify-center mb-8">
         <div className="inline-flex bg-white rounded-full p-1 shadow-md">
           {['monthly', 'quarterly', 'yearly'].map((cycle) => (
@@ -263,49 +255,7 @@ const ChangePlan = () => {
         </div>
       </div>
 
-      {/* Sidebar + Cards */}
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
-        {/* Sidebar */}
-        <div className="w-full lg:w-[22%] bg-gradient-to-br from-purple-50 to-white rounded-2xl shadow-lg p-6 flex flex-col gap-5 border border-purple-100">
-          <div className="text-purple-800 font-bold text-xl mb-4 text-center">
-            Select Applications
-          </div>
-          <p className="text-purple-600 text-sm mb-6 text-center">
-            Choose the applications you want to change the plan for.
-          </p>
-          {availableTypes.length > 0 ? (
-            availableTypes.map((type) => (
-              <label
-                key={type}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white hover:bg-purple-50 transition-all duration-200 cursor-pointer border border-purple-100"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedTypes.includes(type)}
-                  onChange={() => handleCheckboxChange(type)}
-                  className="accent-purple-600 w-5 h-5"
-                />
-                <span className="text-purple-800 font-medium text-lg capitalize">
-                  {type}
-                </span>
-              </label>
-            ))
-          ) : (
-            <p className="text-purple-600 text-sm text-center">
-              No applications available for plan change.
-            </p>
-          )}
-          <div className="mt-auto text-center">
-            <button
-              onClick={() => setSelectedTypes([])}
-              className="mt-4 px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 transition-all duration-200"
-            >
-              Clear Selection
-            </button>
-          </div>
-        </div>
-
-        {/* Pricing Cards */}
         <div className="flex-1">
           {selectedTypes.length > 0 ? (
             <AnimatePresence mode="wait">
@@ -330,7 +280,10 @@ const ChangePlan = () => {
                         billingCycle={billingCycle}
                         icon={plan.icon}
                         selectedTypes={selectedTypes}
-                        onSelect={() => setSelectedPlan({ ...plan, planId: plan.planIds[billingCycle] })}
+                        onSelect={() => {
+                          setSelectedPlan({ ...plan, planId: plan.planIds[billingCycle] });
+                          setShowConfirmModal(true);
+                        }}
                         isSelected={selectedPlan?.planId === plan.planIds[billingCycle]}
                       />
                     </div>
@@ -361,7 +314,7 @@ const ChangePlan = () => {
                 className="flex justify-center items-center h-full min-h-[200px] text-center"
               >
                 <p className="text-purple-600 font-medium text-lg">
-                  Please select at least one product to view subscription plans.
+                  No applications selected for plan change.
                 </p>
               </motion.div>
             </AnimatePresence>
@@ -369,24 +322,8 @@ const ChangePlan = () => {
         </div>
       </div>
 
-      {/* Confirm Button */}
-      {selectedTypes.length > 0 && plans.length > 0 && (
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={() => setShowConfirmModal(true)}
-            disabled={!selectedPlan}
-            className={`px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300 ${
-              selectedPlan ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'
-            }`}
-          >
-            Confirm Selection
-          </button>
-        </div>
-      )}
-
-      {/* Confirm Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">Confirm Plan Change</h3>
             <p className="text-gray-600 mb-6">

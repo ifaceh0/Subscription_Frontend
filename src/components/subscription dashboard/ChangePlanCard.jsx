@@ -1,7 +1,6 @@
-import { Check } from 'lucide-react';
+import { Check, Package } from 'lucide-react';
 
 const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycle, selectedTypes, discountPercent, planIds, onSelect, isSelected }) => {
-  // Skip rendering if the price for the current billing cycle is not available
   if (!price[billingCycle]) return null;
 
   const calculateOriginalPrice = (discountedPrice, discountPercent) => {
@@ -14,14 +13,12 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
       className={`relative rounded-2xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${title === 'Pro' ? 'ring-4 ring-yellow-300' : ''} ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
       onClick={onSelect}
     >
-      {/* Popular Badge */}
       {title === 'Pro' && (
         <div className="absolute top-2 right-2 bg-yellow-300 text-yellow-900 px-2 py-1 text-xs font-semibold rounded">
           Most Popular
         </div>
       )}
 
-      {/* Header */}
       <div className={`px-6 py-4 flex justify-center text-center ${color}`}>
         <div>
           {Icon && (
@@ -40,7 +37,6 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
         </div>
       </div>
 
-      {/* Price */}
       <div className="px-6 py-4 text-left">
         {discountPercent[billingCycle] > 0 && (
           <p className="text-sm text-green-600 font-medium mb-1">
@@ -67,7 +63,16 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
         </div>
       </div>
 
-      {/* Features */}
+      <div className="px-6 pb-4 space-y-2 text-left">
+        <p className="text-sm font-medium text-gray-500">Applications</p>
+        {selectedTypes.map((app, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <Package className="h-5 w-5 text-purple-600" />
+            <p className="text-base font-semibold text-gray-900 capitalize">{app}</p>
+          </div>
+        ))}
+      </div>
+
       <ul className="px-6 pb-4 space-y-2 text-left">
         {features.map((feat, i) => (
           <li key={i} className="flex items-center text-gray-700">
@@ -77,7 +82,6 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
         ))}
       </ul>
 
-      {/* Select Button */}
       <div className="px-6 pb-6">
         <button
           onClick={onSelect}
