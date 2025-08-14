@@ -7,6 +7,8 @@ import Success from './components/Success';
 import Cancel from './components/Cancel';
 import AdminLookUp from './components/admin/AdminLookUp';
 import HomePage from './components/Home/HomePage'; 
+import SubscriptionDashboard from './components/subscription dashboard/SubscriptionDashboard'
+import ChangePlan from './components/subscription dashboard/ChangePlan'
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/subscription" element={<Subscription />} />
         <Route path="/admin" element={<AdminLookUp />} />
+        <Route path="/subscription-dashboard" element={<SubscriptionDashboard />} />
+        <Route path="/subscription-dashboard/change-plan" element={<ChangePlan />} />
         <Route path="/plan/:planType" element={<PlanDetails />} />
         <Route path="/success" element={<Success />} />
         <Route path="/cancel" element={<Cancel />} />
