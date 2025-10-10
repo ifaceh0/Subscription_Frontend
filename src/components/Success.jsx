@@ -121,7 +121,7 @@ const Success = () => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            navigate('/subscription-dashboard'); // Redirect to dashboard
+            navigate('/subscription'); // Redirect to subscription page
             return 0;
           }
           return prev - 1;
