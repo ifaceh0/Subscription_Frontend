@@ -1,76 +1,88 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import SubscriptionCard from './SubscriptionCard';
-import { User, Briefcase, Building2, Loader2, AlertCircle } from 'lucide-react';
+import { User, Star, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw } from "lucide-react";
+import { RefreshCw } from 'lucide-react';
+import { toast } from 'react-toastify';
 
-
-const Subscription = ({
-  defaultApp = '',
-}) => {
+const Subscription = ({ defaultApp = '' }) => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const appFromQuery = queryParams.get('app');
+  const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
 
-  const [billingCycle, setBillingCycle] = useState('monthly');
+  const [billingCycle, setBillingCycle] = useState('month');
   const [selectedTypes, setSelectedTypes] = useState([]);
-  const [pricingData, setPricingData] = useState(null);
+  const [pricingData, setPricingData] = useState([]);
   const [availableTypes, setAvailableTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || "https://subscription-backend-e8gq.onrender.com";
+  const fetchWithBackoff = async (url, options, retries = 3, delay = 1000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After') || delay * Math.pow(2, i);
+          await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+          continue;
+        }
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response;
+      } catch (err) {
+        if (i === retries - 1) throw err;
+        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+      }
+    }
+  };
 
-  // Fetch application types from backend
   useEffect(() => {
     const fetchApplications = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/admin/applications`, {
+        const response = await fetchWithBackoff(`${API_URL}/api/admin/applications`, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
         });
-        if (!response.ok) {
-          throw new Error('Failed to fetch applications');
-        }
         const data = await response.json();
         const types = data.map(app => app.name.toLowerCase());
         setAvailableTypes(types);
+        console.log('Available Types:', types);
       } catch (err) {
-        setError(err.message);
+        setError('Failed to fetch applications.');
+        toast.error(`Error fetching applications: ${err.message}`);
+      } finally {
+        setLoading(false);
       }
     };
     fetchApplications();
   }, []);
 
-  // Fetch plans from backend
   useEffect(() => {
     const fetchPlans = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/subscription/plans`, {
+        const response = await fetchWithBackoff(`${API_URL}/api/subscription/allPlans`, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
         });
-        if (!response.ok) {
-          throw new Error('Failed to fetch plans');
-        }
         const data = await response.json();
-        console.log('Backend Response:', data);
         setPricingData(data);
-        setLoading(false);
+        console.log('Pricing Data:', data);
       } catch (err) {
-        setError(err.message);
+        setError('Failed to fetch plans.');
+        toast.error('Error fetching plans.');
+      } finally {
         setLoading(false);
       }
     };
     fetchPlans();
   }, []);
 
-  // Handle default app selection
   useEffect(() => {
     if (appFromQuery && selectedTypes.length === 0 && availableTypes.length > 0) {
       const mappedType = appFromQuery.toLowerCase();
@@ -86,27 +98,23 @@ const Subscription = ({
   }, [appFromQuery, defaultApp, availableTypes, selectedTypes.length]);
 
   const handleCheckboxChange = (type) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type)
-        ? prev.filter((t) => t !== type)
-        : [...prev, type]
+    setSelectedTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
     );
   };
 
   if (loading || availableTypes.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 px-6">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="polite">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="p-8 max-w-md w-full text-center"
+          transition={{ duration: 0.5 }}
+          className="p-10 max-w-md w-full text-center bg-white rounded-xl shadow-2xl"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
-            <p className="text-xl font-semibold text-gray-800">Loading Plans...</p>
-          </div>
-          <p className="text-gray-600">Please wait while we fetch the subscription details.</p>
+          <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mx-auto mb-4" />
+          <p className="text-2xl font-bold text-gray-800">Fetching the Best Deals</p>
+          <p className="text-gray-500 mt-2">Loading subscription plans and application details...</p>
         </motion.div>
       </div>
     );
@@ -114,24 +122,23 @@ const Subscription = ({
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100 px-6">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="assertive">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="p-8 max-w-md w-full text-center"
+          transition={{ duration: 0.5 }}
+          className="p-10 max-w-md w-full text-center bg-white rounded-xl shadow-2xl"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
-            <p className="text-xl font-semibold text-red-600">Error</p>
-          </div>
+          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <p className="text-2xl font-bold text-red-600 mb-2">Connection Error</p>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
+            className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-200 font-medium shadow-md"
+            aria-label="Retry loading plans"
           >
             <RefreshCw className="w-5 h-5" />
-            Try Again
+            Reload Page
           </button>
         </motion.div>
       </div>
@@ -139,55 +146,51 @@ const Subscription = ({
   }
 
   const mergedPricing = {
-    Basic: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } },
-    Pro: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } },
-    Enterprise: { monthly: 0, quarterly: 0, yearly: 0, discount: { monthly: 0, quarterly: 0, yearly: 0 }, planIds: { monthly: null, quarterly: null, yearly: null } },
+    Basic: { month: 0, quarter: 0, year: 0, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null } },
+    Pro: { month: 0, quarter: 0, year: 0, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null } },
+    Enterprise: { month: 0, quarter: 0, year: 0, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null } },
   };
 
-  // Map backend data to frontend pricing structure
-  ['Basic', 'Pro', 'Enterprise'].forEach((tier) => {
-    pricingData.forEach((plan) => {
-      const selectedTypesLower = selectedTypes.map((type) => type.toLowerCase());
-      const applicationNamesLower = plan.applicationNames.map((name) => name.toLowerCase());
-      const isSelectedAppsMatch = selectedTypesLower.every((type) =>
-        applicationNamesLower.includes(type)
-      );
-      const isAppCountMatch = selectedTypesLower.length === applicationNamesLower.length;
-
-      if (plan.planName.toLowerCase() === tier.toLowerCase() && isSelectedAppsMatch && isAppCountMatch) {
-        const interval = plan.interval.toLowerCase();
-        mergedPricing[tier][interval] = plan.discountedPrice || 0;
-        mergedPricing[tier].discount[interval] = plan.discountPercent || 0;
-        mergedPricing[tier].planIds[interval] = plan.planId;
+  ['Basic', 'Pro', 'Enterprise'].forEach(tier => {
+    const intervalMap = { monthly: 'month', quarterly: 'quarter', yearly: 'year' };
+    pricingData.forEach(plan => {
+      const selectedTypesLower = selectedTypes.map(type => type.toLowerCase());
+      const applicationNamesLower = plan.applicationNames.map(name => name.toLowerCase());
+      const isSelectedAppsMatch = selectedTypesLower.every(type => applicationNamesLower.includes(type));
+      if (plan.planName.toLowerCase() === tier.toLowerCase() && isSelectedAppsMatch && selectedTypesLower.length > 0) {
+        const interval = intervalMap[plan.interval.toLowerCase()];
+        if (!mergedPricing[tier][interval] || applicationNamesLower.length === selectedTypesLower.length) {
+          mergedPricing[tier][interval] = plan.discountedPrice || 0;
+          mergedPricing[tier].discount[interval] = plan.discountPercent || 0;
+          mergedPricing[tier].planIds[interval] = plan.planId;
+          console.log(`Matched Plan: ${plan.planId}, Interval: ${interval}, Price: ${plan.discountedPrice}, Discount: ${plan.discountPercent}`);
+        }
       }
     });
   });
 
-  console.log('Merged Pricing:', mergedPricing);
-
   const formatPrice = (price, interval) => {
-    if (interval === 'monthly') {
+    if (interval === 'month') {
       return `$${parseFloat(price || 0).toFixed(2)} /month`;
-    } else if (interval === 'quarterly') {
+    } else if (interval === 'quarter') {
       return `$${parseFloat(price || 0).toFixed(2)} /quarter`;
     } else {
       return `$${parseFloat(price || 0).toFixed(2)} /year`;
     }
   };
 
-  // Only include plans that have at least one non-zero price
-  const plans = ['Basic', 'Pro', 'Enterprise']
-    .map((tier) => ({
-      title: tier,
-      price: {
-        monthly: formatPrice(mergedPricing[tier].monthly, 'monthly'),
-        quarterly: formatPrice(mergedPricing[tier].quarterly, 'quarterly'),
-        yearly: formatPrice(mergedPricing[tier].yearly, 'yearly'),
-      },
-      discountPercent: mergedPricing[tier].discount,
-      planIds: mergedPricing[tier].planIds,
-      features:
-        tier === 'Basic'
+  const plans = ['Basic', 'Pro', 'Enterprise'].map(tier => ({
+    title: tier,
+    price: {
+      month: formatPrice(mergedPricing[tier].month, 'month'),
+      quarter: formatPrice(mergedPricing[tier].quarter, 'quarter'),
+      year: formatPrice(mergedPricing[tier].year, 'year'),
+    },
+    discountPercent: mergedPricing[tier].discount,
+    planIds: mergedPricing[tier].planIds,
+    features: mergedPricing[tier].features?.length > 0
+      ? mergedPricing[tier].features
+      : (tier === 'Basic'
           ? ['Up to 5 users', '5GB storage', 'Basic support', 'Access to core features']
           : tier === 'Pro'
           ? ['Up to 20 users', '50GB storage', 'Priority support', 'Advanced analytics', 'Custom integrations']
@@ -198,90 +201,104 @@ const Subscription = ({
               'Advanced security features',
               'Custom development',
               'On-premise deployment option',
-            ],
-      buttonText: `Select ${tier} Plan`,
-      color:
-        tier === 'Basic'
-          ? 'bg-purple-500'
-          : tier === 'Pro'
-          ? 'bg-gradient-to-r from-orange-400 to-yellow-400'
-          : 'bg-blue-600',
-      icon: tier === 'Basic' ? User : tier === 'Pro' ? Briefcase : Building2,
-    }))
-    .filter((plan) =>
-      Object.values(mergedPricing[plan.title]).some(
-        (value) => typeof value === 'number' && value > 0
-      )
-    );
+            ]),
+    buttonText: `Add ${tier} Plan`,
+    color: tier === 'Basic' ? 'bg-purple-500' : tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 'bg-blue-600',
+    icon: User,
+  }));
+
+  console.log('Merged Pricing:', mergedPricing);
+  console.log('Plans:', plans);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-100 to-white px-6 py-8">
-      <h1 className="text-5xl font-extrabold text-purple-700 mb-6 text-center">
-        Choose Your Subscription Plan
-      </h1>
+    <div className="min-h-screen bg-gray-50 pt-4 pb-20 px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-7xl mx-auto"
+      >
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
+            Flexible Pricing, Zero Hassle
+          </h1>
+          <p className="text-xl text-gray-600 mt-4 max-w-3xl mx-auto">
+            Scale your business with the perfect combination of applications and billing cycles.
+          </p>
+        </div>
+      </motion.div>
 
-      {/* Billing Cycle Toggle */}
-      <div className="flex justify-center mb-8">
-        <div className="inline-flex bg-white rounded-full p-1 shadow-md">
-          {['monthly', 'quarterly', 'yearly'].map((cycle) => (
+      <div className="flex justify-center mb-10">
+        <div className="inline-flex bg-white rounded-full p-2 shadow-xl border border-gray-100">
+          {['month', 'quarter', 'year'].map(cycle => (
             <div key={cycle} className="relative mx-1">
               <button
                 onClick={() => setBillingCycle(cycle)}
-                className={`px-5 py-2 rounded-full font-semibold transition-all duration-200 w-[100px] text-center ${
+                className={`px-6 py-2.5 rounded-full font-bold transition-all duration-300 w-[120px] text-center text-lg ${
                   billingCycle === cycle
-                    ? 'bg-purple-600 text-white'
-                    : 'text-purple-700 bg-transparent'
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                    : 'text-gray-600 bg-transparent hover:bg-gray-100'
                 }`}
+                aria-label={`Select ${cycle} billing cycle`}
               >
                 {cycle.charAt(0).toUpperCase() + cycle.slice(1)}
               </button>
-              {/* {(cycle === 'quarterly' || cycle === 'yearly') && (
-                <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-green-500 w-[max-content] text-white text-[10px] px-2 py-0.5 rounded-full shadow z-10">
-                  {cycle === 'quarterly' ? '5-10% OFF' : '10-15% OFF'}
+              {mergedPricing.Basic.discount[cycle] > 0 && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-10 animate-pulse-slow">
+                  {mergedPricing.Basic.discount[cycle]}% OFF
                 </span>
-              )} */}
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Sidebar + Cards */}
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
-        {/* Enhanced Sidebar */}
-        <div className="w-full lg:w-[22%] bg-gradient-to-br from-purple-50 to-white rounded-2xl shadow-lg p-6 flex flex-col gap-5 border border-purple-100">
-          <div className="text-purple-800 font-bold text-xl mb-4 text-center">
-            Customize Your Subscription
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="w-full lg:w-1/4 bg-white rounded-2xl shadow-xl p-6 h-fit sticky top-6 border border-indigo-100"
+        >
+          <div className="text-indigo-800 font-extrabold text-2xl mb-6 border-b pb-4 border-indigo-100">
+            Select Applications
           </div>
-          <p className="text-purple-600 text-sm mb-6 text-center">
-            Maximize savings by bundling products tailored for your growing business.
+          <p className="text-gray-600 text-sm mb-6">
+            Bundle the tools you need and see the combined pricing below.
           </p>
-          {availableTypes.map((type) => (
-            <label
-              key={type}
-              className="flex items-center gap-3 p-3 rounded-lg bg-white hover:bg-purple-50 transition-all duration-200 cursor-pointer border border-purple-100"
-            >
-              <input
-                type="checkbox"
-                checked={selectedTypes.includes(type)}
-                onChange={() => handleCheckboxChange(type)}
-                className="accent-purple-600 w-5 h-5"
-              />
-              <span className="text-purple-800 font-medium text-lg capitalize">
-                {type}
-              </span>
-            </label>
-          ))}
-          <div className="mt-auto text-center">
+          <div className="space-y-3">
+            {availableTypes.map(type => (
+              <label
+                key={type}
+                className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer border-2 ${
+                  selectedTypes.includes(type) ? 'bg-indigo-50 border-indigo-300 shadow-sm' : 'bg-gray-50 border-gray-100 hover:bg-indigo-50'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedTypes.includes(type)}
+                  onChange={() => handleCheckboxChange(type)}
+                  className="appearance-none w-5 h-5 border-2 rounded-md transition-all duration-200 accent-indigo-600 checked:bg-indigo-600 checked:border-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                  aria-checked={selectedTypes.includes(type)}
+                  aria-label={`Select ${type} application`}
+                />
+                <span className="text-gray-800 font-semibold text-lg capitalize">
+                  {type}
+                </span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-8 text-center border-t pt-4 border-indigo-100">
             <button
               onClick={() => setSelectedTypes([])}
-              className="mt-4 px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 transition-all duration-200"
+              className="w-full px-4 py-2 text-indigo-600 border border-indigo-300 rounded-xl hover:bg-indigo-50 transition-all duration-200 font-medium"
+              aria-label="Clear all selected applications"
             >
               Clear Selection
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Pricing Cards */}
         <div className="flex-1">
           {selectedTypes.length > 0 ? (
             <AnimatePresence mode="wait">
@@ -318,28 +335,31 @@ const Subscription = ({
                     transition={{ duration: 0.3 }}
                     className="flex justify-center items-center h-full min-h-[200px] text-center"
                   >
-                    <p className="text-purple-600 font-medium text-lg">
-                      No plans available for the selected products.
-                    </p>
+                    <div className="md:col-span-2 lg:col-span-3 text-center p-10 bg-white rounded-xl shadow-lg border border-gray-100">
+                      <p className="text-gray-500 font-medium text-xl">
+                        No plans available that match *exactly* your selected products.
+                        <br />Please try selecting a different combination.
+                      </p>
+                    </div>
                   </motion.div>
                 )}
               </motion.div>
             </AnimatePresence>
           ) : (
-            <AnimatePresence mode="wait">
+            <div className="flex justify-center items-center h-full min-h-[400px]">
               <motion.div
-                key="no-plan"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="flex justify-center items-center h-full min-h-[200px] text-center"
+                key="no-plan-selected"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="text-center p-10 bg-white rounded-xl shadow-lg border border-gray-100"
               >
-                <p className="text-purple-600 font-medium text-lg">
-                  Please select at least one product to view subscription plans.
+                <p className="text-gray-500 font-medium text-xl flex items-center gap-3">
+                  <Star className="w-6 h-6 text-indigo-500 fill-indigo-500" />
+                  Choose your applications in the sidebar to view tailored plans.
                 </p>
               </motion.div>
-            </AnimatePresence>
+            </div>
           )}
         </div>
       </div>

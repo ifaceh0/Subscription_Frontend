@@ -6,12 +6,15 @@ import PlanDetails from './components/PlanDetails';
 import Success from './components/Success'; 
 import Cancel from './components/Cancel';
 import AdminLookUp from './components/admin/AdminLookUp';
+import AddApplication from './components/admin/AddApplication';
+import PlanType from './components/admin/PlanType';
 import HomePage from './components/Home/HomePage'; 
 import SubscriptionDashboard from './components/subscription dashboard/SubscriptionDashboard'
 import ChangePlan from './components/subscription dashboard/ChangePlan'
 import AddProduct from './components/subscription dashboard/AddProduct'
 import ChangeSuccess from './components/subscription dashboard/ChangeSuccess';
 import ErrorBoundary from './components/ErrorBoundary';
+import AddSuccess from './components/subscription dashboard/AddSuccess';
 
 function App() {
   return (
@@ -28,6 +31,9 @@ function App() {
           <Route path="/success" element={<Success />} />
           <Route path="/cancel" element={<Cancel />} />
           <Route path="/changeSuccess" element={<ChangeSuccess/>}/>
+          <Route path="/addSuccess" element={<AddSuccess/>}/>
+          <Route path="/admin/add-application" element={<AddApplication />} />
+          <Route path="/admin/plan-type" element={<PlanType />} />
         </Routes>
         <ToastContainer position="top-right" autoClose={3000} />
       </ErrorBoundary>
