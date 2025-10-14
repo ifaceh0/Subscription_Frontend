@@ -764,9 +764,8 @@
 
 
 
-
 import React, { useEffect, useState } from 'react';
-import { X, Loader2, Plus, Edit, Trash2, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { X, Loader2, Plus, Edit, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
@@ -816,12 +815,9 @@ function AdminPlanManager() {
   const [planToSync, setPlanToSync] = useState(null);
   const [planToEdit, setPlanToEdit] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const itemsPerPage = 5;
-  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const convertDTOToPlan = (dto) => {
-    // console.log('Converting DTO:', dto);
     const planType = planTypes.find(pt => pt.id === (dto.planTypeMappingId || (dto.plan && dto.plan.id)));
     const applicationIds = Array.isArray(dto.applicationIds)
       ? dto.applicationIds
@@ -852,7 +848,6 @@ function AdminPlanManager() {
       fetchPlans(selectedApps);
     } else {
       setPlans([]);
-      setCurrentPage(1);
     }
   }, [selectedApps]);
 
@@ -899,13 +894,20 @@ function AdminPlanManager() {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
       const data = await res.json();
-      // console.log('Fetched Plans:', data);
       const filteredPlans = data
         .map(convertDTOToPlan)
         .filter(plan => !plan.deleted && plan.applications.length === appNames.length &&
-          plan.applications.every(app => appNames.includes(app.name)));
+          plan.applications.every(app => appNames.includes(app.name)))
+        .sort((a, b) => {
+          const planTypeA = a.plan ? planTypes.find(pt => pt.id === a.plan.id) : planTypes.find(pt => pt.id === a.planTypeMappingId);
+          const planTypeB = b.plan ? planTypes.find(pt => pt.id === b.plan.id) : planTypes.find(pt => pt.id === b.planTypeMappingId);
+          const nameA = planTypeA ? planTypeA.planName : '';
+          const nameB = planTypeB ? planTypeB.planName : '';
+          const intervalA = planTypeA ? planTypeA.interval : '';
+          const intervalB = planTypeB ? planTypeB.interval : '';
+          return nameA.localeCompare(nameB) || intervalA.localeCompare(intervalB);
+        });
       setPlans(filteredPlans);
-      setCurrentPage(1);
     } catch (error) {
       console.error('Fetch Plans Error:', error);
       toast.error('Failed to fetch plans: ' + error.message);
@@ -922,14 +924,23 @@ function AdminPlanManager() {
         headers: { 'Content-Type': 'application/json' },
       });
       const responseData = await res.json();
-      // console.log('Stripe Sync Response:', responseData);
       if (res.ok && responseData.status === 'success' && responseData.data) {
         const updatedPlan = convertDTOToPlan(responseData.data);
         if (!updatedPlan.id || !updatedPlan.stripePriceId) {
           throw new Error('Invalid or incomplete plan data received');
         }
         toast.success('Stripe sync successful');
-        setPlans(prev => prev.map(p => (p.id === updatedPlan.id ? updatedPlan : p)));
+        setPlans(prev => prev
+          .map(p => (p.id === updatedPlan.id ? updatedPlan : p))
+          .sort((a, b) => {
+            const planTypeA = a.plan ? planTypes.find(pt => pt.id === a.plan.id) : planTypes.find(pt => pt.id === a.planTypeMappingId);
+            const planTypeB = b.plan ? planTypes.find(pt => pt.id === b.plan.id) : planTypes.find(pt => pt.id === b.planTypeMappingId);
+            const nameA = planTypeA ? planTypeA.planName : '';
+            const nameB = planTypeB ? planTypeB.planName : '';
+            const intervalA = planTypeA ? planTypeA.interval : '';
+            const intervalB = planTypeB ? planTypeB.interval : '';
+            return nameA.localeCompare(nameB) || intervalA.localeCompare(intervalB);
+          }));
       } else {
         throw new Error(responseData.error || 'Failed to sync with Stripe');
       }
@@ -953,7 +964,6 @@ function AdminPlanManager() {
       if (res.ok) {
         toast.success(responseData.message || 'Plan deleted successfully');
         setPlans(prev => prev.filter(p => p.id !== planId));
-        setCurrentPage(1);
       } else {
         throw new Error(responseData.error || `HTTP error! Status: ${res.status}`);
       }
@@ -988,11 +998,20 @@ function AdminPlanManager() {
         }),
       });
       const responseData = await res.json();
-      // console.log('Update Plan Response:', responseData);
       if (res.ok && responseData.plan) {
         toast.success(responseData.message || 'Plan updated successfully');
         const updatedPlan = convertDTOToPlan(responseData.plan);
-        setPlans(prev => prev.map(p => (p.id === planToEdit.id ? updatedPlan : p)));
+        setPlans(prev => prev
+          .map(p => (p.id === planToEdit.id ? updatedPlan : p))
+          .sort((a, b) => {
+            const planTypeA = a.plan ? planTypes.find(pt => pt.id === a.plan.id) : planTypes.find(pt => pt.id === a.planTypeMappingId);
+            const planTypeB = b.plan ? planTypes.find(pt => pt.id === b.plan.id) : planTypes.find(pt => pt.id === b.planTypeMappingId);
+            const nameA = planTypeA ? planTypeA.planName : '';
+            const nameB = planTypeB ? planTypeB.planName : '';
+            const intervalA = planTypeA ? planTypeA.interval : '';
+            const intervalB = planTypeB ? planTypeB.interval : '';
+            return nameA.localeCompare(nameB) || intervalA.localeCompare(intervalB);
+          }));
         closeModal();
       } else {
         throw new Error(responseData.error || `HTTP error! Status: ${res.status}`);
@@ -1098,7 +1117,6 @@ function AdminPlanManager() {
         }),
       });
       const responseData = await res.json();
-      // console.log('Create Plan Response:', responseData);
       if (res.ok) {
         if (responseData.message === 'Plan already exists') {
           toast.error(`Plan already exists for applications: ${responseData.data.applications.map(app => app.name).join(', ')} and plan type: ${formatPlanType(responseData.data.plan)}`);
@@ -1106,7 +1124,15 @@ function AdminPlanManager() {
         }
         const newPlan = convertDTOToPlan(responseData.data || responseData);
         toast.success('Plan created successfully');
-        setPlans([...plans, newPlan]);
+        setPlans(prev => [...prev, newPlan].sort((a, b) => {
+          const planTypeA = a.plan ? planTypes.find(pt => pt.id === a.plan.id) : planTypes.find(pt => pt.id === a.planTypeMappingId);
+          const planTypeB = b.plan ? planTypes.find(pt => pt.id === b.plan.id) : planTypes.find(pt => pt.id === b.planTypeMappingId);
+          const nameA = planTypeA ? planTypeA.planName : '';
+          const nameB = planTypeB ? planTypeB.planName : '';
+          const intervalA = planTypeA ? planTypeA.interval : '';
+          const intervalB = planTypeB ? planTypeB.interval : '';
+          return nameA.localeCompare(nameB) || intervalA.localeCompare(intervalB);
+        }));
         closeModal();
         if (selectedApps.length) {
           fetchPlans(selectedApps);
@@ -1128,17 +1154,6 @@ function AdminPlanManager() {
       : planType && planType.planName
       ? planType.planName
       : `Plan ${planType ? planType.id : 'Unknown'}`;
-  };
-
-  const indexOfLastPlan = currentPage * itemsPerPage;
-  const indexOfFirstPlan = indexOfLastPlan - itemsPerPage;
-  const currentPlans = plans.slice(indexOfFirstPlan, indexOfLastPlan);
-  const totalPages = Math.ceil(plans.length / itemsPerPage);
-
-  const paginate = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-    }
   };
 
   return (
@@ -1166,21 +1181,21 @@ function AdminPlanManager() {
         </header>
         <div className="mb-8 flex justify-between items-center">
           <div className="flex space-x-2">
-              <button
-                onClick={() => navigate('/admin/add-application')}
-                className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors flex items-center active:scale-95"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Add New Application
-              </button>
-              <button
-                onClick={() => navigate('/admin/plan-type')}
-                className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors flex items-center active:scale-95"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Add New Plan Type
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/admin/add-application')}
+              className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors flex items-center active:scale-95"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add New Application
+            </button>
+            <button
+              onClick={() => navigate('/admin/plan-type')}
+              className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors flex items-center active:scale-95"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add New Plan Type
+            </button>
+          </div>
         </div>
         {/* Application Selection (Filter) */}
         <div className="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-200">
@@ -1255,115 +1270,72 @@ function AdminPlanManager() {
               No plans found for the selected combination of applications. Click "Add New Plan" to create one.
             </p>
           ) : (
-            <>
-              <div className="overflow-x-auto rounded-xl border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applications</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan Type</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base Price</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Price</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stripe ID</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <div className="overflow-y-auto max-h-[500px] rounded-xl border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 sticky top-0 z-10">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applications</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Plan Type</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Base Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stripe ID</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {plans.map((plan) => (
+                    <tr key={plan.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900 truncate max-w-xs">{plan.applications.map(a => a.name).join(', ')}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span className="font-semibold text-indigo-600">{formatPlanType(plan.plan)}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
+                        {plan.monthlyBasePrice !== null ? `$${plan.monthlyBasePrice.toFixed(2)}` : 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{plan.discountPercent}%</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-bold">
+                        ${plan.discountedPrice.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 truncate max-w-[150px] font-mono">
+                        {plan.stripePriceId ? (
+                          <span>{plan.stripePriceId}</span>
+                        ) : (
+                          <button
+                            className="p-2 text-yellow-600 hover:text-yellow-800 rounded-full hover:bg-yellow-50 transition-colors active:scale-95"
+                            onClick={() => openSyncModal(plan.id)}
+                            disabled={isLoading}
+                            title="Sync with Stripe"
+                          >
+                            <RefreshCw className="w-5 h-5" />
+                          </button>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <button
+                          className="p-2 text-indigo-600 hover:text-indigo-800 rounded-full hover:bg-indigo-50 transition-colors active:scale-95"
+                          onClick={() => openEditModal(plan)}
+                          disabled={isLoading}
+                          title="Edit Plan"
+                        >
+                          <Edit className="w-5 h-5" />
+                        </button>
+                        <button
+                          className="p-2 text-red-600 hover:text-red-800 rounded-full hover:bg-red-50 transition-colors active:scale-95"
+                          onClick={() => openDeleteModal(plan.id)}
+                          disabled={isLoading}
+                          title="Delete Plan"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {currentPlans
-                      .sort((a, b) => {
-                        const planTypeA = a.plan ? planTypes.find(pt => pt.id === a.plan.id) : planTypes.find(pt => pt.id === a.planTypeMappingId);
-                        const planTypeB = b.plan ? planTypes.find(pt => pt.id === b.plan.id) : planTypes.find(pt => pt.id === b.planTypeMappingId);
-                        const nameA = planTypeA ? formatPlanType(planTypeA) : '';
-                        const nameB = planTypeB ? formatPlanType(planTypeB) : '';
-                        return nameA.localeCompare(nameB);
-                      })
-                      .map((plan) => (
-                        <tr key={plan.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900 truncate max-w-xs">{plan.applications.map(a => a.name).join(', ')}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span className="font-semibold text-indigo-600">{formatPlanType(plan.plan)}</span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
-                            {plan.monthlyBasePrice !== null ? `$${plan.monthlyBasePrice.toFixed(2)}` : 'N/A'}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{plan.discountPercent}%</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-bold">
-                            ${plan.discountedPrice.toFixed(2)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 truncate max-w-[150px] font-mono">
-                            {plan.syncing ? (
-                              <span className="text-gray-500">Syncing...</span>
-                            ) : plan.stripePriceId ? (
-                              <span>{plan.stripePriceId}</span>
-                            ) : (
-                              <button
-                                className="p-2 text-yellow-600 hover:text-yellow-800 rounded-full hover:bg-yellow-50 transition-colors active:scale-95"
-                                onClick={() => openSyncModal(plan.id)}
-                                disabled={isLoading}
-                                title="Sync with Stripe"
-                              >
-                                <RefreshCw className="w-5 h-5" />
-                              </button>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                            <button
-                              className="p-2 text-indigo-600 hover:text-indigo-800 rounded-full hover:bg-indigo-50 transition-colors active:scale-95"
-                              onClick={() => openEditModal(plan)}
-                              disabled={isLoading}
-                              title="Edit Plan"
-                            >
-                              <Edit className="w-5 h-5" />
-                            </button>
-                            <button
-                              className="p-2 text-red-600 hover:text-red-800 rounded-full hover:bg-red-50 transition-colors active:scale-95"
-                              onClick={() => openDeleteModal(plan.id)}
-                              disabled={isLoading}
-                              title="Delete Plan"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-              {plans.length > itemsPerPage && (
-                <div className="flex justify-center items-center space-x-2 mt-6">
-                  <button
-                    onClick={() => paginate(currentPage - 1)}
-                    disabled={currentPage === 1 || isLoading}
-                    className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <button
-                      key={page}
-                      onClick={() => paginate(page)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        currentPage === page
-                          ? 'bg-indigo-600 text-white shadow-md'
-                          : 'bg-white text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 border border-gray-300'
-                      }`}
-                    >
-                      {page}
-                    </button>
                   ))}
-                  <button
-                    onClick={() => paginate(currentPage + 1)}
-                    disabled={currentPage === totalPages || isLoading}
-                    className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
-            </>
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -1499,7 +1471,13 @@ function AdminPlanManager() {
                   >
                     <option value="" disabled>Select a Plan Type</option>
                     {planTypes
-                      .sort((a, b) => formatPlanType(a).localeCompare(formatPlanType(b)))
+                      .sort((a, b) => {
+                        const nameA = a.planName || '';
+                        const nameB = b.planName || '';
+                        const intervalA = a.interval || '';
+                        const intervalB = b.interval || '';
+                        return nameA.localeCompare(nameB) || intervalA.localeCompare(intervalB);
+                      })
                       .map(planType => (
                         <option key={planType.id} value={planType.id}>
                           {formatPlanType(planType)}
@@ -1573,8 +1551,6 @@ function AdminPlanManager() {
             </div>
           </div>
         </div>
-
-        {/* Toast Notifications (handled by react-toastify) */}
       </div>
     </ErrorBoundary>
   );
