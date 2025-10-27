@@ -110,9 +110,9 @@ const Subscription = ({ defaultApp = '' }) => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="p-10 max-w-md w-full text-center bg-white rounded-xl shadow-2xl"
+          className="p-10 max-w-md w-full text-center"
         >
-          <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-violet-500 animate-spin mx-auto mb-4" />
           <p className="text-2xl font-bold text-gray-800">Fetching the Best Deals</p>
           <p className="text-gray-500 mt-2">Loading subscription plans and application details...</p>
         </motion.div>
@@ -127,7 +127,7 @@ const Subscription = ({ defaultApp = '' }) => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="p-10 max-w-md w-full text-center bg-white rounded-xl shadow-2xl"
+          className="p-10 max-w-md w-full text-center"
         >
           <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
           <p className="text-2xl font-bold text-red-600 mb-2">Connection Error</p>
@@ -236,7 +236,7 @@ const Subscription = ({ defaultApp = '' }) => {
                 onClick={() => setBillingCycle(cycle)}
                 className={`px-6 py-2.5 rounded-full font-bold transition-all duration-300 w-[120px] text-center text-lg ${
                   billingCycle === cycle
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                    ? 'bg-violet-600 text-white shadow-lg shadow-indigo-200'
                     : 'text-gray-600 bg-transparent hover:bg-gray-100'
                 }`}
                 aria-label={`Select ${cycle} billing cycle`}
@@ -258,9 +258,9 @@ const Subscription = ({ defaultApp = '' }) => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full lg:w-1/4 bg-white rounded-2xl shadow-xl p-6 h-fit sticky top-6 border border-indigo-100"
+          className="w-full lg:w-1/4 bg-white rounded-2xl shadow-xl p-6 h-fit sticky top-6 border border-violet-100"
         >
-          <div className="text-indigo-800 font-extrabold text-2xl mb-6 border-b pb-4 border-indigo-100">
+          <div className="text-violet-800 font-extrabold text-2xl mb-6 border-b pb-4 border-violet-100">
             Select Applications
           </div>
           <p className="text-gray-600 text-sm mb-6">
@@ -271,14 +271,14 @@ const Subscription = ({ defaultApp = '' }) => {
               <label
                 key={type}
                 className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer border-2 ${
-                  selectedTypes.includes(type) ? 'bg-indigo-50 border-indigo-300 shadow-sm' : 'bg-gray-50 border-gray-100 hover:bg-indigo-50'
+                  selectedTypes.includes(type) ? 'bg-violet-50 border-violet-300 shadow-sm' : 'bg-gray-50 border-gray-100 hover:bg-violet-50'
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={selectedTypes.includes(type)}
                   onChange={() => handleCheckboxChange(type)}
-                  className="appearance-none w-5 h-5 border-2 rounded-md transition-all duration-200 accent-indigo-600 checked:bg-indigo-600 checked:border-indigo-600 focus:ring-2 focus:ring-indigo-500"
+                  className="appearance-none w-5 h-5 border-2 rounded-md transition-all duration-200 accent-violet-600 checked:bg-violet-600 checked:border-violet-600 focus:ring-2 focus:ring-violet-500"
                   aria-checked={selectedTypes.includes(type)}
                   aria-label={`Select ${type} application`}
                 />
@@ -288,10 +288,10 @@ const Subscription = ({ defaultApp = '' }) => {
               </label>
             ))}
           </div>
-          <div className="mt-8 text-center border-t pt-4 border-indigo-100">
+          <div className="mt-8 text-center border-t pt-4 border-violet-100">
             <button
               onClick={() => setSelectedTypes([])}
-              className="w-full px-4 py-2 text-indigo-600 border border-indigo-300 rounded-xl hover:bg-indigo-50 transition-all duration-200 font-medium"
+              className="w-full px-4 py-2 text-violet-600 border border-violet-300 rounded-xl hover:bg-violet-50 transition-all duration-200 font-medium"
               aria-label="Clear all selected applications"
             >
               Clear Selection
@@ -355,7 +355,7 @@ const Subscription = ({ defaultApp = '' }) => {
                 className="text-center p-10 bg-white rounded-xl shadow-lg border border-gray-100"
               >
                 <p className="text-gray-500 font-medium text-xl flex items-center gap-3">
-                  <Star className="w-6 h-6 text-indigo-500 fill-indigo-500" />
+                  <Star className="w-6 h-6 text-violet-500 fill-violet-500" />
                   Choose your applications in the sidebar to view tailored plans.
                 </p>
               </motion.div>

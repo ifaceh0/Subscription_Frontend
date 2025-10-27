@@ -22,14 +22,14 @@ function HomePage() {
     <div className="min-h-screen bg-gray-50">
       
       {/* Hero Section */}
-      <div className="pt-20 pb-28 bg-gradient-to-br from-indigo-50 to-blue-100 flex flex-col items-center justify-center px-6">
+      <div className="pt-20 pb-28 bg-gradient-to-br from-violet-50 to-blue-100 flex flex-col items-center justify-center px-6">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center max-w-4xl"
         >
-          <p className="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-2">
+          <p className="text-sm font-semibold text-violet-600 uppercase tracking-wider mb-2">
             Your Business, Streamlined
           </p>
           <h1 className="text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
@@ -43,7 +43,7 @@ function HomePage() {
           <div className="flex flex-wrap justify-center gap-4">
             <motion.button
               onClick={() => navigate('/subscription')}
-              className="px-8 py-4 text-lg font-semibold bg-indigo-600 text-white rounded-xl shadow-lg hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 focus:ring-4 focus:ring-indigo-500 focus:ring-offset-2"
+              className="px-8 py-4 text-lg font-semibold bg-violet-600 text-white rounded-xl shadow-lg hover:bg-violet-700 transition-all duration-300 transform hover:scale-105 focus:ring-4 focus:ring-violet-500 focus:ring-offset-2"
               aria-label="Explore subscription plans"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -52,7 +52,7 @@ function HomePage() {
             </motion.button>
             <motion.button
               onClick={() => navigate('/subscription-dashboard')}
-              className="px-8 py-4 text-lg font-semibold bg-white border-2 border-indigo-600 text-indigo-600 rounded-xl shadow-lg hover:bg-indigo-50 transition-all duration-300 transform hover:scale-105 focus:ring-4 focus:ring-indigo-500 focus:ring-offset-2"
+              className="px-8 py-4 text-lg font-semibold bg-white border-2 border-violet-600 text-violet-600 rounded-xl shadow-lg hover:bg-violet-50 transition-all duration-300 transform hover:scale-105 focus:ring-4 focus:ring-violet-500 focus:ring-offset-2"
               aria-label="Go to the Dashboard"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -83,7 +83,7 @@ function HomePage() {
               icon={BoltIcon}
               title="Automated Billing"
               description="Reduce manual work with automatic invoicing, dunning, and payment processing for all your subscribers."
-              color="pink"
+              color="violet"
             />
             <FeatureCard 
               icon={ArrowRightIcon} // Reusing ArrowRightIcon for simplicity

@@ -1161,7 +1161,7 @@ function AdminPlanManager() {
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans">
         {/* Loading Overlay */}
         {isLoading && (
-          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-white bg-opacity-30 flex items-center justify-center z-50">
             <div className="flex items-center space-x-2">
               <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
