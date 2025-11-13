@@ -1139,57 +1139,57 @@ const SubscriptionDashboard = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(location.search);
-  //   const emailFromUrl = searchParams.get('email');
-    
-  //   if (emailFromUrl) {
-  //     localStorage.setItem('CompanyEmail', emailFromUrl);
-  //   }
-
-  //   const email = localStorage.getItem('CompanyEmail');
-  //   if (!email) {
-  //     setError('No email found. Please provide an email to view dashboard.');
-  //     setIsLoading(false);
-  //     return;
-  //   }
-  //   fetchDashboardData(email);
-  // }, [navigate, location.search]);
-
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const accessToken = params.get('access_token');
-
-    if (accessToken) {
-      try {
-        // Decode JWT (no secret needed for decode-only)
-        const payload = JSON.parse(atob(accessToken.split('.')[1]));
-        const email = payload.sub;
-        const exp = payload.exp * 1000;
-
-        if (Date.now() > exp) {
-          throw new Error("Link expired");
-        }
-
-        localStorage.setItem('CompanyEmail', email);
-        // Clean URL
-        window.history.replaceState({}, '', '/subscription-dashboard');
-      } catch (err) {
-        setError("Invalid or expired link. Get a new one from Loyalty app.");
-        setIsLoading(false);
-        return;
-      }
+    const searchParams = new URLSearchParams(location.search);
+    const emailFromUrl = searchParams.get('email');
+    
+    if (emailFromUrl) {
+      localStorage.setItem('CompanyEmail', emailFromUrl);
     }
 
     const email = localStorage.getItem('CompanyEmail');
     if (!email) {
-      setError("Access denied.");
+      setError('No email found. Please provide an email to view dashboard.');
       setIsLoading(false);
       return;
     }
-
     fetchDashboardData(email);
-  }, [location.search]);
+  }, [navigate, location.search]);
+
+  // useEffect(() => {
+  //   const params = new URLSearchParams(location.search);
+  //   const accessToken = params.get('access_token');
+
+  //   if (accessToken) {
+  //     try {
+  //       // Decode JWT (no secret needed for decode-only)
+  //       const payload = JSON.parse(atob(accessToken.split('.')[1]));
+  //       const email = payload.sub;
+  //       const exp = payload.exp * 1000;
+
+  //       if (Date.now() > exp) {
+  //         throw new Error("Link expired");
+  //       }
+
+  //       localStorage.setItem('CompanyEmail', email);
+  //       // Clean URL
+  //       window.history.replaceState({}, '', '/subscription-dashboard');
+  //     } catch (err) {
+  //       setError("Invalid or expired link. Get a new one from Loyalty app.");
+  //       setIsLoading(false);
+  //       return;
+  //     }
+  //   }
+
+  //   const email = localStorage.getItem('CompanyEmail');
+  //   if (!email) {
+  //     setError("Access denied.");
+  //     setIsLoading(false);
+  //     return;
+  //   }
+
+  //   fetchDashboardData(email);
+  // }, [location.search]);
 
   const handleCancelSubscription = async () => {
     if (!subscriptionToCancel || selectedCancelApps.length === 0) {
