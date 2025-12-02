@@ -435,7 +435,7 @@ const PlanDetails = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-xl shadow-2xl p-10 max-w-md w-full text-center border-t-4 border-purple-500"
+          className="bg-white rounded shadow-2xl p-10 max-w-md w-full text-center border-t-4 border-purple-500"
         >
           <p className="text-2xl text-purple-600 font-semibold mb-6 flex items-center justify-center gap-2">
             <span>⚠️</span> Session Expired or Invalid Plan
@@ -445,7 +445,7 @@ const PlanDetails = () => {
           </p>
           <button
             onClick={() => navigate('/subscription')}
-            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition-all duration-200 font-medium shadow-lg"
+            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-all duration-200 font-medium shadow-lg"
             aria-label="Go back to plans"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -506,7 +506,7 @@ const PlanDetails = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-4xl w-full mx-auto overflow-hidden border border-slate-700"
+        className="bg-white dark:bg-slate-800 rounded shadow-2xl max-w-5xl w-full mx-auto overflow-hidden border border-slate-700"
       >
         <nav className="bg-purple-600 dark:bg-purple-700 p-4 w-full flex justify-between items-center">
           <button
@@ -527,7 +527,7 @@ const PlanDetails = () => {
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 100 }}
-                className="text-center p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-purple-200 dark:border-purple-600"
+                className="text-center p-6 bg-white dark:bg-slate-800 rounded shadow-lg border border-purple-200 dark:border-purple-600"
               >
                 <div className="flex items-center justify-center mb-3">
                   <Zap className="w-8 h-8 text-purple-600 dark:text-purple-400" />
@@ -602,7 +602,7 @@ const PlanDetails = () => {
                     setSubscribed(false);
                     setError(null);
                   }}
-                  className="mt-1 w-full p-3 border border-gray-300 dark:border-slate-700 dark:bg-slate-700 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-inner"
+                  className="mt-1 w-full p-3 border border-gray-300 dark:border-slate-700 dark:bg-slate-700 dark:text-white rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-inner"
                   placeholder="your-secure-email@company.com"
                   aria-required="true"
                   aria-invalid={error ? 'true' : 'false'}
@@ -617,7 +617,7 @@ const PlanDetails = () => {
               <button
                 type="submit"
                 disabled={isLoading || subscribed}
-                className={`w-full text-white px-6 py-3 rounded-xl font-bold text-lg transition-all duration-300 shadow-xl transform hover:scale-[1.01] ${
+                className={`w-full text-white px-6 py-3 rounded font-bold text-lg transition-all duration-300 shadow-xl transform hover:scale-[1.01] ${
                   isLoading || subscribed
                     ? 'bg-purple-400 dark:bg-purple-800 opacity-80 cursor-not-allowed'
                     : 'bg-purple-600 dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-600'
@@ -651,7 +651,7 @@ const PlanDetails = () => {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700 p-4 rounded-xl text-center mt-6"
+                    className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700 p-4 rounded text-center mt-6"
                   >
                     <p className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center justify-center gap-2">
                       <CheckCircle className="w-5 h-5" />

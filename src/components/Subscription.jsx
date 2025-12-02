@@ -134,7 +134,7 @@ const Subscription = ({ defaultApp = '' }) => {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-200 font-medium shadow-md"
+            className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition-all duration-200 font-medium shadow-md"
             aria-label="Retry loading plans"
           >
             <RefreshCw className="w-5 h-5" />
@@ -211,7 +211,7 @@ const Subscription = ({ defaultApp = '' }) => {
   console.log('Plans:', plans);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-4 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 pt-14 pb-20 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -234,7 +234,7 @@ const Subscription = ({ defaultApp = '' }) => {
             <div key={cycle} className="relative mx-1">
               <button
                 onClick={() => setBillingCycle(cycle)}
-                className={`px-6 py-2.5 rounded-full font-bold transition-all duration-300 w-[120px] text-center text-lg ${
+                className={`px-6 py-2 rounded-full font-bold transition-all duration-300 w-[120px] text-center text-lg ${
                   billingCycle === cycle
                     ? 'bg-violet-600 text-white shadow-lg shadow-indigo-200'
                     : 'text-gray-600 bg-transparent hover:bg-gray-100'
@@ -243,24 +243,24 @@ const Subscription = ({ defaultApp = '' }) => {
               >
                 {cycle.charAt(0).toUpperCase() + cycle.slice(1)}
               </button>
-              {mergedPricing.Basic.discount[cycle] > 0 && (
+              {/* {mergedPricing.Basic.discount[cycle] > 0 && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-10 animate-pulse-slow">
                   {mergedPricing.Basic.discount[cycle]}% OFF
                 </span>
-              )}
+              )} */}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
+      <div className="max-w-8xl mx-auto flex flex-col lg:flex-row gap-10">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full lg:w-1/4 bg-white rounded-2xl shadow-xl p-6 h-fit sticky top-6 border border-violet-100"
+          className="w-full lg:w-1/5 bg-white rounded shadow-xl p-6 h-fit sticky top-6 border border-violet-100"
         >
-          <div className="text-violet-800 font-extrabold text-2xl mb-6 border-b pb-4 border-violet-100">
+          <div className="text-violet-800 font-extrabold text-2xl mb-4 border-b pb-4 border-violet-100">
             Select Applications
           </div>
           <p className="text-gray-600 text-sm mb-6">
@@ -270,7 +270,7 @@ const Subscription = ({ defaultApp = '' }) => {
             {availableTypes.map(type => (
               <label
                 key={type}
-                className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer border-2 ${
+                className={`flex items-center gap-3 p-2 rounded transition-all duration-200 cursor-pointer border-2 ${
                   selectedTypes.includes(type) ? 'bg-violet-50 border-violet-300 shadow-sm' : 'bg-gray-50 border-gray-100 hover:bg-violet-50'
                 }`}
               >
@@ -278,7 +278,7 @@ const Subscription = ({ defaultApp = '' }) => {
                   type="checkbox"
                   checked={selectedTypes.includes(type)}
                   onChange={() => handleCheckboxChange(type)}
-                  className="appearance-none w-5 h-5 border-2 rounded-md transition-all duration-200 accent-violet-600 checked:bg-violet-600 checked:border-violet-600 focus:ring-2 focus:ring-violet-500"
+                  className="appearance-none w-5 h-5 border-2 rounded transition-all duration-200 accent-violet-600 checked:bg-violet-600 checked:border-violet-600 focus:ring-2 focus:ring-violet-500"
                   aria-checked={selectedTypes.includes(type)}
                   aria-label={`Select ${type} application`}
                 />
@@ -291,7 +291,7 @@ const Subscription = ({ defaultApp = '' }) => {
           <div className="mt-8 text-center border-t pt-4 border-violet-100">
             <button
               onClick={() => setSelectedTypes([])}
-              className="w-full px-4 py-2 text-violet-600 border border-violet-300 rounded-xl hover:bg-violet-50 transition-all duration-200 font-medium"
+              className="w-full px-4 py-2 text-violet-600 border border-violet-300 rounded hover:bg-violet-50 transition-all duration-200 font-medium"
               aria-label="Clear all selected applications"
             >
               Clear Selection
@@ -335,7 +335,7 @@ const Subscription = ({ defaultApp = '' }) => {
                     transition={{ duration: 0.3 }}
                     className="flex justify-center items-center h-full min-h-[200px] text-center"
                   >
-                    <div className="md:col-span-2 lg:col-span-3 text-center p-10 bg-white rounded-xl shadow-lg border border-gray-100">
+                    <div className="md:col-span-2 lg:col-span-3 text-center p-10 bg-white rounded shadow-lg border border-gray-100">
                       <p className="text-gray-500 font-medium text-xl">
                         No plans available that match *exactly* your selected products.
                         <br />Please try selecting a different combination.
@@ -352,7 +352,7 @@ const Subscription = ({ defaultApp = '' }) => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="text-center p-10 bg-white rounded-xl shadow-lg border border-gray-100"
+                className="text-center p-10 bg-white rounded shadow-lg border border-gray-100"
               >
                 <p className="text-gray-500 font-medium text-xl flex items-center gap-3">
                   <Star className="w-6 h-6 text-violet-500 fill-violet-500" />

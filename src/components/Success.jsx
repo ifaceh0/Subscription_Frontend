@@ -134,7 +134,7 @@ const Success = () => {
   if (!verified) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-blue-50">
-        <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+        <div className="bg-white p-6 md:p-8 rounded shadow-lg w-full max-w-md text-center">
           <div className="flex justify-center mb-4">
             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-indigo-500"></div>
           </div>
@@ -146,7 +146,7 @@ const Success = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-blue-50">
-      <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl w-full max-w-md">
+      <div className="bg-white p-6 md:p-8 rounded shadow-lg transform transition-all duration-300 hover:shadow-xl w-full max-w-md">
         <div className="text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">

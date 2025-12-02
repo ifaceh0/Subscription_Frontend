@@ -16,14 +16,14 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
 
   return (
     <div
-      className={`relative rounded-lg overflow-hidden shadow-md w-full bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
+      className={`relative rounded overflow-hidden shadow-md max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
       aria-label={`Add ${title} plan`}
       onKeyDown={(e) => e.key === 'Enter' && onSelect()}
     >
-      <div className={`px-6 py-4 flex justify-center text-center ${color}`}>
+      <div className={`px-6 py-3 flex justify-center text-center ${color}`}>
         <div>
           <div className="mb-2 flex justify-center">
             <PlusCircle className="h-8 w-8 text-white" />
@@ -85,7 +85,7 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
       <div className="px-6 pb-6">
         <button
           onClick={onSelect}
-          className="w-full py-2 rounded-lg font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
+          className="w-full py-2 rounded font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
           aria-label={`Add ${title} plan`}
         >
           Add Plan

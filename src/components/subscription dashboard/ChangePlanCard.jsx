@@ -122,14 +122,14 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
 
   return (
     <div
-      className={`relative rounded-2xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
+      className={`relative rounded overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
       aria-label={`Select ${title} plan`}
       onKeyDown={(e) => e.key === 'Enter' && onSelect()}
     >
-      <div className={`px-6 py-4 flex justify-center text-center ${color}`}>
+      <div className={`px-6 py-3 flex justify-center text-center ${color}`}>
         <div>
           {Icon && (
             <div className="mb-2 flex justify-center">
@@ -188,7 +188,7 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
       <div className="px-6 pb-6">
         <button
           onClick={onSelect}
-          className="w-full py-2 rounded-lg font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
+          className="w-full py-2 rounded font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
           aria-label={`Select ${title} plan`}
         >
           Select Plan

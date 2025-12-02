@@ -1468,7 +1468,7 @@ const ChangePlan = () => {
           transition={{ duration: 0.3 }}
           className="flex flex-col items-center justify-center h-64"
         >
-          <Loader2 className="h-16 w-16 text-purple-600 animate-spin" />
+          <Loader2 className="h-14 w-14 text-purple-600 animate-spin" />
           <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
         </motion.div>
       </div>
@@ -1482,7 +1482,7 @@ const ChangePlan = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center"
+          className="bg-white rounded shadow-lg p-8 max-w-md w-full text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <AlertCircle className="w-8 h-8 text-red-500" />
@@ -1491,7 +1491,7 @@ const ChangePlan = () => {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate('/subscription-dashboard')}
-            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
+            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-all duration-200 font-medium"
             aria-label="Back to dashboard"
           >
             <RefreshCw className="w-5 h-5" />
@@ -1533,11 +1533,11 @@ const ChangePlan = () => {
                     {cycle === 'quarter' ? '2-7% OFF' : '4-7% OFF'}
                   </span>
                 )} */}
-                {mergedPricing.Basic.discount[cycle] > 0 && (
+                {/* {mergedPricing.Basic.discount[cycle] > 0 && (
                   <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow z-10">
                     {mergedPricing.Basic.discount[cycle]}% OFF
                   </span>
-                )}
+                )} */}
               </div>
             ))}
           </div>
@@ -1549,7 +1549,7 @@ const ChangePlan = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="mb-6 bg-white rounded-lg shadow-sm p-4 border border-gray-100 max-w-md mx-auto"
+              className="mb-6 bg-white rounded shadow-sm p-4 border border-gray-100 max-w-md mx-auto"
             >
               <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
                 <Package className="w-5 h-5 text-indigo-600" />
@@ -1560,7 +1560,7 @@ const ChangePlan = () => {
                   {selectedTypes.map((app) => (
                     <span
                       key={app}
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors duration-200"
+                      className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors duration-200"
                     >
                       {app}
                     </span>
@@ -1625,7 +1625,7 @@ const ChangePlan = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
+              className="bg-white rounded p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="confirm-plan-title" className="text-2xl font-semibold text-gray-800 mb-4">Confirm Plan Change</h3>
               <p className="text-gray-600 mb-6">
@@ -1635,14 +1635,14 @@ const ChangePlan = () => {
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={() => setShowConfirmModal(false)}
-                  className="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-400 transition-colors"
+                  className="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded hover:bg-gray-400 transition-colors"
                   aria-label="Cancel plan change"
                 >
                   No
                 </button>
                 <button
                   onClick={handleChangePlan}
-                  className={`bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors ${
+                  className={`bg-blue-600 text-white font-semibold py-2 px-6 rounded transition-colors ${
                     loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                   }`}
                   disabled={loading}

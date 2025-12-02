@@ -562,7 +562,7 @@ const AddProduct = () => {
           transition={{ duration: 0.3 }}
           className="flex flex-col items-center justify-center h-64"
         >
-          <Loader2 className="h-16 w-16 text-purple-600 animate-spin" />
+          <Loader2 className="h-12 w-12 text-purple-600 animate-spin" />
           <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
         </motion.div>
       </div>
@@ -576,7 +576,7 @@ const AddProduct = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center"
+          className="bg-white rounded shadow-lg p-8 max-w-md w-full text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <AlertCircle className="w-8 h-8 text-red-600" />
@@ -585,7 +585,7 @@ const AddProduct = () => {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate('/subscription-dashboard')}
-            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
+            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-all duration-200 font-medium"
             aria-label="Back to dashboard"
           >
             <RefreshCw className="w-5 h-5" />
@@ -598,7 +598,7 @@ const AddProduct = () => {
 
   return (
       <div className="min-h-screen bg-gray-100 px-6 py-8">
-        <h1 className="text-6xl font-bold text-gray-800 mb-14 text-center">
+        <h1 className="text-5xl font-bold text-gray-800 mb-24 text-center">
             Add New Product
         </h1>
         <motion.div
@@ -624,7 +624,7 @@ const AddProduct = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="bg-white rounded-lg shadow-md border border-gray-100"
+                    className="bg-white rounded max-w-sm shadow-md border border-gray-100"
                   >
                     <AddProductCard
                       title={plan.title}
@@ -650,7 +650,7 @@ const AddProduct = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white rounded-lg shadow-md p-6 border border-gray-100 col-span-full text-center"
+                  className="bg-white rounded shadow-md p-6 border border-gray-100 col-span-full text-center"
                 >
                   <p className="text-gray-600 text-lg">
                     No plans available for the selected applications.
@@ -666,7 +666,7 @@ const AddProduct = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white rounded-lg p-8 max-w-md w-full shadow-lg"
+                className="bg-white rounded p-8 max-w-md w-full shadow-lg"
               >
                 <h3 id="confirm-add-title" className="text-2xl font-semibold text-gray-800 mb-4">Confirm Add Product</h3>
                 <p className="text-gray-600 mb-6">
@@ -675,14 +675,14 @@ const AddProduct = () => {
                 <div className="flex justify-end space-x-4">
                   <button
                     onClick={() => setShowConfirmModal(false)}
-                    className="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-lg hover:bg-gray-400 transition-colors"
+                    className="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded hover:bg-gray-400 transition-colors"
                     aria-label="Cancel adding product"
                   >
                     No
                   </button>
                   <button
                     onClick={handleAddPlan}
-                    className={`bg-purple-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors ${
+                    className={`bg-purple-600 text-white font-semibold py-2 px-6 rounded transition-colors ${
                       loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-700'
                     }`}
                     disabled={loading}

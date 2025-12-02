@@ -6,7 +6,7 @@ const Cancel = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-gray-100">
-      <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl w-full max-w-md">
+      <div className="bg-white p-6 md:p-8 rounded shadow-lg transform transition-all duration-300 hover:shadow-xl w-full max-w-md">
         <div className="text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
@@ -34,7 +34,7 @@ const Cancel = () => {
           </p>
           <button
             onClick={() => navigate('/')}
-            className="mt-6 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+            className="mt-6 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200"
           >
             <ArrowLeft className="w-5 h-5 inline-block mr-2" />
             Back to Plans

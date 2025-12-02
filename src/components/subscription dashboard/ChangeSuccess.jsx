@@ -154,7 +154,7 @@ const ChangeSuccess = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white p-6 md:p-8 rounded-xl shadow-lg w-full max-w-md text-center"
+          className="bg-white p-6 md:p-8 rounded shadow-lg w-full max-w-md text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -177,7 +177,7 @@ const ChangeSuccess = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="bg-white p-6 md:p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl w-full max-w-md"
+        className="bg-white p-6 md:p-8 rounded shadow-lg transform transition-all duration-300 hover:shadow-xl w-full max-w-md"
       >
         <div className="text-center">
           <div className="flex justify-center mb-4">
