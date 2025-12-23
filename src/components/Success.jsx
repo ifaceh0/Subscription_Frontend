@@ -358,7 +358,7 @@ const Success = () => {
   if (status === 'error') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-gray-100">
-        <div className="bg-white p-8 rounded-xl shadow-xl max-w-md text-center">
+        <div className="bg-white p-8 rounded shadow-xl max-w-md text-center">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -368,7 +368,7 @@ const Success = () => {
           <p className="text-gray-600 mb-6">{errorMessage}</p>
           <button
             onClick={() => navigate('/subscription')}
-            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            className="px-8 py-3 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
           >
             Back to Plans
           </button>
@@ -380,7 +380,7 @@ const Success = () => {
   if (status === 'timeout') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
-        <div className="bg-white p-8 rounded-xl shadow-xl max-w-md text-center">
+        <div className="bg-white p-8 rounded shadow-xl max-w-md text-center">
           <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -392,7 +392,7 @@ const Success = () => {
           </p>
           <button
             onClick={() => navigate('/subscription')}
-            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            className="px-8 py-3 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
           >
             Go to Dashboard
           </button>
@@ -404,7 +404,7 @@ const Success = () => {
   if (status === 'success') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-teal-50">
-        <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md text-center transform transition-all hover:scale-105">
+        <div className="bg-white p-8 rounded shadow-2xl max-w-md text-center transform transition-all hover:scale-105">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -428,7 +428,7 @@ const Success = () => {
   // Default: Processing
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
-      <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-md text-center">
+      <div className="bg-white p-10 rounded shadow-2xl max-w-md text-center">
         <div className="flex justify-center mb-6">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
         </div>
