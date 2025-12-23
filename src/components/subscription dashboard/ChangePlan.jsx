@@ -1302,6 +1302,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { User, Loader2, AlertCircle, Package, RefreshCw } from 'lucide-react';
+import {  
+    FiLoader
+} from "react-icons/fi";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import ChangePlanCard from './ChangePlanCard';
@@ -1468,7 +1471,7 @@ const ChangePlan = () => {
           transition={{ duration: 0.3 }}
           className="flex flex-col items-center justify-center h-64"
         >
-          <Loader2 className="h-14 w-14 text-purple-600 animate-spin" />
+          <FiLoader className="h-14 w-14 text-purple-600 animate-spin" />
           <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
         </motion.div>
       </div>
@@ -1545,7 +1548,7 @@ const ChangePlan = () => {
 
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
           <div className="flex-1">
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
@@ -1569,7 +1572,7 @@ const ChangePlan = () => {
               ) : (
                 <p className="text-gray-500 text-sm italic">No applications selected</p>
               )}
-            </motion.div>
+            </motion.div> */}
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -1578,7 +1581,7 @@ const ChangePlan = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-wrap justify-center gap-8 px-2"
+                className="flex flex-wrap mt-8 justify-center gap-8 px-2"
               >
                 {plans.length > 0 ? (
                   plans.map((plan, index) => (

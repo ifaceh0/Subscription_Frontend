@@ -103,18 +103,55 @@ const Subscription = ({ defaultApp = '' }) => {
     );
   };
 
+  // if (loading || availableTypes.length === 0) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="polite">
+  //       <motion.div
+  //         initial={{ opacity: 0, scale: 0.95 }}
+  //         animate={{ opacity: 1, scale: 1 }}
+  //         transition={{ duration: 0.5 }}
+  //         className="p-10 max-w-md w-full text-center"
+  //       >
+  //         <Loader2 className="w-12 h-12 text-violet-500 animate-spin mx-auto mb-4" />
+  //         <p className="text-2xl font-bold text-gray-800">Fetching the Best Deals</p>
+  //         <p className="text-gray-500 mt-2">Loading subscription plans and application details...</p>
+  //       </motion.div>
+  //     </div>
+  //   );
+  // }
+
   if (loading || availableTypes.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="polite">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 10 }} // Subtle lift animation on appear
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="p-10 max-w-md w-full text-center"
+          className="p-10 max-w-md w-full text-center rounded shadow-indigo-100/50" // Added modern card styling
         >
-          <Loader2 className="w-12 h-12 text-violet-500 animate-spin mx-auto mb-4" />
-          <p className="text-2xl font-bold text-gray-800">Fetching the Best Deals</p>
-          <p className="text-gray-500 mt-2">Loading subscription plans and application details...</p>
+          {/* Modern Pulsing Ring Animation */}
+          <div className="mx-auto mb-6 relative w-16 h-16">
+            
+            {/* Inner Ring (The stable center) */}
+            <div className="w-8 h-8 rounded-full bg-violet-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+
+            {/* Outer Pulsing Ring (The modern animation) */}
+            <motion.div
+              animate={{ 
+                scale: [0.8, 1.4], // Scale out and back
+                opacity: [0.7, 0],   // Fade out as it scales
+              }}
+              transition={{ 
+                duration: 1.5, 
+                repeat: Infinity, 
+                ease: "easeOut",
+              }}
+              className="w-full h-full rounded-full border-4 border-violet-500 absolute top-0 left-0"
+            />
+          </div>
+
+          <p className="text-2xl font-extrabold text-gray-900 tracking-tight">Fetching the Best Deals</p>
+          <p className="text-gray-500 mt-2 text-base">Loading subscription plans and application details...</p>
         </motion.div>
       </div>
     );
@@ -352,7 +389,7 @@ const Subscription = ({ defaultApp = '' }) => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="text-center p-10 bg-white rounded shadow-lg border border-gray-100"
+                className="text-center p-6 bg-white rounded shadow-lg border border-gray-100"
               >
                 <p className="text-gray-500 font-medium text-xl flex items-center gap-3">
                   <Star className="w-6 h-6 text-violet-500 fill-violet-500" />

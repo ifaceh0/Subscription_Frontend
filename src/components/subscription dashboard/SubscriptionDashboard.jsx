@@ -520,21 +520,66 @@ const SubscriptionDashboard = () => {
       </span>
     );
   };
+
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6" role="alert" aria-live="polite">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col items-center justify-center h-64"
-        >
-          <FiLoader className="h-14 w-14 text-violet-600 animate-spin" />
-          <p className="mt-4 text-gray-600 text-lg">Loading Your Subscription dashboard...</p>
-        </motion.div>
-      </div>
-    );
-  }
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6" role="alert" aria-live="polite">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center justify-center h-64"
+          >
+            <div className="flex space-x-2">
+              
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.3, 1], 
+                  opacity: [0.8, 1, 0.8],
+                }}
+                transition={{ 
+                  duration: 1.2, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: 0 // Start first
+                }}
+                className="w-4 h-4 rounded-full bg-red-800 shadow-md"
+              />
+              
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.3, 1],
+                  opacity: [0.8, 1, 0.8],
+                }}
+                transition={{ 
+                  duration: 1.2, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: 0.2 // Delayed start
+                }}
+                className="w-4 h-4 rounded-full bg-yellow-600 shadow-md"
+              />
+              
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.3, 1],
+                  opacity: [0.8, 1, 0.8],
+                }}
+                transition={{ 
+                  duration: 1.2, 
+                  repeat: Infinity, 
+                  ease: "easeInOut",
+                  delay: 0.4 // Delayed start
+                }}
+                className="w-4 h-4 rounded-full bg-gray-900 shadow-md"
+              />
+            </div>
+  
+            <p className="text-gray-600 mt-6 text-lg">Loading Your Subscription dashboard...</p>
+          </motion.div>
+        </div>
+      );
+    }
 
   if (error) {
     return (

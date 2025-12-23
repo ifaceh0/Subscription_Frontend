@@ -389,7 +389,10 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import {  
+    FiLoader
+} from "react-icons/fi";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import AddProductCard from './AddProductCard';
@@ -425,7 +428,7 @@ const AddProduct = () => {
       setLoading(true);
       try {
         const query = selectedTypes.length > 0
-          ? `?${selectedTypes.map(type => `appNames=${encodeURIComponent(type.toLowerCase())}`).join('&')}`
+          ? `?${selectedTypes.map(type => `appNames=${encodeURIComponent(type)}`).join('&')}`
           : '';
         const response = await fetch(`${API_URL}/api/subscription/unsubscribed-plans${query}&email=${encodeURIComponent(email)}`, {
           method: 'GET',
@@ -562,7 +565,7 @@ const AddProduct = () => {
           transition={{ duration: 0.3 }}
           className="flex flex-col items-center justify-center h-64"
         >
-          <Loader2 className="h-12 w-12 text-purple-600 animate-spin" />
+          <FiLoader className="h-12 w-12 text-purple-600 animate-spin" />
           <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
         </motion.div>
       </div>
