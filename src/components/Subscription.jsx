@@ -248,14 +248,14 @@ const Subscription = ({ defaultApp = '' }) => {
   console.log('Plans:', plans);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-14 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 pt-10 pb-20 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="max-w-7xl mx-auto"
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
             Flexible Pricing, Zero Hassle
           </h1>
@@ -266,7 +266,7 @@ const Subscription = ({ defaultApp = '' }) => {
       </motion.div>
 
       <div className="flex justify-center mb-10">
-        <div className="inline-flex bg-white rounded-full p-2 shadow-xl border border-gray-100">
+        <div className="inline-flex bg-white rounded-full p-1 shadow-xl border border-gray-100">
           {['month', 'quarter', 'year'].map(cycle => (
             <div key={cycle} className="relative mx-1">
               <button
@@ -307,7 +307,7 @@ const Subscription = ({ defaultApp = '' }) => {
             {availableTypes.map(type => (
               <label
                 key={type}
-                className={`flex items-center gap-3 p-2 rounded transition-all duration-200 cursor-pointer border-2 ${
+                className={`flex items-center gap-3 p-2 rounded-full transition-all duration-200 cursor-pointer border-2 ${
                   selectedTypes.includes(type) ? 'bg-violet-50 border-violet-300 shadow-sm' : 'bg-gray-50 border-gray-100 hover:bg-violet-50'
                 }`}
               >
@@ -315,7 +315,7 @@ const Subscription = ({ defaultApp = '' }) => {
                   type="checkbox"
                   checked={selectedTypes.includes(type)}
                   onChange={() => handleCheckboxChange(type)}
-                  className="appearance-none w-5 h-5 border-2 rounded transition-all duration-200 accent-violet-600 checked:bg-violet-600 checked:border-violet-600 focus:ring-2 focus:ring-violet-500"
+                  className="appearance-none w-5 h-5 border-2 rounded-full transition-all duration-200 accent-violet-600 checked:bg-violet-600 checked:border-violet-600 focus:ring-2 focus:ring-violet-500"
                   aria-checked={selectedTypes.includes(type)}
                   aria-label={`Select ${type} application`}
                 />
@@ -328,7 +328,7 @@ const Subscription = ({ defaultApp = '' }) => {
           <div className="mt-8 text-center border-t pt-4 border-violet-100">
             <button
               onClick={() => setSelectedTypes([])}
-              className="w-full px-4 py-2 text-violet-600 border border-violet-300 rounded hover:bg-violet-50 transition-all duration-200 font-medium"
+              className="w-full px-4 py-2 text-violet-600 border border-violet-300 rounded-full hover:bg-violet-50 transition-all duration-200 font-medium"
               aria-label="Clear all selected applications"
             >
               Clear Selection

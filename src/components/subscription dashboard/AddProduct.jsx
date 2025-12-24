@@ -387,12 +387,338 @@
 
 
 
+// import { useState, useEffect } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+// import {  
+//     FiLoader
+// } from "react-icons/fi";
+// import { motion, AnimatePresence } from 'framer-motion';
+// import { toast } from 'react-toastify';
+// import AddProductCard from './AddProductCard';
+
+// const AddProduct = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { selectedApps = ["Referral"] } = location.state || {}; // Default to ["Referral"] for testing
+//   const [billingCycle] = useState('quarter'); // Changed to 'quarter' to match backend
+//   const [selectedTypes, setSelectedTypes] = useState(selectedApps);
+//   const [pricingData, setPricingData] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [selectedPlan, setSelectedPlan] = useState(null);
+//   const [showConfirmModal, setShowConfirmModal] = useState(false);
+//   const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
+
+//   useEffect(() => {
+//     console.log('Selected Apps from location.state:', selectedApps);
+//     const email = localStorage.getItem('CompanyEmail');
+//     if (!email) {
+//       setError('No email found. Please sign in again.');
+//       setLoading(false);
+//       return;
+//     }
+//     if (!selectedApps || selectedApps.length === 0) {
+//       setError('No applications selected. Please select applications from the dashboard.');
+//       setLoading(false);
+//       return;
+//     }
+
+//     const fetchPlans = async () => {
+//       setLoading(true);
+//       try {
+//         const query = selectedTypes.length > 0
+//           ? `?${selectedTypes.map(type => `appNames=${encodeURIComponent(type)}`).join('&')}`
+//           : '';
+//         const response = await fetch(`${API_URL}/api/subscription/unsubscribed-plans${query}&email=${encodeURIComponent(email)}`, {
+//           method: 'GET',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//         });
+//         if (!response.ok) {
+//           if (response.status === 404) throw new Error('No plans available for the selected applications.');
+//           throw new Error(`HTTP error! Status: ${response.status}`);
+//         }
+//         const data = await response.json();
+//         console.log('Backend response from /unsubscribed-plans:', data);
+//         setPricingData(data || []);
+//       } catch (err) {
+//         setError(`Failed to fetch plans: ${err.message}`);
+//         toast.error(`Error: ${err.message}`);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchPlans();
+//   }, [selectedApps, navigate]);
+
+//   const handleAddPlan = async () => {
+//     const email = localStorage.getItem('CompanyEmail');
+//     if (!email) {
+//       setError('No email found. Please sign in again.');
+//       toast.error('No email found.');
+//       return;
+//     }
+//     if (!selectedPlan) {
+//       toast.error('Please select a plan.');
+//       return;
+//     }
+//     if (selectedTypes.length === 0) {
+//       toast.error('No applications selected.');
+//       return;
+//     }
+
+//     setLoading(true);
+//     try {
+//       const response = await fetch(`${API_URL}/api/subscription/add-app`, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           email,
+//           appNames: selectedTypes.map(type => type.toLowerCase()),
+//           newPlanId: selectedPlan.planId,
+//         }),
+//       });
+//       const data = await response.json();
+//       if (response.ok && data.message) {
+//         toast.success(data.message);
+//         navigate('/subscription-dashboard');
+//       } else {
+//         setError(data.error || 'Failed to add product.');
+//         toast.error(data.error || 'Failed to add product.');
+//       }
+//     } catch (err) {
+//       setError(`Failed to add product: ${err.message}`);
+//       toast.error(`Error: ${err.message}`);
+//     } finally {
+//       setLoading(false);
+//       setShowConfirmModal(false);
+//     }
+//   };
+
+//   const mergedPricing = {
+//     Basic: { month: null, quarter: null, year: null, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null }, features: [], applications: [] },
+//     Pro: { month: null, quarter: null, year: null, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null }, features: [], applications: [] },
+//     Enterprise: { month: null, quarter: null, year: null, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null }, features: [], applications: [] },
+//   };
+
+//   pricingData.forEach((plan) => {
+//     const selectedTypesLower = selectedTypes.map(type => type.toLowerCase()).sort();
+//     const applicationNamesLower = (plan.applicationNames || []).map(name => name.toLowerCase()).sort();
+//     const isSelectedAppsMatch = selectedTypesLower.length === applicationNamesLower.length &&
+//       selectedTypesLower.every((type, i) => type === applicationNamesLower[i]);
+//     if (isSelectedAppsMatch && ['basic', 'pro', 'enterprise'].includes(plan.planName.toLowerCase())) {
+//       const tier = plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase();
+//       const interval = plan.interval.toLowerCase().replace('ly', '');
+//       mergedPricing[tier][interval] = plan.discountedPrice || null;
+//       mergedPricing[tier].discount[interval] = plan.discountPercent || 0;
+//       mergedPricing[tier].planIds[interval] = plan.planId || null;
+//       mergedPricing[tier].features = plan.features || [];
+//       mergedPricing[tier].applications = plan.applicationNames || [];
+//     }
+//   });
+
+//   const formatPrice = (price, interval) => {
+//     if (price === null || price === undefined) return 'N/A';
+//     return `$${parseFloat(price).toFixed(2)} /${interval}`;
+//   };
+
+//   const plans = ['Basic', 'Pro', 'Enterprise']
+//     .map((tier) => ({
+//       title: tier,
+//       price: {
+//         month: formatPrice(mergedPricing[tier].month, 'month'),
+//         quarter: formatPrice(mergedPricing[tier].quarter, 'quarter'),
+//         year: formatPrice(mergedPricing[tier].year, 'year'),
+//       },
+//       discountPercent: mergedPricing[tier].discount,
+//       planIds: mergedPricing[tier].planIds,
+//       applications: mergedPricing[tier].applications,
+//       features: mergedPricing[tier].features.length > 0
+//         ? mergedPricing[tier].features
+//         : (tier === 'Basic'
+//             ? ['Up to 5 users', '5GB storage', 'Basic support', 'Access to core features']
+//             : tier === 'Pro'
+//             ? ['Up to 20 users', '50GB storage', 'Priority support', 'Advanced analytics', 'Custom integrations']
+//             : [
+//                 'Unlimited users',
+//                 'Unlimited storage',
+//                 '24/7 dedicated support',
+//                 'Advanced security features',
+//                 'Custom development',
+//                 'On-premise deployment option',
+//               ]),
+//       buttonText: `Add ${tier} Plan`,
+//       color: tier === 'Basic' ? 'bg-purple-500' : tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 'bg-blue-600',
+//     }))
+//     .filter((plan) => plan.planIds[billingCycle] !== null);
+
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6" role="alert" aria-live="polite">
+//         <motion.div
+//           initial={{ opacity: 0, scale: 0.95 }}
+//           animate={{ opacity: 1, scale: 1 }}
+//           transition={{ duration: 0.3 }}
+//           className="flex flex-col items-center justify-center h-64"
+//         >
+//           <FiLoader className="h-12 w-12 text-purple-600 animate-spin" />
+//           <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
+//         </motion.div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6" role="alert" aria-live="assertive">
+//         <motion.div
+//           initial={{ opacity: 0, scale: 0.95 }}
+//           animate={{ opacity: 1, scale: 1 }}
+//           transition={{ duration: 0.3 }}
+//           className="bg-white rounded shadow-lg p-8 max-w-md w-full text-center"
+//         >
+//           <div className="flex items-center justify-center gap-3 mb-4">
+//             <AlertCircle className="w-8 h-8 text-red-600" />
+//             <p className="text-xl font-semibold text-red-600">Error</p>
+//           </div>
+//           <p className="text-gray-600 mb-6">{error}</p>
+//           <button
+//             onClick={() => navigate('/subscription-dashboard')}
+//             className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-all duration-200 font-medium"
+//             aria-label="Back to dashboard"
+//           >
+//             <RefreshCw className="w-5 h-5" />
+//             Back to Dashboard
+//           </button>
+//         </motion.div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//       <div className="min-h-screen bg-gray-100 px-6 py-8">
+//         <h1 className="text-5xl font-bold text-gray-800 mb-24 text-center">
+//             Add New Product
+//         </h1>
+//         <motion.div
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.5 }}
+//           className="max-w-7xl mx-auto"
+//         >
+//           <AnimatePresence mode="wait">
+//             <motion.div
+//               key={selectedTypes.join('-') + billingCycle}
+//               initial={{ opacity: 0, y: 20 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -20 }}
+//               transition={{ duration: 0.3 }}
+//               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+//             >
+//               {plans.length > 0 ? (
+//                 plans.map((plan, index) => (
+//                   <motion.div
+//                     key={index}
+//                     initial={{ opacity: 0, y: 20 }}
+//                     animate={{ opacity: 1, y: 0 }}
+//                     exit={{ opacity: 0, y: -20 }}
+//                     transition={{ duration: 0.3, delay: index * 0.1 }}
+//                     className="bg-white rounded max-w-sm shadow-md border border-gray-100"
+//                   >
+//                     <AddProductCard
+//                       title={plan.title}
+//                       price={plan.price}
+//                       discountPercent={plan.discountPercent}
+//                       planIds={plan.planIds}
+//                       features={plan.features}
+//                       color={plan.color}
+//                       billingCycle={billingCycle}
+//                       selectedTypes={selectedTypes}
+//                       applications={plan.applications}
+//                       onSelect={() => {
+//                         setSelectedPlan({ title: plan.title, planId: plan.planIds[billingCycle] });
+//                         setShowConfirmModal(true);
+//                       }}
+//                       isSelected={selectedPlan?.planId === plan.planIds[billingCycle]}
+//                     />
+//                   </motion.div>
+//                 ))
+//               ) : (
+//                 <motion.div
+//                   initial={{ opacity: 0, y: 20 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   exit={{ opacity: 0, y: -20 }}
+//                   transition={{ duration: 0.3 }}
+//                   className="bg-white rounded shadow-md p-6 border border-gray-100 col-span-full text-center"
+//                 >
+//                   <p className="text-gray-600 text-lg">
+//                     No plans available for the selected applications.
+//                   </p>
+//                 </motion.div>
+//               )}
+//             </motion.div>
+//           </AnimatePresence>
+
+//           {showConfirmModal && (
+//             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="confirm-add-title">
+//               <motion.div
+//                 initial={{ opacity: 0, scale: 0.95 }}
+//                 animate={{ opacity: 1, scale: 1 }}
+//                 transition={{ duration: 0.3 }}
+//                 className="bg-white rounded p-8 max-w-md w-full shadow-lg"
+//               >
+//                 <h3 id="confirm-add-title" className="text-2xl font-semibold text-gray-800 mb-4">Confirm Add Product</h3>
+//                 <p className="text-gray-600 mb-6">
+//                   Are you sure you want to add {selectedTypes.join(', ')} to {selectedPlan.title} ({billingCycle})?
+//                 </p>
+//                 <div className="flex justify-end space-x-4">
+//                   <button
+//                     onClick={() => setShowConfirmModal(false)}
+//                     className="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded hover:bg-gray-400 transition-colors"
+//                     aria-label="Cancel adding product"
+//                   >
+//                     No
+//                   </button>
+//                   <button
+//                     onClick={handleAddPlan}
+//                     className={`bg-purple-600 text-white font-semibold py-2 px-6 rounded transition-colors ${
+//                       loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-700'
+//                     }`}
+//                     disabled={loading}
+//                     aria-label="Confirm adding product"
+//                   >
+//                     {loading ? 'Processing...' : 'Yes, Add'}
+//                   </button>
+//                 </div>
+//               </motion.div>
+//             </div>
+//           )}
+//         </motion.div>
+//       </div>
+//   );
+// };
+
+// export default AddProduct;
+
+
+
+
+
+
+
+
+
+
+
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
-import {  
-    FiLoader
-} from "react-icons/fi";
+import { FiLoader } from "react-icons/fi";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import AddProductCard from './AddProductCard';
@@ -400,10 +726,11 @@ import AddProductCard from './AddProductCard';
 const AddProduct = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedApps = ["Referral"] } = location.state || {}; // Default to ["Referral"] for testing
-  const [billingCycle] = useState('quarter'); // Changed to 'quarter' to match backend
-  const [selectedTypes, setSelectedTypes] = useState(selectedApps);
+  const { selectedApps = [] } = location.state || {}; // No default - use selected from dashboard
+  const [billingCycle, setBillingCycle] = useState('month'); // Default to month
+  const [selectedTypes] = useState(selectedApps); // Fixed - no need to change
   const [pricingData, setPricingData] = useState([]);
+  const [adding, setAdding] = useState(false); // New state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -469,7 +796,7 @@ const AddProduct = () => {
       return;
     }
 
-    setLoading(true);
+    setAdding(true);
     try {
       const response = await fetch(`${API_URL}/api/subscription/add-app`, {
         method: 'POST',
@@ -494,67 +821,57 @@ const AddProduct = () => {
       setError(`Failed to add product: ${err.message}`);
       toast.error(`Error: ${err.message}`);
     } finally {
-      setLoading(false);
+      setAdding(false);
       setShowConfirmModal(false);
     }
   };
 
-  const mergedPricing = {
-    Basic: { month: null, quarter: null, year: null, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null }, features: [], applications: [] },
-    Pro: { month: null, quarter: null, year: null, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null }, features: [], applications: [] },
-    Enterprise: { month: null, quarter: null, year: null, discount: { month: 0, quarter: 0, year: 0 }, planIds: { month: null, quarter: null, year: null }, features: [], applications: [] },
-  };
-
-  pricingData.forEach((plan) => {
-    const selectedTypesLower = selectedTypes.map(type => type.toLowerCase()).sort();
-    const applicationNamesLower = (plan.applicationNames || []).map(name => name.toLowerCase()).sort();
-    const isSelectedAppsMatch = selectedTypesLower.length === applicationNamesLower.length &&
-      selectedTypesLower.every((type, i) => type === applicationNamesLower[i]);
-    if (isSelectedAppsMatch && ['basic', 'pro', 'enterprise'].includes(plan.planName.toLowerCase())) {
-      const tier = plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase();
-      const interval = plan.interval.toLowerCase().replace('ly', '');
-      mergedPricing[tier][interval] = plan.discountedPrice || null;
-      mergedPricing[tier].discount[interval] = plan.discountPercent || 0;
-      mergedPricing[tier].planIds[interval] = plan.planId || null;
-      mergedPricing[tier].features = plan.features || [];
-      mergedPricing[tier].applications = plan.applicationNames || [];
-    }
-  });
-
   const formatPrice = (price, interval) => {
-    if (price === null || price === undefined) return 'N/A';
-    return `$${parseFloat(price).toFixed(2)} /${interval}`;
+    if (price === 0 || price == null) return 'N/A';
+    if (interval === 'month') return `$${parseFloat(price).toFixed(2)} /month`;
+    if (interval === 'quarter') return `$${parseFloat(price).toFixed(2)} /quarter`;
+    return `$${parseFloat(price).toFixed(2)} /year`;
   };
 
-  const plans = ['Basic', 'Pro', 'Enterprise']
-    .map((tier) => ({
-      title: tier,
-      price: {
-        month: formatPrice(mergedPricing[tier].month, 'month'),
-        quarter: formatPrice(mergedPricing[tier].quarter, 'quarter'),
-        year: formatPrice(mergedPricing[tier].year, 'year'),
-      },
-      discountPercent: mergedPricing[tier].discount,
-      planIds: mergedPricing[tier].planIds,
-      applications: mergedPricing[tier].applications,
-      features: mergedPricing[tier].features.length > 0
-        ? mergedPricing[tier].features
-        : (tier === 'Basic'
-            ? ['Up to 5 users', '5GB storage', 'Basic support', 'Access to core features']
-            : tier === 'Pro'
-            ? ['Up to 20 users', '50GB storage', 'Priority support', 'Advanced analytics', 'Custom integrations']
-            : [
-                'Unlimited users',
-                'Unlimited storage',
-                '24/7 dedicated support',
-                'Advanced security features',
-                'Custom development',
-                'On-premise deployment option',
-              ]),
-      buttonText: `Add ${tier} Plan`,
-      color: tier === 'Basic' ? 'bg-purple-500' : tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 'bg-blue-600',
-    }))
-    .filter((plan) => plan.planIds[billingCycle] !== null);
+  // Dynamic tiers from backend
+  const uniqueTiers = [...new Set(pricingData.map(plan => 
+    plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()
+  ))];
+
+  const plans = uniqueTiers
+    .map((tier) => {
+      // Find plan that exactly matches selected apps and current billing cycle
+      const matchingPlan = pricingData.find(plan => 
+        plan.planName.toLowerCase() === tier.toLowerCase() &&
+        plan.interval.toLowerCase().includes(billingCycle) && // Match current cycle
+        plan.applicationNames?.length === selectedTypes.length &&
+        selectedTypes.every(app => 
+          plan.applicationNames?.map(n => n.toLowerCase()).includes(app.toLowerCase())
+        )
+      );
+
+      if (!matchingPlan) return null;
+
+      const intervalKey = billingCycle;
+
+      return {
+        title: tier,
+        price: {
+          month: formatPrice(matchingPlan.discountedPrice, 'month'),
+          quarter: formatPrice(matchingPlan.discountedPrice, 'quarter'),
+          year: formatPrice(matchingPlan.discountedPrice, 'year'),
+        },
+        discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
+        planIds: { [intervalKey]: matchingPlan.planId },
+        features: matchingPlan.features || [],
+        applications: matchingPlan.applicationNames || [],
+        buttonText: `Add ${tier} Plan`,
+        color: tier === 'Basic' ? 'bg-purple-500' : 
+               tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
+               'bg-blue-600',
+      };
+    })
+    .filter(plan => plan !== null && plan.planIds[billingCycle] !== null);
 
   if (loading) {
     return (
@@ -566,7 +883,7 @@ const AddProduct = () => {
           className="flex flex-col items-center justify-center h-64"
         >
           <FiLoader className="h-12 w-12 text-purple-600 animate-spin" />
-          <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details...</p>
+          <p className="mt-4 text-gray-600 text-lg">Loading subscription plan details for add product plan...</p>
         </motion.div>
       </div>
     );
@@ -600,105 +917,131 @@ const AddProduct = () => {
   }
 
   return (
-      <div className="min-h-screen bg-gray-100 px-6 py-8">
-        <h1 className="text-5xl font-bold text-gray-800 mb-24 text-center">
-            Add New Product
-        </h1>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-7xl mx-auto"
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedTypes.join('-') + billingCycle}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    <div className="min-h-screen bg-gray-100 px-6 py-8">
+      <h1 className="text-5xl font-bold text-gray-800 mb-12 text-center">
+        Add New Product
+      </h1>
+
+      {/* Billing Cycle Selector */}
+      <div className="flex justify-center mb-12">
+        <div className="inline-flex bg-white rounded-full p-1 shadow-lg">
+          {['month', 'quarter', 'year'].map((cycle) => (
+            <button
+              key={cycle}
+              onClick={() => setBillingCycle(cycle)}
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-200 ${
+                billingCycle === cycle
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
             >
-              {plans.length > 0 ? (
-                plans.map((plan, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="bg-white rounded max-w-sm shadow-md border border-gray-100"
-                  >
-                    <AddProductCard
-                      title={plan.title}
-                      price={plan.price}
-                      discountPercent={plan.discountPercent}
-                      planIds={plan.planIds}
-                      features={plan.features}
-                      color={plan.color}
-                      billingCycle={billingCycle}
-                      selectedTypes={selectedTypes}
-                      applications={plan.applications}
-                      onSelect={() => {
-                        setSelectedPlan({ title: plan.title, planId: plan.planIds[billingCycle] });
-                        setShowConfirmModal(true);
-                      }}
-                      isSelected={selectedPlan?.planId === plan.planIds[billingCycle]}
-                    />
-                  </motion.div>
-                ))
-              ) : (
+              {cycle.charAt(0).toUpperCase() + cycle.slice(1) + (cycle === 'year' ? 'ly' : 'ly')}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Selected Apps Display */}
+      <div className="text-center mb-8">
+        <p className="text-lg text-gray-700">
+          Adding: <strong>{selectedTypes.join(', ')}</strong>
+        </p>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-7xl mx-auto"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedTypes.join('-') + billingCycle}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {plans.length > 0 ? (
+              plans.map((plan, index) => (
                 <motion.div
+                  key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded shadow-md p-6 border border-gray-100 col-span-full text-center"
+                  transition={{ delay: index * 0.1 }}
                 >
-                  <p className="text-gray-600 text-lg">
-                    No plans available for the selected applications.
-                  </p>
+                  <AddProductCard
+                    title={plan.title}
+                    price={plan.price}
+                    discountPercent={plan.discountPercent}
+                    planIds={plan.planIds}
+                    features={plan.features}
+                    color={plan.color}
+                    billingCycle={billingCycle}
+                    selectedTypes={selectedTypes}
+                    applications={plan.applications}
+                    onSelect={() => {
+                      setSelectedPlan({ title: plan.title, planId: plan.planIds[billingCycle] });
+                      setShowConfirmModal(true);
+                    }}
+                    isSelected={selectedPlan?.planId === plan.planIds[billingCycle]}
+                  />
                 </motion.div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-
-          {showConfirmModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="confirm-add-title">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded p-8 max-w-md w-full shadow-lg"
-              >
-                <h3 id="confirm-add-title" className="text-2xl font-semibold text-gray-800 mb-4">Confirm Add Product</h3>
-                <p className="text-gray-600 mb-6">
-                  Are you sure you want to add {selectedTypes.join(', ')} to {selectedPlan.title} ({billingCycle})?
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-xl text-gray-600">
+                  No plans available for {selectedTypes.join(', ')} in {billingCycle} billing.
                 </p>
-                <div className="flex justify-end space-x-4">
-                  <button
-                    onClick={() => setShowConfirmModal(false)}
-                    className="bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded hover:bg-gray-400 transition-colors"
-                    aria-label="Cancel adding product"
-                  >
-                    No
-                  </button>
-                  <button
-                    onClick={handleAddPlan}
-                    className={`bg-purple-600 text-white font-semibold py-2 px-6 rounded transition-colors ${
-                      loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-700'
-                    }`}
-                    disabled={loading}
-                    aria-label="Confirm adding product"
-                  >
-                    {loading ? 'Processing...' : 'Yes, Add'}
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </motion.div>
-      </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Confirm Modal with Local Loading */}
+        {showConfirmModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="confirm-add-title">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white rounded p-8 max-w-md w-full shadow-2xl"
+            >
+              <h3 id="confirm-add-title" className="text-2xl font-bold text-gray-800 mb-4">Confirm Add Product</h3>
+              <p className="text-gray-600 mb-8">
+                Add <strong>{selectedTypes.join(', ')}</strong> to <strong>{selectedPlan.title}</strong> plan ({billingCycle})?
+              </p>
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  disabled={adding}
+                  className="px-6 py-3 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Cancel adding product"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddPlan}
+                  disabled={adding}
+                  className="px-6 py-3 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px]"
+                  aria-label="Confirm adding product"
+                >
+                  {adding ? (
+                    <>
+                      Processing...
+                      <FiLoader className="h-5 w-5 animate-spin" />
+                    </>
+                  ) : (
+                    'Yes, Add'
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </motion.div>
+    </div>
   );
 };
 

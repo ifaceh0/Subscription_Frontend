@@ -14,6 +14,7 @@ const SubscriptionDashboard = () => {
   const [dashboardData, setDashboardData] = useState({ subscriptions: [], appHistory: [], plans: [], subscriptionHistory: [] });
   const [error, setError] = useState(location.state?.successMessage || '');
   const [isLoading, setIsLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
   const [showCancelSelectionModal, setShowCancelSelectionModal] = useState(false);
   const [selectedCancelApps, setSelectedCancelApps] = useState([]);
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
@@ -163,7 +164,7 @@ const SubscriptionDashboard = () => {
       toast.error('Please select at least one application to cancel.');
       return;
     }
-    setIsLoading(true);
+    setCancelling(true);
     try {
       const email = localStorage.getItem('CompanyEmail');
       const selectedAppNames = dashboardData.subscriptions
@@ -194,7 +195,7 @@ const SubscriptionDashboard = () => {
       setError(`Failed to cancel subscription: ${err.message}`);
       toast.error(`Error: ${err.message}`);
     } finally {
-      setIsLoading(false);
+      setCancelling(false);
     }
   };
 
@@ -618,7 +619,7 @@ const SubscriptionDashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-6xl mx-auto"
+        className="max-w-7xl mx-auto"
       >
         <h1 className="text-4xl font-bold text-gray-800 mb-12 text-center">
           Welcome, {customerName}!
@@ -854,19 +855,29 @@ const SubscriptionDashboard = () => {
                 <button
                   className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
+                  disabled={cancelling} // Disable Cancel button during loading
                   aria-label="Cancel cancellation"
                 >
                   Cancel
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded transition-colors ${
-                    isLoading ? 'bg-red-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
+                  className={`px-4 py-2 text-white rounded transition-colors min-w-[140px] ${
+                    cancelling 
+                      ? 'bg-red-400 cursor-not-allowed' 
+                      : 'bg-red-600 hover:bg-red-700'
                   }`}
                   onClick={handleCancelSubscription}
-                  disabled={isLoading}
+                  disabled={cancelling} // Disable Confirm button during loading
                   aria-label="Confirm cancellation"
                 >
-                  {isLoading ? 'Cancelling...' : 'Confirm Cancellation'}
+                  {cancelling ? (
+                    <span className="flex items-center justify-center gap-2">
+                      Cancelling...
+                      <FiLoader className="h-4 w-4 animate-spin" />
+                    </span>
+                  ) : (
+                    'Confirm Cancellation'
+                  )}
                 </button>
               </div>
             </motion.div>
