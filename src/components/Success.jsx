@@ -267,7 +267,7 @@ const Success = () => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const sessionId = new URLSearchParams(search).get('session_id');
-  const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [status, setStatus] = useState('processing'); // processing | success | error | timeout
   const [countdown, setCountdown] = useState(5);

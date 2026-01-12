@@ -10,7 +10,7 @@ const Subscription = ({ defaultApp = '' }) => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const appFromQuery = queryParams.get('app');
-  const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [billingCycle, setBillingCycle] = useState('month');
   const [selectedTypes, setSelectedTypes] = useState([]);

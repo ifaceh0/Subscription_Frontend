@@ -278,7 +278,7 @@ import { toast } from 'react-toastify';
 const PlanDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);

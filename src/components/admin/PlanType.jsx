@@ -528,13 +528,13 @@ const PlanTypeManager = () => {
     window.toastTimer = setTimeout(() => setIsToastVisible(false), duration);
   }, []);
 
-  const API_BASE_URL = 'https://subscription-backend-e8gq.onrender.com/api/admin';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchPlanTypes = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`${API_BASE_URL}/plan-types`);
+        const res = await fetch(`${API_BASE_URL}/api/admin/plan-types`);
         if (!res.ok) throw new Error('Failed to load plan types');
         const data = await res.json();
         setPlanTypes(data);
@@ -591,8 +591,8 @@ const PlanTypeManager = () => {
       };
 
       const url = isCreatingNew
-        ? `${API_BASE_URL}/createPlanType`
-        : `${API_BASE_URL}/updatePlanType/${form.id}`;
+        ? `${API_BASE_URL}/api/admin/createPlanType`
+        : `${API_BASE_URL}/api/admin/updatePlanType/${form.id}`;
       const method = isCreatingNew ? 'POST' : 'PUT';
 
       const res = await fetch(url, {

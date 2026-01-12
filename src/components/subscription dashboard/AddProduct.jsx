@@ -735,7 +735,7 @@ const AddProduct = () => {
   const [error, setError] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     console.log('Selected Apps from location.state:', selectedApps);

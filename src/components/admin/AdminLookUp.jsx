@@ -834,7 +834,7 @@ function AdminPlanManager() {
   const [isFabOpen, setIsFabOpen] = useState(false);
   const navigate = useNavigate();
 
-  const API_BASE = 'https://subscription-backend-e8gq.onrender.com/api/admin';
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 
   const convertDTOToPlan = (dto) => {
@@ -874,7 +874,7 @@ function AdminPlanManager() {
   const fetchApplications = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('https://subscription-backend-e8gq.onrender.com/api/admin/applications');
+      const res = await fetch(`${API_BASE}/api/admin/applications`);
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
@@ -891,7 +891,7 @@ function AdminPlanManager() {
   const fetchPlanTypes = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('https://subscription-backend-e8gq.onrender.com/api/admin/plan-types');
+      const res = await fetch(`${API_BASE}/api/admin/plan-types`);
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
@@ -909,7 +909,7 @@ function AdminPlanManager() {
     setIsLoading(true);
     try {
       const query = appNames.map(name => `appNames=${encodeURIComponent(name)}`).join('&');
-      const res = await fetch(`https://subscription-backend-e8gq.onrender.com/api/admin/plansByApp?${query}`);
+      const res = await fetch(`${API_BASE}/api/admin/plansByApp?${query}`);
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
@@ -939,7 +939,7 @@ function AdminPlanManager() {
   const handleStripeSync = async (planId) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`https://subscription-backend-e8gq.onrender.com/api/admin/sync-stripe-price/${planId}`, {
+      const res = await fetch(`${API_BASE}/api/admin/sync-stripe-price/${planId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -977,7 +977,7 @@ function AdminPlanManager() {
   const handleDeletePlan = async (planId) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`https://subscription-backend-e8gq.onrender.com/api/admin/deletePlans/${planId}`, {
+      const res = await fetch(`${API_BASE}/api/admin/deletePlans/${planId}`, {
         method: 'DELETE',
       });
       const responseData = await res.json();
@@ -1008,7 +1008,7 @@ function AdminPlanManager() {
     }
     setIsLoading(true);
     try {
-      const res = await fetch(`https://subscription-backend-e8gq.onrender.com/api/admin/updatePlans/${planToEdit.id}`, {
+      const res = await fetch(`${API_BASE}/api/admin/updatePlans/${planToEdit.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1127,7 +1127,7 @@ function AdminPlanManager() {
     }
     setIsLoading(true);
     try {
-      const res = await fetch('https://subscription-backend-e8gq.onrender.com/api/admin/create', {
+      const res = await fetch(`${API_BASE}/api/admin/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

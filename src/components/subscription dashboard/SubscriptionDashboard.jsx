@@ -25,7 +25,7 @@ const SubscriptionDashboard = () => {
   const [selectedAddProductApps, setSelectedAddProductApps] = useState([]);
   const [subscriptionToCancel, setSubscriptionToCancel] = useState(null);
   const modalRef = useRef(null);
-  const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const handleKeyDown = (e) => {

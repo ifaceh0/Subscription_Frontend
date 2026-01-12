@@ -1702,7 +1702,7 @@ const ChangePlan = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL || 'https://subscription-backend-e8gq.onrender.com';
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const email = localStorage.getItem('CompanyEmail');
