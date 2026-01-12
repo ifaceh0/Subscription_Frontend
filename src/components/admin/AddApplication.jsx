@@ -390,13 +390,13 @@ const ApplicationManager = () => {
     window.toastTimer = setTimeout(() => setIsToastVisible(false), duration);
   }, []);
 
-  const API_BASE_URL = 'https://subscription-backend-e8gq.onrender.com/api/admin';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`${API_BASE_URL}/applications`);
+        const res = await fetch(`${API_BASE_URL}/api/admin/applications`);
         if (!res.ok) throw new Error('Failed to load applications');
         const data = await res.json();
         setApplications(data);
@@ -412,7 +412,7 @@ const ApplicationManager = () => {
   const handleSyncStripe = async (app) => {
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/sync-stripe-app`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/sync-stripe-app`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(app),
@@ -438,7 +438,7 @@ const ApplicationManager = () => {
     setIsSubmitting(true);
     try {
       const payload = { name: form.name.trim(), stripeProductId: form.stripeProductId || null };
-      const url = isCreatingNew ? `${API_BASE_URL}/createApp` : `${API_BASE_URL}/updateApp/${form.id}`;
+      const url = isCreatingNew ? `${API_BASE_URL}/api/admin/createApp` : `${API_BASE_URL}/api/admin/updateApp/${form.id}`;
       const method = isCreatingNew ? 'POST' : 'PUT';
 
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -455,6 +455,7 @@ const ApplicationManager = () => {
       setIsSubmitting(false);
     }
   };
+console.log("API BASE URL:", import.meta.env.VITE_API_BASE_URL);
 
   return (
     <>
