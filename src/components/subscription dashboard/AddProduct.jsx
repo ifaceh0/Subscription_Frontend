@@ -726,11 +726,11 @@ import AddProductCard from './AddProductCard';
 const AddProduct = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedApps = [] } = location.state || {}; // No default - use selected from dashboard
-  const [billingCycle, setBillingCycle] = useState('month'); // Default to month
-  const [selectedTypes] = useState(selectedApps); // Fixed - no need to change
+  const { selectedApps = [] } = location.state || {};
+  const [billingCycle, setBillingCycle] = useState('month');
+  const [selectedTypes] = useState(selectedApps);
   const [pricingData, setPricingData] = useState([]);
-  const [adding, setAdding] = useState(false); // New state
+  const [adding, setAdding] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -833,17 +833,15 @@ const AddProduct = () => {
     return `$${parseFloat(price).toFixed(2)} /year`;
   };
 
-  // Dynamic tiers from backend
   const uniqueTiers = [...new Set(pricingData.map(plan => 
     plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()
   ))];
 
   const plans = uniqueTiers
     .map((tier) => {
-      // Find plan that exactly matches selected apps and current billing cycle
       const matchingPlan = pricingData.find(plan => 
         plan.planName.toLowerCase() === tier.toLowerCase() &&
-        plan.interval.toLowerCase().includes(billingCycle) && // Match current cycle
+        plan.interval.toLowerCase().includes(billingCycle) && 
         plan.applicationNames?.length === selectedTypes.length &&
         selectedTypes.every(app => 
           plan.applicationNames?.map(n => n.toLowerCase()).includes(app.toLowerCase())
