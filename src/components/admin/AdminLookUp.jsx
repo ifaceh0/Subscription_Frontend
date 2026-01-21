@@ -1379,6 +1379,14 @@ function AdminPlanManager() {
                 >
                   <Settings className="w-5 h-5" /> Add Plan Type
                 </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => { navigate('/admin/trial-days-settings'); setIsFabOpen(false); }}
+                  className="flex items-center gap-3 px-5 py-4 bg-white text-violet-700 font-semibold rounded shadow-xl hover:shadow-2xl transition whitespace-nowrap"
+                >
+                  <Settings className="w-5 h-5" /> Trail Days Setting
+                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
