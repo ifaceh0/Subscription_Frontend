@@ -15,6 +15,7 @@ import AddProduct from './components/subscription dashboard/AddProduct'
 import ChangeSuccess from './components/subscription dashboard/ChangeSuccess';
 import ErrorBoundary from './components/ErrorBoundary';
 import AddSuccess from './components/subscription dashboard/AddSuccess';
+import TrailDaysSettingsPage from './components/admin/TrialDaysSettingsPage';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/addSuccess" element={<AddSuccess/>}/>
           <Route path="/admin/add-application" element={<AddApplication />} />
           <Route path="/admin/plan-type" element={<PlanType />} />
+          <Route path="/admin/trial-days-settings" element={<TrailDaysSettingsPage />} />
         </Routes>
         <ToastContainer position="top-right" autoClose={3000} />
       </ErrorBoundary>
