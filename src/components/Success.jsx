@@ -269,12 +269,12 @@ const Success = () => {
   const sessionId = new URLSearchParams(search).get('session_id');
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  const [status, setStatus] = useState('processing'); // processing | success | error | timeout
+  const [status, setStatus] = useState('processing'); 
   const [countdown, setCountdown] = useState(5);
   const [errorMessage, setErrorMessage] = useState('');
   const pollIntervalRef = useRef(null);
-  const maxAttemptsRef = useRef(15); // ~1 minute (4s × 15)
-
+  const maxAttemptsRef = useRef(15);
+  
   const verifySession = async (silent = false) => {
     if (!sessionId) {
       setStatus('error');
