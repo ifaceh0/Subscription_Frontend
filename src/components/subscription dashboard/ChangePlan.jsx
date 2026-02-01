@@ -1906,7 +1906,26 @@ const ChangePlan = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 px-6 py-8">
-      <motion.div className="max-w-7xl mx-auto">
+      <div className="fixed top-4 left-4 sm:top-6 sm:left-8 z-50">
+                <a 
+                  href="https://www.ifaceh.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-md border border-gray-200 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+                >
+                  {/* <img 
+                    src="/logo.svg"         
+                    alt="Interface Hub" 
+                    className="h-7 w-7 sm:h-8 sm:w-8 object-contain" 
+                  /> */}
+                  {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
+                  <span className="font-bold text-lg sm:text-xl tracking-tight">
+                    <span className="text-gray-900">Interface</span>
+                    <span className="text-violet-600">Hub</span>
+                  </span>
+                </a>
+              </div>
+      <motion.div className="max-w-7xl mx-auto mt-7">
         <h1 className="text-4xl font-bold text-gray-800 text-center mb-8">
           Change Your Subscription Plan
         </h1>

@@ -103,43 +103,23 @@ const Subscription = ({ defaultApp = '' }) => {
     );
   };
 
-  // if (loading || availableTypes.length === 0) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="polite">
-  //       <motion.div
-  //         initial={{ opacity: 0, scale: 0.95 }}
-  //         animate={{ opacity: 1, scale: 1 }}
-  //         transition={{ duration: 0.5 }}
-  //         className="p-10 max-w-md w-full text-center"
-  //       >
-  //         <Loader2 className="w-12 h-12 text-violet-500 animate-spin mx-auto mb-4" />
-  //         <p className="text-2xl font-bold text-gray-800">Fetching the Best Deals</p>
-  //         <p className="text-gray-500 mt-2">Loading subscription plans and application details...</p>
-  //       </motion.div>
-  //     </div>
-  //   );
-  // }
-
   if (loading || availableTypes.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="polite">
         <motion.div
-          initial={{ opacity: 0, y: 10 }} // Subtle lift animation on appear
+          initial={{ opacity: 0, y: 10 }} 
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="p-10 max-w-md w-full text-center rounded shadow-indigo-100/50" // Added modern card styling
+          className="p-10 max-w-md w-full text-center rounded shadow-indigo-100/50" 
         >
-          {/* Modern Pulsing Ring Animation */}
           <div className="mx-auto mb-6 relative w-16 h-16">
             
-            {/* Inner Ring (The stable center) */}
             <div className="w-8 h-8 rounded-full bg-violet-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 
-            {/* Outer Pulsing Ring (The modern animation) */}
             <motion.div
               animate={{ 
-                scale: [0.8, 1.4], // Scale out and back
-                opacity: [0.7, 0],   // Fade out as it scales
+                scale: [0.8, 1.4],
+                opacity: [0.7, 0],
               }}
               transition={{ 
                 duration: 1.5, 
@@ -249,11 +229,27 @@ const Subscription = ({ defaultApp = '' }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="fixed top-4 left-4 sm:top-6 sm:left-8 z-50">
+        <a 
+          href="https://www.ifaceh.com/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-md border border-gray-200 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+        >
+          
+          <Star className="h-5 w-5 text-violet-600 fill-violet-100" />
+          <span className="font-bold text-lg sm:text-xl tracking-tight">
+            <span className="text-gray-900">Interface</span>
+            <span className="text-violet-600">Hub</span>
+          </span>
+        </a>
+      </div>
+      
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-7xl mx-auto"
+        className="max-w-7xl mx-auto mt-5"
       >
         <div className="text-center mb-6">
           <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
