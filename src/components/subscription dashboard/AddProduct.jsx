@@ -722,6 +722,7 @@ import { FiLoader } from "react-icons/fi";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import AddProductCard from './AddProductCard';
+import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -736,6 +737,7 @@ const AddProduct = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+  const { countryCode } = useCountryLocation();
 
   useEffect(() => {
     console.log('Selected Apps from location.state:', selectedApps);
@@ -761,6 +763,7 @@ const AddProduct = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            'X-User-Location': countryCode
           },
         });
         if (!response.ok) {
@@ -802,6 +805,7 @@ const AddProduct = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-User-Location': countryCode
         },
         body: JSON.stringify({
           email,
@@ -826,12 +830,43 @@ const AddProduct = () => {
     }
   };
 
-  const formatPrice = (price, interval) => {
-    if (price === 0 || price == null) return 'N/A';
-    if (interval === 'month') return `$${parseFloat(price).toFixed(2)} /month`;
-    if (interval === 'quarter') return `$${parseFloat(price).toFixed(2)} /quarter`;
-    return `$${parseFloat(price).toFixed(2)} /year`;
-  };
+  // const formatPrice = (price, interval) => {
+  //   if (price === 0 || price == null) return 'N/A';
+  //   if (interval === 'month') return `$${parseFloat(price).toFixed(2)} /month`;
+  //   if (interval === 'quarter') return `$${parseFloat(price).toFixed(2)} /quarter`;
+  //   return `$${parseFloat(price).toFixed(2)} /year`;
+  // };
+
+//   const mergedPricing = {
+//   Basic: { month: {}, quarter: {}, year: {}, discount: {}, planIds: {} },
+//   Pro: { month: {}, quarter: {}, year: {}, discount: {}, planIds: {} },
+//   Enterprise: { month: {}, quarter: {}, year: {}, discount: {}, planIds: {} },
+// };
+
+// ['Basic', 'Pro', 'Enterprise'].forEach(tier => {
+//     const intervalMap = { monthly: 'month', quarterly: 'quarter', yearly: 'year' };
+//     pricingData.forEach(plan => {
+//       const selectedTypesLower = selectedTypes.map(t => t.toLowerCase());
+//       const applicationNamesLower = plan.applicationNames.map(n => n.toLowerCase());
+
+//       const isExactMatch = 
+//         selectedTypesLower.length === applicationNamesLower.length &&
+//         selectedTypesLower.every(t => applicationNamesLower.includes(t)) &&
+//         selectedTypesLower.length > 0;
+
+//       if (plan.planName.toLowerCase() === tier.toLowerCase() && isExactMatch) {
+//         const interval = intervalMap[plan.interval.toLowerCase()];
+//         if (interval) {
+//           mergedPricing[tier][interval] = {
+//             price: plan.discountedPrice || 0,
+//             formatted: plan.formattedPrice || '0.00'
+//           };
+//           mergedPricing[tier].discount[interval] = plan.discountPercent || 0;
+//           mergedPricing[tier].planIds[interval] = plan.planId;
+//         }
+//       }
+//     });
+//   });
 
   const uniqueTiers = [...new Set(pricingData.map(plan => 
     plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()
@@ -852,21 +887,37 @@ const AddProduct = () => {
 
       const intervalKey = billingCycle;
 
+      // return {
+      //   title: tier,
+      //   price: {
+      //     month: formatPrice(matchingPlan.discountedPrice, 'month'),
+      //     quarter: formatPrice(matchingPlan.discountedPrice, 'quarter'),
+      //     year: formatPrice(matchingPlan.discountedPrice, 'year'),
+      //   },
+      //   discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
+      //   planIds: { [intervalKey]: matchingPlan.planId },
+      //   features: matchingPlan.features || [],
+      //   applications: matchingPlan.applicationNames || [],
+      //   buttonText: `Add ${tier} Plan`,
+      //   color: tier === 'Basic' ? 'bg-purple-500' : 
+      //          tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
+      //          'bg-blue-600',
+      // };
       return {
         title: tier,
         price: {
-          month: formatPrice(matchingPlan.discountedPrice, 'month'),
-          quarter: formatPrice(matchingPlan.discountedPrice, 'quarter'),
-          year: formatPrice(matchingPlan.discountedPrice, 'year'),
-        },
+            month: matchingPlan.formattedPrice || '0.00',    // ← Use backend formatted string
+            quarter: matchingPlan.formattedPrice || '0.00',
+            year: matchingPlan.formattedPrice || '0.00',
+          },
         discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
         planIds: { [intervalKey]: matchingPlan.planId },
         features: matchingPlan.features || [],
         applications: matchingPlan.applicationNames || [],
         buttonText: `Add ${tier} Plan`,
         color: tier === 'Basic' ? 'bg-purple-500' : 
-               tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
-               'bg-blue-600',
+              tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
+              'bg-blue-600',
       };
     })
     .filter(plan => plan !== null && plan.planIds[billingCycle] !== null);
@@ -894,7 +945,7 @@ const AddProduct = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded shadow-lg p-8 max-w-md w-full text-center"
+          className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <AlertCircle className="w-8 h-8 text-red-600" />
@@ -915,26 +966,27 @@ const AddProduct = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 px-6 py-8">
-      <div className="fixed top-4 left-4 sm:top-6 sm:left-8 z-50">
-                <a 
-                  href="https://www.ifaceh.com/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-md border border-gray-200 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
-                >
-                  {/* <img 
-                    src="/logo.svg"         
-                    alt="Interface Hub" 
-                    className="h-7 w-7 sm:h-8 sm:w-8 object-contain" 
-                  /> */}
-                  {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
-                  <span className="font-bold text-lg sm:text-xl tracking-tight">
-                    <span className="text-gray-900">Interface</span>
-                    <span className="text-violet-600">Hub</span>
-                  </span>
-                </a>
-              </div>
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://www.ifaceh.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-3"
+              >
+                {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
+                <span className="font-bold text-xl sm:text-2xl">
+                  <span className="text-gray-900">Interface</span>
+                  <span className="text-violet-600">Hub</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
       <h1 className="text-5xl font-bold text-gray-800 mb-12 mt-8 text-center">
         Add New Product
       </h1>
@@ -969,7 +1021,7 @@ const AddProduct = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto"
+        className="max-w-7xl mx-auto p-4"
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -1023,7 +1075,7 @@ const AddProduct = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded p-8 max-w-md w-full shadow-2xl"
+              className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="confirm-add-title" className="text-2xl font-bold text-gray-800 mb-4">Confirm Add Product</h3>
               <p className="text-gray-600 mb-8">
@@ -1033,7 +1085,7 @@ const AddProduct = () => {
                 <button
                   onClick={() => setShowConfirmModal(false)}
                   disabled={adding}
-                  className="px-6 py-3 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-gray-300 text-gray-800 rounded-full hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Cancel adding product"
                 >
                   Cancel
@@ -1041,7 +1093,7 @@ const AddProduct = () => {
                 <button
                   onClick={handleAddPlan}
                   disabled={adding}
-                  className="px-6 py-3 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px]"
+                  className="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px]"
                   aria-label="Confirm adding product"
                 >
                   {adding ? (

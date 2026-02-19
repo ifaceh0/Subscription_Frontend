@@ -8,6 +8,7 @@ import { Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 
 const SubscriptionDashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +28,23 @@ const SubscriptionDashboard = () => {
   const [subscriptionToCancel, setSubscriptionToCancel] = useState(null);
   const modalRef = useRef(null);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const { countryCode } = useCountryLocation();
+
+  const formatPriceDynamic = (rawFormatted, currencySymbol, currencyPosition) => {
+    if (!rawFormatted) return '0.00';
+    
+    if (rawFormatted.includes('₹') || rawFormatted.includes('$') || rawFormatted.includes('€')) {
+      return rawFormatted;
+    }
+
+    const amount = parseFloat(rawFormatted) || 0;
+    const formattedAmount = amount.toFixed(2);
+    
+    return currencyPosition === 'prefix'
+      ? `${currencySymbol}${formattedAmount}`
+      : `${formattedAmount}${currencySymbol}`;
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -70,6 +88,7 @@ const SubscriptionDashboard = () => {
           headers: {
             ...options.headers,
             'Content-Type': 'application/json',
+            'X-User-Location': countryCode,
           },
         });
         if (response.status === 429) {
@@ -122,13 +141,22 @@ const SubscriptionDashboard = () => {
           billingCycle: sub.interval,
           nextBillingDate: sub.endDate,
           currentPrice: sub.currentPrice,
-          oldPrice: sub.oldPrice
+          // currentPriceFormatted: sub.currentPriceFormatted || `$${sub.currentPrice?.toFixed(2) || '0.00'}`,
+          currentPriceFormatted: sub.currentPriceFormatted || '0.00',
+          oldPrice: sub.oldPrice || null,
+          // oldPriceFormatted: sub.oldPriceFormatted || `$${sub.oldPrice?.toFixed(2) || '0.00'}`,
+          oldPriceFormatted: sub.oldPriceFormatted || null,
+          nextPlanPriceFormatted: sub.nextPlanPriceFormatted || null,
+          currencySymbol: data.currencySymbol || '$',
+          currencyPosition: data.currencyPosition || 'prefix',
         }));
         setDashboardData({
           subscriptions: transformedSubscriptions,
           appHistory: data.appHistory || [],
           plans: data.plans || [],
           subscriptionHistory: data.subscriptionHistory || [],
+          currencySymbol: data.currencySymbol || '$',
+        currencyPosition: data.currencyPosition || 'prefix',
         });
         localStorage.setItem('subscriptions', JSON.stringify(transformedSubscriptions));
       } else {
@@ -174,6 +202,10 @@ const SubscriptionDashboard = () => {
         .map(app => app.name);
       const response = await fetchWithBackoff(`${API_URL}/api/subscription/cancel-plan`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Location': countryCode
+        },
         body: JSON.stringify({
           email,
           selectedAppNames,
@@ -310,7 +342,7 @@ const SubscriptionDashboard = () => {
         </h2>
         
         {subscriptions.length === 0 ? (
-          <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded">
+          <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-xl">
             <p className="text-gray-500">You don't have any active subscriptions.</p>
           </div>
         ) : (
@@ -327,7 +359,7 @@ const SubscriptionDashboard = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -30, scale: 0.95 }}
                     transition={{ duration: 0.4, delay: index * 0.08 }}
-                    className={`bg-white rounded shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border-t-8 ${statusColors.border}`}
+                    className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border-t-8 ${statusColors.border}`}
                   >
                     <div className="p-6">
                       {/* Header: Plan Name & Status */}
@@ -340,13 +372,25 @@ const SubscriptionDashboard = () => {
 
                       {/* Price Block */}
                       <div className="border-b pb-4 mb-4">
-                        <p className={`text-4xl font-black ${isPriceChange ? 'text-green-600' : 'text-gray-600'}`}>
+                        {/* <p className={`text-4xl font-black ${isPriceChange ? 'text-green-600' : 'text-gray-600'}`}>
                           ${sub.currentPrice.toFixed(2)}
                           <span className="text-lg font-medium text-gray-500">/{sub.billingCycle.toLowerCase()}</span>
                         </p>
                         {isPriceChange && (
                           <p className="text-sm text-red-500 mt-1 flex items-center">
                             <span className="line-through mr-1">${sub.oldPrice.toFixed(2)}</span>
+                            <span className="font-semibold">Price change applied next cycle</span>
+                          </p>
+                        )} */}
+                        <p className={`text-4xl font-black ${isPriceChange ? 'text-green-600' : 'text-gray-600'}`}>
+                          {formatPriceDynamic(sub.currentPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
+                          <span className="text-lg font-medium text-gray-500">/{sub.billingCycle.toLowerCase()}</span>
+                        </p>
+                        {isPriceChange && sub.oldPriceFormatted && (
+                          <p className="text-sm text-red-500 mt-1 flex items-center">
+                            <span className="line-through mr-1">
+                              {formatPriceDynamic(sub.oldPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
+                            </span>
                             <span className="font-semibold">Price change applied next cycle</span>
                           </p>
                         )}
@@ -395,7 +439,10 @@ const SubscriptionDashboard = () => {
                             Upcoming Plan Change
                           </p>
                           <p className="text-sm text-indigo-800">
-                            <span className="font-semibold">{sub.nextPlanName}</span> (${sub.nextPlanPrice.toFixed(2)}/{sub.nextInterval}) starting on <strong>{formatDate(sub.nextPlanActiveDate)}</strong>.
+                            <span className="font-semibold">{sub.nextPlanName}</span>
+                            {/* (${sub.nextPlanPrice.toFixed(2)}/{sub.nextInterval}) starting on <strong>{formatDate(sub.nextPlanActiveDate)}</strong>. */}
+                            ({formatPriceDynamic(sub.nextPlanPriceFormatted, sub.currencySymbol, sub.currencyPosition)}/{sub.nextInterval}) 
+                              starting on <strong>{formatDate(sub.nextPlanActiveDate)}</strong>.
                           </p>
                         </div>
                       )}
@@ -590,7 +637,7 @@ const SubscriptionDashboard = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded shadow-lg p-8 max-w-md w-full text-center"
+          className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <AlertCircle className="w-8 h-8 text-red-500" />
@@ -599,7 +646,7 @@ const SubscriptionDashboard = () => {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition-all duration-200 font-medium"
+            className="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-all duration-200 font-medium"
             aria-label="Retry loading dashboard"
           >
             <RefreshCw className="w-5 h-5" />
@@ -615,31 +662,33 @@ const SubscriptionDashboard = () => {
   const customerName = localStorage.getItem('CompanyEmail') || 'User';
 
   return (
-    <div className="min-h-screen bg-gray-100 px-6 py-8">
-      <div className="fixed top-4 left-4 sm:top-6 sm:left-8 z-50">
-          <a 
-            href="https://www.ifaceh.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-md border border-gray-200 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
-          >
-            {/* <img 
-              src="/logo.svg"         
-              alt="Interface Hub" 
-              className="h-7 w-7 sm:h-8 sm:w-8 object-contain" 
-            /> */}
-            <Star className="h-5 w-5 text-violet-600 fill-violet-100" />
-            <span className="font-bold text-lg sm:text-xl tracking-tight">
-              <span className="text-gray-900">Interface</span>
-              <span className="text-violet-600">Hub</span>
-            </span>
-          </a>
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://www.ifaceh.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-3"
+              >
+                {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
+                <span className="font-bold text-xl sm:text-2xl">
+                  <span className="text-gray-900">Interface</span>
+                  <span className="text-violet-600">Hub</span>
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
+      </header>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto mt-7"
+        className="max-w-7xl mx-auto p-4"
       >
         <h1 className="text-4xl font-bold text-gray-800 mb-12 text-center">
           Welcome, {customerName}!
@@ -661,7 +710,7 @@ const SubscriptionDashboard = () => {
               <CheckCircle className="w-6 h-6 text-green-600" />
               New Products Available
             </h2>
-            <div className="bg-white rounded shadow-md p-4 border border-gray-100">
+            <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
               <p className="text-gray-600 mb-4">Explore our new offerings to enhance your subscription:</p>
               <div className="flex flex-wrap gap-2">
                 {newProducts.map((product, index) => (
@@ -692,7 +741,7 @@ const SubscriptionDashboard = () => {
               <FileText className="w-6 h-6 text-blue-600" />
               Billing History
             </h2>
-            <div className="bg-white rounded shadow-md p-6 border border-gray-100">
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
@@ -711,7 +760,8 @@ const SubscriptionDashboard = () => {
                       .map((invoice, index) => (
                         <tr key={index} className="border-b">
                           <td className="py-2 px-4 text-gray-600">{formatDate(invoice.date)}</td>
-                          <td className="py-2 px-4 text-gray-600">${invoice.amount.toFixed(2)}</td>
+                          {/* <td className="py-2 px-4 text-gray-600">${invoice.amount.toFixed(2)}</td> */}
+                          <td className="py-2 px-4 text-gray-600">{formatPriceDynamic(invoice.amount.toFixed(2), dashboardData.currencySymbol, dashboardData.currencyPosition)}</td>
                           <td className="py-2 px-4 text-gray-600">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -750,7 +800,7 @@ const SubscriptionDashboard = () => {
               <FileText className="w-6 h-6 text-blue-600" />
               Subscription History
             </h2>
-            <div className="bg-white rounded shadow-md p-6 border border-gray-100">
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
               <div className="space-y-3">
                 {subscriptionHistory.map((history, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -774,7 +824,7 @@ const SubscriptionDashboard = () => {
               <XCircle className="w-6 h-6 text-red-600" />
               Cancellation History
             </h2>
-            <div className="bg-white rounded shadow-md p-6 border border-gray-100">
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
               <div className="space-y-3">
                 {appHistory.map((history, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -797,10 +847,10 @@ const SubscriptionDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded p-6 max-w-md w-full"
+              className="bg-white rounded-lg p-6 max-w-md w-full"
             >
               <h3 id="cancel-selection-title" className="text-lg font-semibold text-gray-800 mb-4">Select Applications to Cancel</h3>
-              <div className="border border-gray-200 rounded p-4 bg-gray-50 max-h-48 overflow-y-auto">
+              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 max-h-48 overflow-y-auto">
                 {subscriptionToCancel?.applications?.map(app => (
                   <div key={app.id} className="flex items-center mb-2">
                     <input
@@ -826,14 +876,14 @@ const SubscriptionDashboard = () => {
               )}
               <div className="flex justify-end space-x-4 mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Cancel selection"
                 >
                   Cancel
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded transition-colors ${
+                  className={`px-4 py-2 text-white rounded-full transition-colors ${
                     isLoading || selectedCancelApps.length === 0
                       ? 'bg-red-400 cursor-not-allowed'
                       : 'bg-red-600 hover:bg-red-700'
@@ -861,7 +911,7 @@ const SubscriptionDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded p-6 max-w-md w-full"
+              className="bg-white rounded-lg p-6 max-w-md w-full"
             >
               <h3 id="cancel-confirm-title" className="text-lg font-semibold text-gray-800 mb-4">Confirm Cancellation</h3>
               <p className="text-sm text-gray-600 mb-6">
@@ -873,7 +923,7 @@ const SubscriptionDashboard = () => {
               </p>
               <div className="flex justify-end space-x-4">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   disabled={cancelling} // Disable Cancel button during loading
                   aria-label="Cancel cancellation"
@@ -881,7 +931,7 @@ const SubscriptionDashboard = () => {
                   Cancel
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded transition-colors min-w-[140px] ${
+                  className={`px-4 py-2 text-white rounded-full transition-colors min-w-[140px] ${
                     cancelling 
                       ? 'bg-red-400 cursor-not-allowed' 
                       : 'bg-red-600 hover:bg-red-700'
@@ -911,10 +961,10 @@ const SubscriptionDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded p-6 max-w-md w-full"
+              className="bg-white rounded-lg p-6 max-w-md w-full"
             >
               <h3 id="change-plan-selection-title" className="text-lg font-semibold text-gray-800 mb-4">Select Applications for Plan Change</h3>
-              <div className="border border-gray-200 rounded p-4 bg-gray-50 max-h-48 overflow-y-auto">
+              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 max-h-48 overflow-y-auto">
                 {subscriptionToCancel?.applications?.map(app => (
                   <div key={app.id} className="flex items-center mb-2">
                     <input
@@ -940,14 +990,14 @@ const SubscriptionDashboard = () => {
               )}
               <div className="flex justify-end space-x-4 mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Cancel selection"
                 >
                   Cancel
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded transition-colors ${
+                  className={`px-4 py-2 text-white rounded-full transition-colors ${
                     isLoading || selectedChangePlanApps.length === 0
                       ? 'bg-purple-400 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
@@ -970,10 +1020,10 @@ const SubscriptionDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded p-6 max-w-md w-full"
+              className="bg-white rounded-lg p-6 max-w-md w-full"
             >
               <h3 id="add-product-selection-title" className="text-lg font-semibold text-gray-800 mb-4">Select Applications to Add</h3>
-              <div className="border border-gray-200 rounded p-4 bg-gray-50 max-h-48 overflow-y-auto">
+              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 max-h-48 overflow-y-auto">
                 {newProducts.map(app => (
                   <div key={app.id} className="flex items-center mb-2">
                     <input
@@ -1002,14 +1052,14 @@ const SubscriptionDashboard = () => {
               )}
               <div className="flex justify-end space-x-4 mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Cancel selection"
                 >
                   Cancel
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded transition-colors ${
+                  className={`px-4 py-2 text-white rounded-full transition-colors ${
                     isLoading || selectedAddProductApps.length === 0 || newProducts.length === 0
                       ? 'bg-purple-400 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
@@ -1032,13 +1082,13 @@ const SubscriptionDashboard = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded p-6 max-w-md w-full"
+              className="bg-white rounded-lg p-6 max-w-md w-full"
             >
               <h3 id="success-modal-title" className="text-lg font-semibold text-gray-800 mb-4">Success</h3>
               <p className="text-sm text-gray-600 mb-6">{location.state?.successMessage}</p>
               <div className="flex justify-end">
                 <button
-                  className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+                  className="px-4 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Close success message"
                 >

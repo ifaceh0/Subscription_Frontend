@@ -120,9 +120,18 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
     return (price / (1 - discountPercent / 100)).toFixed(2);
   };
 
+  const getIntervalText = () => {
+    switch (billingCycle) {
+      case 'month': return '/month';
+      case 'quarter': return '/quarter';
+      case 'year': return '/year';
+      default: return '/month';
+    }
+  };
+
   return (
     <div
-      className={`relative rounded overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
+      className={`relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
@@ -150,7 +159,7 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
           </p>
         )}
         <div className="space-y-1">
-          {discountPercent[billingCycle] > 0 && (
+          {/* {discountPercent[billingCycle] > 0 && (
             <div className="text-sm text-gray-400 line-through">
               Original: ${calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])}
             </div>
@@ -161,6 +170,14 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
             </span>
             <span className="text-gray-500 text-base font-medium">
               {price[billingCycle]?.split(' ')[1] || '/month'}
+            </span>
+          </div> */}
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl font-bold text-gray-900">
+              {price[billingCycle] || '0.00'}  {/* ← This is now "₹ 300.00" */}
+            </span>
+            <span className="text-gray-500 text-base font-medium">
+              {getIntervalText()}
             </span>
           </div>
         </div>
@@ -188,7 +205,7 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
       <div className="px-6 pb-6">
         <button
           onClick={onSelect}
-          className="w-full py-2 rounded font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
+          className="w-full py-2 rounded-full font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
           aria-label={`Select ${title} plan`}
         >
           Select Plan

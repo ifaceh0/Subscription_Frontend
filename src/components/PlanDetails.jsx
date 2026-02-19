@@ -271,14 +271,17 @@
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { CheckCircle, ArrowLeft, Loader2, DollarSign, Zap } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Loader2, DollarSign, Zap, Banknote } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
+import { useLocation as useCountryLocation } from '../contexts/LocationContext';
 
 const PlanDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+   const { countryCode } = useCountryLocation();
 
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -327,7 +330,10 @@ const PlanDetails = () => {
     try {
       const response = await fetch(`${API_URL}/api/subscription/create-checkout-session`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-User-Location': countryCode
+         },
         body: JSON.stringify({
           email,
           planId,
@@ -367,7 +373,7 @@ const PlanDetails = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-white rounded shadow-2xl max-w-5xl w-full mx-auto overflow-hidden border border-gray-200"
+        className="bg-white rounded-xl shadow-2xl max-w-5xl w-full mx-auto overflow-hidden border border-gray-200"
       >
         <nav className="bg-purple-600 p-4 w-full flex justify-between items-center">
           <button
@@ -389,7 +395,7 @@ const PlanDetails = () => {
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 100 }}
-                className="text-center p-6 bg-white rounded shadow-lg border border-purple-200"
+                className="text-center p-6 bg-white rounded-xl shadow-lg border border-purple-200"
               >
                 <div className="flex items-center justify-center mb-3">
                   <Zap className="w-8 h-8 text-purple-600" />
@@ -404,7 +410,7 @@ const PlanDetails = () => {
 
               <div className="text-center">
                 <p className="text-4xl font-extrabold text-gray-900 flex items-center justify-center gap-2 mb-1">
-                  <DollarSign className="w-8 h-8 text-green-500" />
+                  <Banknote className="w-8 h-8 text-green-500" />
                   {price}
                 </p>
                 <p className="text-sm text-gray-500">
@@ -465,7 +471,7 @@ const PlanDetails = () => {
                     setSubscribed(false);
                     setError(null);
                   }}
-                  className="mt-1 w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-inner"
+                  className="mt-1 w-full p-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-inner"
                   placeholder="your-secure-email@company.com"
                   aria-required="true"
                   aria-invalid={error ? 'true' : 'false'}
@@ -480,7 +486,7 @@ const PlanDetails = () => {
               <button
                 type="submit"
                 disabled={isLoading || subscribed}
-                className={`w-full text-white px-6 py-3 rounded font-bold text-lg transition-all duration-300 shadow-xl transform hover:scale-[1.01] ${
+                className={`w-full text-white px-6 py-3 rounded-full font-bold text-lg transition-all duration-300 shadow-xl transform hover:scale-[1.01] ${
                   isLoading || subscribed
                     ? 'bg-purple-400 opacity-80 cursor-not-allowed'
                     : 'bg-purple-600 hover:bg-purple-700'

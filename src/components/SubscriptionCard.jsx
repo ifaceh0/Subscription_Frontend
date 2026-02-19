@@ -46,9 +46,9 @@ const SubscriptionCard = ({ title, price, features, buttonText, color, icon: Ico
   const priceValue = parseFloat(displayPrice.replace(/[^0-9.]/g, '') || 0);
 
   return (
-    <div className={`relative rounded overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${title === 'Pro' ? 'ring-4 ring-yellow-300' : ''}`}>
+    <div className={`relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${title === 'Pro' ? 'ring-4 ring-yellow-300' : ''}`}>
       {title === 'Pro' && (
-        <div className="absolute top-2 right-2 bg-yellow-300 text-yellow-900 px-2 py-1 text-xs font-semibold rounded">
+        <div className="absolute top-2 right-2 bg-yellow-300 text-yellow-900 px-2 py-1 text-xs font-semibold rounded-full">
           Most Popular
         </div>
       )}
@@ -85,7 +85,8 @@ const SubscriptionCard = ({ title, price, features, buttonText, color, icon: Ico
           )}
           <div className="flex items-baseline gap-1">
             <span className="text-3xl font-bold text-gray-900">
-              {priceValue > 0 ? `$${priceValue.toFixed(2)}` : '$0.00'}
+              {/* {priceValue > 0 ? `$${priceValue.toFixed(2)}` : '$0.00'} */}
+              {price[billingCycle] || '0.00'}
             </span>
             <span className="text-gray-500 text-base font-medium">
               {getIntervalText()}
@@ -106,7 +107,7 @@ const SubscriptionCard = ({ title, price, features, buttonText, color, icon: Ico
       <div className="px-6 pb-6">
         <button
           onClick={handleAccessClick}
-          className={`w-full py-2 rounded font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 ${
+          className={`w-full py-2 rounded-full font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 ${
             title === 'Basic'
               ? 'bg-purple-600 hover:bg-purple-700'
               : title === 'Pro'

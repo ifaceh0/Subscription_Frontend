@@ -10,13 +10,23 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
     return (price / (1 - discountPercent / 100)).toFixed(2);
   };
 
-  const displayPrice = price[billingCycle] && price[billingCycle] !== 'N/A'
-    ? price[billingCycle]
-    : '$0.00 /month';
+  const getIntervalText = () => {
+    switch (billingCycle) {
+      case 'month': return '/month';
+      case 'quarter': return '/quarter';
+      case 'year': return '/year';
+      default: return '/month';
+    }
+  };
+
+  // const displayPrice = price[billingCycle] && price[billingCycle] !== 'N/A'
+  //   ? price[billingCycle]
+  //   : '$0.00 /month';
+  const displayPrice = price[billingCycle] || '0.00';
 
   return (
     <div
-      className={`relative rounded overflow-hidden shadow-md max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
+      className={`relative rounded-xl overflow-hidden shadow-md max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
@@ -41,7 +51,7 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
             Save {discountPercent[billingCycle]}%
           </p>
         )}
-        <div className="space-y-1">
+        {/* <div className="space-y-1">
           {discountPercent[billingCycle] > 0 && (
             <div className="text-sm text-gray-400 line-through">
               Original: ${calculateOriginalPrice(displayPrice, discountPercent[billingCycle])}
@@ -53,6 +63,17 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
             </span>
             <span className="text-gray-500 text-base font-medium">
               {displayPrice.split(' ')[1] || '/month'}
+            </span>
+          </div>
+        </div> */}
+        <div className="space-y-1">
+          {/* Use backend-formatted price directly */}
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl font-bold text-gray-900">
+              {price[billingCycle] || '0.00'}
+            </span>
+            <span className="text-gray-500 text-base font-medium">
+              {getIntervalText()}
             </span>
           </div>
         </div>
@@ -85,7 +106,7 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
       <div className="px-6 pb-6">
         <button
           onClick={onSelect}
-          className="w-full py-2 rounded font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
+          className="w-full py-2 rounded-full font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
           aria-label={`Add ${title} plan`}
         >
           Add Plan

@@ -1689,6 +1689,7 @@ import { FiLoader } from "react-icons/fi";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import ChangePlanCard from './ChangePlanCard';
+import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 
 const ChangePlan = () => {
   const navigate = useNavigate();
@@ -1703,6 +1704,7 @@ const ChangePlan = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
+  const { countryCode } = useCountryLocation();
 
   useEffect(() => {
     const email = localStorage.getItem('CompanyEmail');
@@ -1725,7 +1727,10 @@ const ChangePlan = () => {
           : '';
         const response = await fetch(`${API_URL}/api/subscription/subscribed-plan${query}&email=${encodeURIComponent(email)}`, {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-User-Location': countryCode
+           },
         });
         if (!response.ok) {
           if (response.status === 404) throw new Error('No alternative plans available for selected applications.');
@@ -1787,7 +1792,10 @@ const ChangePlan = () => {
       const lowercaseAppNames = selectedTypes.map(type => type.toLowerCase());
       const response = await fetch(`${API_URL}/api/subscription/change-plan`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-User-Location': countryCode
+        },
         body: JSON.stringify({
           email,
           appNames: lowercaseAppNames,
@@ -1828,12 +1836,12 @@ const ChangePlan = () => {
   };
 
   // FIXED: formatPrice defined BEFORE use
-  const formatPrice = (price, interval) => {
-    if (price === 0 || price == null) return 'N/A';
-    if (interval === 'month') return `$${parseFloat(price).toFixed(2)} /month`;
-    if (interval === 'quarter') return `$${parseFloat(price).toFixed(2)} /quarter`;
-    return `$${parseFloat(price).toFixed(2)} /year`;
-  };
+  // const formatPrice = (price, interval) => {
+  //   if (price === 0 || price == null) return 'N/A';
+  //   if (interval === 'month') return `$${parseFloat(price).toFixed(2)} /month`;
+  //   if (interval === 'quarter') return `$${parseFloat(price).toFixed(2)} /quarter`;
+  //   return `$${parseFloat(price).toFixed(2)} /year`;
+  // };
 
   // Dynamic tiers from backend
   const uniqueTiers = [...new Set(pricingData.map(plan => 
@@ -1857,10 +1865,15 @@ const ChangePlan = () => {
 
       return {
         title: tier,
+        // price: {
+        //   month: formatPrice(matchingPlan.discountedPrice, 'month'),
+        //   quarter: formatPrice(matchingPlan.discountedPrice, 'quarter'),
+        //   year: formatPrice(matchingPlan.discountedPrice, 'year'),
+        // },
         price: {
-          month: formatPrice(matchingPlan.discountedPrice, 'month'),
-          quarter: formatPrice(matchingPlan.discountedPrice, 'quarter'),
-          year: formatPrice(matchingPlan.discountedPrice, 'year'),
+          month: matchingPlan.formattedPrice || '0.00',    // ← Use backend formatted string
+          quarter: matchingPlan.formattedPrice || '0.00',
+          year: matchingPlan.formattedPrice || '0.00',
         },
         discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
         planIds: { [intervalKey]: matchingPlan.planId },
@@ -1905,27 +1918,28 @@ const ChangePlan = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 px-6 py-8">
-      <div className="fixed top-4 left-4 sm:top-6 sm:left-8 z-50">
-                <a 
-                  href="https://www.ifaceh.com/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-md border border-gray-200 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
-                >
-                  {/* <img 
-                    src="/logo.svg"         
-                    alt="Interface Hub" 
-                    className="h-7 w-7 sm:h-8 sm:w-8 object-contain" 
-                  /> */}
-                  {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
-                  <span className="font-bold text-lg sm:text-xl tracking-tight">
-                    <span className="text-gray-900">Interface</span>
-                    <span className="text-violet-600">Hub</span>
-                  </span>
-                </a>
-              </div>
-      <motion.div className="max-w-7xl mx-auto mt-7">
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://www.ifaceh.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-3"
+              >
+                {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
+                <span className="font-bold text-xl sm:text-2xl">
+                  <span className="text-gray-900">Interface</span>
+                  <span className="text-violet-600">Hub</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+      <motion.div className="max-w-7xl mx-auto p-4">
         <h1 className="text-4xl font-bold text-gray-800 text-center mb-8">
           Change Your Subscription Plan
         </h1>
@@ -2003,7 +2017,7 @@ const ChangePlan = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded p-8 max-w-md w-full shadow-2xl"
+              className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl"
             >
               <h3 className="text-2xl font-bold text-gray-800 mb-4">Confirm Plan Change</h3>
               <p className="text-gray-600 mb-8">
@@ -2013,14 +2027,14 @@ const ChangePlan = () => {
                 <button
                   onClick={() => setShowConfirmModal(false)}
                   disabled={modalLoading}
-                  className="px-6 py-3 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:opacity-50"
+                  className="px-6 py-3 bg-gray-300 text-gray-800 rounded-full hover:bg-gray-400 disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleChangePlan}
                   disabled={modalLoading}
-                  className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px]"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px]"
                 >
                   {modalLoading ? (
                     <>
