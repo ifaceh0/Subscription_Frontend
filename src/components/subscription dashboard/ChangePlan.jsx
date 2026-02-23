@@ -1682,6 +1682,388 @@
 
 
 
+// import { useState, useEffect } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import { User, Loader2, AlertCircle, Package, RefreshCw } from 'lucide-react';
+// import { FiLoader } from "react-icons/fi";
+// import { motion, AnimatePresence } from 'framer-motion';
+// import { toast } from 'react-toastify';
+// import ChangePlanCard from './ChangePlanCard';
+// import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
+
+// const ChangePlan = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { selectedApps = [] } = location.state || {};
+//   const [billingCycle, setBillingCycle] = useState('month');
+//   const [selectedTypes] = useState(selectedApps);
+//   const [pricingData, setPricingData] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [selectedPlan, setSelectedPlan] = useState(null);
+//   const [showConfirmModal, setShowConfirmModal] = useState(false);
+//   const [modalLoading, setModalLoading] = useState(false);
+//   const API_URL = import.meta.env.VITE_API_BASE_URL;
+//   const { countryCode } = useCountryLocation();
+
+//   useEffect(() => {
+//     const email = localStorage.getItem('CompanyEmail');
+//     if (!email) {
+//       setError('No email found. Please provide an email to change plans.');
+//       setLoading(false);
+//       return;
+//     }
+//     if (!selectedApps || selectedApps.length === 0) {
+//       setError('No applications selected. Please select applications from the dashboard.');
+//       setLoading(false);
+//       return;
+//     }
+
+//     const fetchAvailablePlans = async () => {
+//       setLoading(true);
+//       try {
+//         const query = selectedTypes.length > 0
+//           ? `?${selectedTypes.map(type => `appNames=${encodeURIComponent(type)}`).join('&')}`
+//           : '';
+//         const response = await fetch(`${API_URL}/api/subscription/subscribed-plan${query}&email=${encodeURIComponent(email)}`, {
+//           method: 'GET',
+//           headers: { 
+//             'Content-Type': 'application/json',
+//             'X-User-Location': countryCode
+//            },
+//         });
+//         if (!response.ok) {
+//           if (response.status === 404) throw new Error('No alternative plans available for selected applications.');
+//           throw new Error(`HTTP error! Status: ${response.status}`);
+//         }
+//         const data = await response.json();
+//         setPricingData(data || []);
+//       } catch (err) {
+//         setError(`Failed to fetch plans: ${err.message}`);
+//         toast.error(`Error: ${err.message}`);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchAvailablePlans();
+//   }, [selectedApps, navigate]);
+
+//   // const handleChangePlan = async () => {
+//   //   const email = localStorage.getItem('CompanyEmail');
+//   //   if (!email || !selectedPlan || selectedTypes.length === 0) return;
+
+//   //   setModalLoading(true);
+//   //   try {
+//   //     const lowercaseAppNames = selectedTypes.map(type => type.toLowerCase());
+//   //     const response = await fetch(`${API_URL}/api/subscription/change-plan`, {
+//   //       method: 'POST',
+//   //       headers: { 'Content-Type': 'application/json' },
+//   //       body: JSON.stringify({
+//   //         email,
+//   //         appNames: lowercaseAppNames,
+//   //         newPlanTypeId: selectedPlan.planId,
+//   //         newInterval: billingCycle.charAt(0).toUpperCase() + billingCycle.slice(1),
+//   //         activationDate: Math.floor(Date.now() / 1000),
+//   //       }),
+//   //     });
+//   //     const data = await response.json();
+//   //     if (response.ok && data.checkoutUrl) {
+//   //       toast.success('Redirecting to checkout...');
+//   //       window.location.href = data.checkoutUrl;
+//   //     } else {
+//   //       setError(data.message || 'Failed to initiate plan change.');
+//   //       toast.error(data.message || 'Failed to change plan.');
+//   //     }
+//   //   } catch (err) {
+//   //     setError(`Failed to change plan: ${err.message}`);
+//   //     toast.error(`Error: ${err.message}`);
+//   //   } finally {
+//   //     setModalLoading(false);
+//   //     setShowConfirmModal(false);
+//   //   }
+//   // };
+
+//   const handleChangePlan = async () => {
+//     const email = localStorage.getItem('CompanyEmail');
+//     if (!email || !selectedPlan || selectedTypes.length === 0) return;
+
+//     setModalLoading(true);
+//     try {
+//       const lowercaseAppNames = selectedTypes.map(type => type.toLowerCase());
+//       const response = await fetch(`${API_URL}/api/subscription/change-plan`, {
+//         method: 'POST',
+//         headers: { 
+//           'Content-Type': 'application/json',
+//           'X-User-Location': countryCode
+//         },
+//         body: JSON.stringify({
+//           email,
+//           appNames: lowercaseAppNames,
+//           newPlanTypeId: selectedPlan.planId,
+//           newInterval: billingCycle.charAt(0).toUpperCase() + billingCycle.slice(1),
+//           activationDate: Math.floor(Date.now() / 1000),
+//         }),
+//       });
+
+//       const data = await response.json();
+
+//       if (response.ok) {
+//         // Case 1: Needs checkout → redirect
+//         if (data.checkoutUrl) {
+//           toast.success('Redirecting to checkout...');
+//           window.location.href = data.checkoutUrl;
+//         } 
+//         // Case 2: Success without checkout → show success and go to dashboard
+//         else {
+//           const successMsg = data.message || 'Plan changed successfully. You will receive a confirmation email soon.';
+//           toast.success(successMsg);
+//           navigate('/subscription-dashboard', {
+//             state: { successMessage: successMsg }
+//           });
+//         }
+//       } else {
+//         const errMsg = data.message || 'Failed to change plan.';
+//         setError(errMsg);
+//         toast.error(errMsg);
+//       }
+//     } catch (err) {
+//       setError(`Failed to change plan: ${err.message}`);
+//       toast.error(`Error: ${err.message}`);
+//     } finally {
+//       setModalLoading(false);
+//       setShowConfirmModal(false);
+//     }
+//   };
+
+//   // FIXED: formatPrice defined BEFORE use
+//   // const formatPrice = (price, interval) => {
+//   //   if (price === 0 || price == null) return 'N/A';
+//   //   if (interval === 'month') return `$${parseFloat(price).toFixed(2)} /month`;
+//   //   if (interval === 'quarter') return `$${parseFloat(price).toFixed(2)} /quarter`;
+//   //   return `$${parseFloat(price).toFixed(2)} /year`;
+//   // };
+
+//   // Dynamic tiers from backend
+//   const uniqueTiers = [...new Set(pricingData.map(plan => 
+//     plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()
+//   ))];
+
+//   const plans = uniqueTiers
+//     .map((tier) => {
+//       const matchingPlan = pricingData.find(plan => 
+//         plan.planName.toLowerCase() === tier.toLowerCase() &&
+//         plan.interval.toLowerCase().includes(billingCycle) &&
+//         plan.applicationNames?.length === selectedTypes.length &&
+//         selectedTypes.every(app => 
+//           plan.applicationNames?.map(n => n.toLowerCase()).includes(app.toLowerCase())
+//         )
+//       );
+
+//       if (!matchingPlan) return null;
+
+//       const intervalKey = billingCycle;
+
+//       return {
+//         title: tier,
+//         // price: {
+//         //   month: formatPrice(matchingPlan.discountedPrice, 'month'),
+//         //   quarter: formatPrice(matchingPlan.discountedPrice, 'quarter'),
+//         //   year: formatPrice(matchingPlan.discountedPrice, 'year'),
+//         // },
+//         price: {
+//           month: matchingPlan.formattedPrice || '0.00',    // ← Use backend formatted string
+//           quarter: matchingPlan.formattedPrice || '0.00',
+//           year: matchingPlan.formattedPrice || '0.00',
+//         },
+//         discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
+//         planIds: { [intervalKey]: matchingPlan.planId },
+//         features: matchingPlan.features || [],
+//         selectedTypes,
+//         buttonText: `Select ${tier} Plan`,
+//         color: tier === 'Basic' ? 'bg-purple-500' : 
+//                tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
+//                'bg-blue-600',
+//         icon: User,
+//       };
+//     })
+//     .filter(plan => plan !== null && plan.planIds[billingCycle] !== null);
+
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-100">
+//         <motion.div className="flex flex-col items-center">
+//           <FiLoader className="h-14 w-14 text-purple-600 animate-spin" />
+//           <p className="mt-4 text-gray-600 text-lg">Loading plans for change application plan...</p>
+//         </motion.div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-100">
+//         <motion.div className="bg-white rounded shadow-lg p-8 max-w-md text-center">
+//           <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
+//           <p className="text-xl font-semibold text-red-500 mb-4">Error</p>
+//           <p className="text-gray-600 mb-6">{error}</p>
+//           <button
+//             onClick={() => navigate('/subscription-dashboard')}
+//             className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700"
+//           >
+//             Back to Dashboard
+//           </button>
+//         </motion.div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gray-100">
+//       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+//         <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+//           <div className="flex items-center justify-between h-16">
+//             <div className="flex items-center gap-4">
+//               <a 
+//                 href="https://www.ifaceh.com/" 
+//                 target="_blank" 
+//                 rel="noopener noreferrer"
+//                 className="flex items-center gap-3"
+//               >
+//                 {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
+//                 <span className="font-bold text-xl sm:text-2xl">
+//                   <span className="text-gray-900">Interface</span>
+//                   <span className="text-violet-600">Hub</span>
+//                 </span>
+//               </a>
+//             </div>
+//           </div>
+//         </div>
+//       </header>
+//       <motion.div className="max-w-7xl mx-auto p-4">
+//         <h1 className="text-4xl font-bold text-gray-800 text-center mb-8">
+//           Change Your Subscription Plan
+//         </h1>
+
+//         {/* Billing Cycle Selector */}
+//         <div className="flex justify-center mb-12">
+//           <div className="inline-flex bg-white rounded-full p-1 shadow-lg">
+//             {['month', 'quarter', 'year'].map((cycle) => (
+//               <button
+//                 key={cycle}
+//                 onClick={() => setBillingCycle(cycle)}
+//                 className={`px-6 py-3 rounded-full font-semibold transition-all ${
+//                   billingCycle === cycle
+//                     ? 'bg-purple-600 text-white'
+//                     : 'text-gray-700 hover:bg-gray-100'
+//                 }`}
+//               >
+//                 {cycle.charAt(0).toUpperCase() + cycle.slice(1) + (cycle === 'year' ? 'ly' : 'ly')}
+//               </button>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Selected Apps */}
+//         <div className="text-center mb-8">
+//           <p className="text-lg text-gray-700">
+//             Changing plan for: <strong>{selectedTypes.join(', ')}</strong>
+//           </p>
+//         </div>
+
+//         <AnimatePresence mode="wait">
+//           <motion.div
+//             key={billingCycle}
+//             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+//           >
+//             {plans.length > 0 ? (
+//               plans.map((plan, index) => (
+//                 <motion.div
+//                   key={index}
+//                   initial={{ opacity: 0, y: 20 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ delay: index * 0.1 }}
+//                 >
+//                   <ChangePlanCard
+//                     title={plan.title}
+//                     price={plan.price}
+//                     discountPercent={plan.discountPercent}
+//                     planIds={plan.planIds}
+//                     features={plan.features}
+//                     color={plan.color}
+//                     billingCycle={billingCycle}
+//                     icon={plan.icon}
+//                     selectedTypes={plan.selectedTypes}
+//                     onSelect={() => {
+//                       setSelectedPlan({ title: plan.title, planId: plan.planIds[billingCycle] });
+//                       setShowConfirmModal(true);
+//                     }}
+//                     isSelected={selectedPlan?.planId === plan.planIds[billingCycle]}
+//                   />
+//                 </motion.div>
+//               ))
+//             ) : (
+//               <div className="col-span-full text-center py-12">
+//                 <p className="text-xl text-gray-600">
+//                   No alternative plans available for {selectedTypes.join(', ')} in {billingCycle} billing.
+//                 </p>
+//               </div>
+//             )}
+//           </motion.div>
+//         </AnimatePresence>
+
+//         {/* Confirm Modal */}
+//         {showConfirmModal && (
+//           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+//             <motion.div
+//               initial={{ opacity: 0, scale: 0.95 }}
+//               animate={{ opacity: 1, scale: 1 }}
+//               className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl"
+//             >
+//               <h3 className="text-2xl font-bold text-gray-800 mb-4">Confirm Plan Change</h3>
+//               <p className="text-gray-600 mb-8">
+//                 Change <strong>{selectedTypes.join(', ')}</strong> to <strong>{selectedPlan.title}</strong> ({billingCycle})?
+//               </p>
+//               <div className="flex justify-end gap-4">
+//                 <button
+//                   onClick={() => setShowConfirmModal(false)}
+//                   disabled={modalLoading}
+//                   className="px-6 py-3 bg-gray-300 text-gray-800 rounded-full hover:bg-gray-400 disabled:opacity-50"
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   onClick={handleChangePlan}
+//                   disabled={modalLoading}
+//                   className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px]"
+//                 >
+//                   {modalLoading ? (
+//                     <>
+//                       Processing...
+//                       <FiLoader className="h-5 w-5 animate-spin" />
+//                     </>
+//                   ) : (
+//                     'Yes, Change'
+//                   )}
+//                 </button>
+//               </div>
+//             </motion.div>
+//           </div>
+//         )}
+//       </motion.div>
+//     </div>
+//   );
+// };
+
+// export default ChangePlan;
+
+
+
+
+
+
+
+
+// updated code for language change
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { User, Loader2, AlertCircle, Package, RefreshCw } from 'lucide-react';
@@ -1690,8 +2072,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import ChangePlanCard from './ChangePlanCard';
 import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
+import { useTranslation } from 'react-i18next';
+import Header from '../../components/Header';
 
 const ChangePlan = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { selectedApps = [] } = location.state || {};
@@ -1709,12 +2094,12 @@ const ChangePlan = () => {
   useEffect(() => {
     const email = localStorage.getItem('CompanyEmail');
     if (!email) {
-      setError('No email found. Please provide an email to change plans.');
+      setError(t('changePlan.noEmailFound'));
       setLoading(false);
       return;
     }
     if (!selectedApps || selectedApps.length === 0) {
-      setError('No applications selected. Please select applications from the dashboard.');
+      setError(t('changePlan.noAppsSelected'));
       setLoading(false);
       return;
     }
@@ -1733,55 +2118,20 @@ const ChangePlan = () => {
            },
         });
         if (!response.ok) {
-          if (response.status === 404) throw new Error('No alternative plans available for selected applications.');
+          if (response.status === 404) throw new Error(t('changePlan.noAlternativePlans'));
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
         setPricingData(data || []);
       } catch (err) {
-        setError(`Failed to fetch plans: ${err.message}`);
-        toast.error(`Error: ${err.message}`);
+        setError(`${t('changePlan.failedToFetchPlans')}: ${err.message}`);
+        toast.error(`${t('changePlan.error')}: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
     fetchAvailablePlans();
   }, [selectedApps, navigate]);
-
-  // const handleChangePlan = async () => {
-  //   const email = localStorage.getItem('CompanyEmail');
-  //   if (!email || !selectedPlan || selectedTypes.length === 0) return;
-
-  //   setModalLoading(true);
-  //   try {
-  //     const lowercaseAppNames = selectedTypes.map(type => type.toLowerCase());
-  //     const response = await fetch(`${API_URL}/api/subscription/change-plan`, {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({
-  //         email,
-  //         appNames: lowercaseAppNames,
-  //         newPlanTypeId: selectedPlan.planId,
-  //         newInterval: billingCycle.charAt(0).toUpperCase() + billingCycle.slice(1),
-  //         activationDate: Math.floor(Date.now() / 1000),
-  //       }),
-  //     });
-  //     const data = await response.json();
-  //     if (response.ok && data.checkoutUrl) {
-  //       toast.success('Redirecting to checkout...');
-  //       window.location.href = data.checkoutUrl;
-  //     } else {
-  //       setError(data.message || 'Failed to initiate plan change.');
-  //       toast.error(data.message || 'Failed to change plan.');
-  //     }
-  //   } catch (err) {
-  //     setError(`Failed to change plan: ${err.message}`);
-  //     toast.error(`Error: ${err.message}`);
-  //   } finally {
-  //     setModalLoading(false);
-  //     setShowConfirmModal(false);
-  //   }
-  // };
 
   const handleChangePlan = async () => {
     const email = localStorage.getItem('CompanyEmail');
@@ -1808,42 +2158,30 @@ const ChangePlan = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Case 1: Needs checkout → redirect
         if (data.checkoutUrl) {
-          toast.success('Redirecting to checkout...');
+          toast.success(t('changePlan.redirectingToCheckout'));
           window.location.href = data.checkoutUrl;
-        } 
-        // Case 2: Success without checkout → show success and go to dashboard
-        else {
-          const successMsg = data.message || 'Plan changed successfully. You will receive a confirmation email soon.';
+        } else {
+          const successMsg = data.message || t('changePlan.planChangedSuccess');
           toast.success(successMsg);
           navigate('/subscription-dashboard', {
             state: { successMessage: successMsg }
           });
         }
       } else {
-        const errMsg = data.message || 'Failed to change plan.';
+        const errMsg = data.message || t('changePlan.failedToChange');
         setError(errMsg);
         toast.error(errMsg);
       }
     } catch (err) {
-      setError(`Failed to change plan: ${err.message}`);
-      toast.error(`Error: ${err.message}`);
+      setError(`${t('changePlan.failedToChange')}: ${err.message}`);
+      toast.error(`${t('changePlan.error')}: ${err.message}`);
     } finally {
       setModalLoading(false);
       setShowConfirmModal(false);
     }
   };
 
-  // FIXED: formatPrice defined BEFORE use
-  // const formatPrice = (price, interval) => {
-  //   if (price === 0 || price == null) return 'N/A';
-  //   if (interval === 'month') return `$${parseFloat(price).toFixed(2)} /month`;
-  //   if (interval === 'quarter') return `$${parseFloat(price).toFixed(2)} /quarter`;
-  //   return `$${parseFloat(price).toFixed(2)} /year`;
-  // };
-
-  // Dynamic tiers from backend
   const uniqueTiers = [...new Set(pricingData.map(plan => 
     plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()
   ))];
@@ -1865,13 +2203,8 @@ const ChangePlan = () => {
 
       return {
         title: tier,
-        // price: {
-        //   month: formatPrice(matchingPlan.discountedPrice, 'month'),
-        //   quarter: formatPrice(matchingPlan.discountedPrice, 'quarter'),
-        //   year: formatPrice(matchingPlan.discountedPrice, 'year'),
-        // },
         price: {
-          month: matchingPlan.formattedPrice || '0.00',    // ← Use backend formatted string
+          month: matchingPlan.formattedPrice || '0.00',
           quarter: matchingPlan.formattedPrice || '0.00',
           year: matchingPlan.formattedPrice || '0.00',
         },
@@ -1879,7 +2212,7 @@ const ChangePlan = () => {
         planIds: { [intervalKey]: matchingPlan.planId },
         features: matchingPlan.features || [],
         selectedTypes,
-        buttonText: `Select ${tier} Plan`,
+        buttonText: `${t('changePlan.select')} ${tier} ${t('changePlan.plan')}`,
         color: tier === 'Basic' ? 'bg-purple-500' : 
                tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
                'bg-blue-600',
@@ -1893,7 +2226,7 @@ const ChangePlan = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <motion.div className="flex flex-col items-center">
           <FiLoader className="h-14 w-14 text-purple-600 animate-spin" />
-          <p className="mt-4 text-gray-600 text-lg">Loading plans for change application plan...</p>
+          <p className="mt-4 text-gray-600 text-lg">{t('changePlan.loadingPlans')}</p>
         </motion.div>
       </div>
     );
@@ -1904,13 +2237,13 @@ const ChangePlan = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <motion.div className="bg-white rounded shadow-lg p-8 max-w-md text-center">
           <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
-          <p className="text-xl font-semibold text-red-500 mb-4">Error</p>
+          <p className="text-xl font-semibold text-red-500 mb-4">{t('changePlan.error')}</p>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate('/subscription-dashboard')}
             className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700"
           >
-            Back to Dashboard
+            {t('changePlan.backToDashboard')}
           </button>
         </motion.div>
       </div>
@@ -1919,29 +2252,10 @@ const ChangePlan = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <a 
-                href="https://www.ifaceh.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-3"
-              >
-                {/* <Star className="h-5 w-5 text-violet-600 fill-violet-100" /> */}
-                <span className="font-bold text-xl sm:text-2xl">
-                  <span className="text-gray-900">Interface</span>
-                  <span className="text-violet-600">Hub</span>
-                </span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
       <motion.div className="max-w-7xl mx-auto p-4">
         <h1 className="text-4xl font-bold text-gray-800 text-center mb-8">
-          Change Your Subscription Plan
+          {t('changePlan.changeYourPlan')}
         </h1>
 
         {/* Billing Cycle Selector */}
@@ -1957,7 +2271,7 @@ const ChangePlan = () => {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                {cycle.charAt(0).toUpperCase() + cycle.slice(1) + (cycle === 'year' ? 'ly' : 'ly')}
+                {t(`changePlan.${cycle}`)}
               </button>
             ))}
           </div>
@@ -1966,7 +2280,7 @@ const ChangePlan = () => {
         {/* Selected Apps */}
         <div className="text-center mb-8">
           <p className="text-lg text-gray-700">
-            Changing plan for: <strong>{selectedTypes.join(', ')}</strong>
+            {t('changePlan.changingPlanFor')}: <strong>{selectedTypes.join(', ')}</strong>
           </p>
         </div>
 
@@ -2004,7 +2318,10 @@ const ChangePlan = () => {
             ) : (
               <div className="col-span-full text-center py-12">
                 <p className="text-xl text-gray-600">
-                  No alternative plans available for {selectedTypes.join(', ')} in {billingCycle} billing.
+                  {t('changePlan.noAlternativePlansFor', { 
+                    apps: selectedTypes.join(', '), 
+                    cycle: billingCycle 
+                  })}
                 </p>
               </div>
             )}
@@ -2019,9 +2336,13 @@ const ChangePlan = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl"
             >
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Confirm Plan Change</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">{t('changePlan.confirmPlanChange')}</h3>
               <p className="text-gray-600 mb-8">
-                Change <strong>{selectedTypes.join(', ')}</strong> to <strong>{selectedPlan.title}</strong> ({billingCycle})?
+                {t('changePlan.confirmMessage', {
+                  apps: selectedTypes.join(', '),
+                  plan: selectedPlan.title,
+                  cycle: billingCycle
+                })}
               </p>
               <div className="flex justify-end gap-4">
                 <button
@@ -2029,7 +2350,7 @@ const ChangePlan = () => {
                   disabled={modalLoading}
                   className="px-6 py-3 bg-gray-300 text-gray-800 rounded-full hover:bg-gray-400 disabled:opacity-50"
                 >
-                  Cancel
+                  {t('changePlan.cancel')}
                 </button>
                 <button
                   onClick={handleChangePlan}
@@ -2038,11 +2359,11 @@ const ChangePlan = () => {
                 >
                   {modalLoading ? (
                     <>
-                      Processing...
+                      {t('changePlan.processing')}
                       <FiLoader className="h-5 w-5 animate-spin" />
                     </>
                   ) : (
-                    'Yes, Change'
+                    t('changePlan.yesChange')
                   )}
                 </button>
               </div>

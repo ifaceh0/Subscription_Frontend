@@ -15,8 +15,19 @@ export function LocationProvider({ children }) {
         if (countryLine) {
           const code = countryLine.split('=')[1]?.trim();
           if (code && code.length === 2) {
-            setCountryCode(code);
-            console.log(`[Location] Detected country from Cloudflare: ${code}`);
+            if (code === 'IN') {
+              setCountryCode('IN');
+              console.log(`[Location] Detected: India (IN)`);
+            } else if (code === 'US') {
+              setCountryCode('US');
+              console.log(`[Location] Detected: United States (US)`);
+            } else {
+              // Any other country → force US
+              setCountryCode('US');
+              console.log(`[Location] Detected ${code} → forced to US`);
+            }
+            // setCountryCode(code);
+            // console.log(`[Location] Detected country from Cloudflare: ${code}`);
             return;
           }
         }
@@ -28,8 +39,19 @@ export function LocationProvider({ children }) {
         const ipRes = await fetch('https://ipapi.co/json/');
         const data = await ipRes.json();
         if (data.country_code && data.country_code.length === 2) {
-          setCountryCode(data.country_code);
-          console.log(`[Location] Detected country from ipapi: ${data.country_code}`);
+          let code = data.country_code;
+          if (code === 'IN') {
+            setCountryCode('IN');
+            console.log(`[Location] ipapi: India (IN)`);
+          } else if (code === 'US') {
+            setCountryCode('US');
+            console.log(`[Location] ipapi: United States (US)`);
+          } else {
+            setCountryCode('US');
+            console.log(`[Location] ipapi: ${code} → forced to US`);
+          }
+          // setCountryCode(data.country_code);
+          // console.log(`[Location] Detected country from ipapi: ${data.country_code}`);
           return;
         }
       } catch (err) {
