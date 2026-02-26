@@ -18,7 +18,7 @@ export default function LanguageSelector() {
 
   return (
     <div className="relative inline-flex items-center gap-2">
-      <Globe className="h-5 w-5 text-gray-600" />
+      {/* <Globe className="h-5 w-5 text-gray-600" /> */}
 
       <div className="relative">
         {/* Selected language - always shows flag */}

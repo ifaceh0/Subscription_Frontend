@@ -10,15 +10,17 @@ export default function Header() {
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
-            <Link
-              to="/"
+            <a
+              href="https://www.ifaceh.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="flex items-center gap-3"
             >
               <span className="font-bold text-xl sm:text-2xl">
                 <span className="text-gray-900">Interface</span>
                 <span className="text-violet-600">Hub</span>
               </span>
-            </Link>
+            </a>
           </div>
 
           {/* Language selector on the right */}
