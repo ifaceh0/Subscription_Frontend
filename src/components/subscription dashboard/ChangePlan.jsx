@@ -2074,6 +2074,7 @@ import ChangePlanCard from './ChangePlanCard';
 import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 import { useTranslation } from 'react-i18next';
 import Header from '../../components/Header';
+import FeatureDetailsModal from '../Modal/FeatureDetailsModal';
 
 const ChangePlan = () => {
   const { t } = useTranslation();
@@ -2090,6 +2091,7 @@ const ChangePlan = () => {
   const [modalLoading, setModalLoading] = useState(false);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const { countryCode } = useCountryLocation();
+  const [selectedTierForModal, setSelectedTierForModal] = useState(null);
 
   useEffect(() => {
     const email = localStorage.getItem('CompanyEmail');
@@ -2186,40 +2188,96 @@ const ChangePlan = () => {
     plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()
   ))];
 
-  const plans = uniqueTiers
-    .map((tier) => {
-      const matchingPlan = pricingData.find(plan => 
-        plan.planName.toLowerCase() === tier.toLowerCase() &&
-        plan.interval.toLowerCase().includes(billingCycle) &&
-        plan.applicationNames?.length === selectedTypes.length &&
-        selectedTypes.every(app => 
-          plan.applicationNames?.map(n => n.toLowerCase()).includes(app.toLowerCase())
-        )
-      );
+  const planHighlights = {
+    Basic: t('subscription.planHighlights.Basic', { returnObjects: true }) || [],
+    Pro: t('subscription.planHighlights.Pro', { returnObjects: true }) || [],
+    Enterprise: t('subscription.planHighlights.Enterprise', { returnObjects: true }) || [],
+  };
 
-      if (!matchingPlan) return null;
+  const planDetails = {
+    Basic: t('subscription.planDetails.Basic', { returnObjects: true }) || [],
+    Pro: t('subscription.planDetails.Pro', { returnObjects: true }) || [],
+    Enterprise: t('subscription.planDetails.Enterprise', { returnObjects: true }) || [],
+  };
 
-      const intervalKey = billingCycle;
+  // const plans = uniqueTiers
+  //   .map((tier) => {
+  //     const matchingPlan = pricingData.find(plan => 
+  //       plan.planName.toLowerCase() === tier.toLowerCase() &&
+  //       plan.interval.toLowerCase().includes(billingCycle) &&
+  //       plan.applicationNames?.length === selectedTypes.length &&
+  //       selectedTypes.every(app => 
+  //         plan.applicationNames?.map(n => n.toLowerCase()).includes(app.toLowerCase())
+  //       )
+  //     );
 
-      return {
-        title: tier,
-        price: {
-          month: matchingPlan.formattedPrice || '0.00',
-          quarter: matchingPlan.formattedPrice || '0.00',
-          year: matchingPlan.formattedPrice || '0.00',
-        },
-        discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
-        planIds: { [intervalKey]: matchingPlan.planId },
-        features: matchingPlan.features || [],
-        selectedTypes,
-        buttonText: `${t('changePlan.select')} ${tier} ${t('changePlan.plan')}`,
-        color: tier === 'Basic' ? 'bg-purple-500' : 
-               tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
-               'bg-blue-600',
-        icon: User,
-      };
-    })
-    .filter(plan => plan !== null && plan.planIds[billingCycle] !== null);
+  //     if (!matchingPlan) return null;
+
+  //     const intervalKey = billingCycle;
+
+  //     return {
+  //       title: tier,
+  //       price: {
+  //         month: matchingPlan.formattedPrice || '0.00',
+  //         quarter: matchingPlan.formattedPrice || '0.00',
+  //         year: matchingPlan.formattedPrice || '0.00',
+  //       },
+  //       discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
+  //       planIds: { [intervalKey]: matchingPlan.planId },
+  //       features: matchingPlan.features || [],
+  //       selectedTypes,
+  //       buttonText: `${t('changePlan.select')} ${tier} ${t('changePlan.plan')}`,
+  //       color: tier === 'Basic' ? 'bg-purple-500' : 
+  //              tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
+  //              'bg-blue-600',
+  //       icon: User,
+  //     };
+  //   })
+  //   .filter(plan => plan !== null && plan.planIds[billingCycle] !== null);
+
+  const plans = ['Basic', 'Pro', 'Enterprise'].map(tier => {
+    // Find all plans for this tier that match selected apps exactly
+    const tierPlans = pricingData.filter(plan =>
+      plan.planName.toLowerCase() === tier.toLowerCase() &&
+      plan.applicationNames?.length === selectedTypes.length &&
+      selectedTypes.every(app =>
+        plan.applicationNames.map(n => n.toLowerCase()).includes(app.toLowerCase())
+      )
+    );
+
+    if (tierPlans.length === 0) return null;
+
+    const priceObj = {};
+    const discountObj = {};
+    const planIdObj = {};
+
+    tierPlans.forEach(plan => {
+      let key;
+      const intervalLower = plan.interval.toLowerCase();
+      if (intervalLower === 'monthly') key = 'month';
+      else if (intervalLower === 'quarterly') key = 'quarter';
+      else if (intervalLower === 'yearly') key = 'year';
+      else return;
+
+      priceObj[key] = plan.formattedPrice || '0.00';
+      discountObj[key] = plan.discountPercent || 0;
+      planIdObj[key] = plan.planId;
+    });
+
+    return {
+      title: tier,
+      price: priceObj,
+      discountPercent: discountObj,
+      planIds: planIdObj,
+      features: planHighlights[tier] || [],
+      selectedTypes,
+      buttonText: `${t('changePlan.select')} ${tier} ${t('changePlan.plan')}`,
+      color: tier === 'Basic' ? 'bg-purple-500' :
+            tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' :
+            'bg-blue-600',
+      icon: User,
+    };
+  }).filter(Boolean);
 
   if (loading) {
     return (
@@ -2312,6 +2370,7 @@ const ChangePlan = () => {
                       setShowConfirmModal(true);
                     }}
                     isSelected={selectedPlan?.planId === plan.planIds[billingCycle]}
+                    onShowMore={() => setSelectedTierForModal(plan.title)}
                   />
                 </motion.div>
               ))
@@ -2370,6 +2429,12 @@ const ChangePlan = () => {
             </motion.div>
           </div>
         )}
+        <FeatureDetailsModal
+          isOpen={!!selectedTierForModal}
+          onClose={() => setSelectedTierForModal(null)}
+          tier={selectedTierForModal || ''}
+          content={planDetails[selectedTierForModal] || []}
+        />
       </motion.div>
     </div>
   );

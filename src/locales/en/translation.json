@@ -31,7 +31,129 @@
     "enterpriseFeature6": "On-premise deployment option",
     "noPlansAvailable": "No plans available that match *exactly* your selected products in {{country}}.",
     "tryDifferentCombination": "Please try selecting a different combination.",
-    "chooseApplicationsSidebar": "Choose your applications in the sidebar to view tailored plans."
+    "chooseApplicationsSidebar": "Choose your applications in the sidebar to view tailored plans.",
+    "planHighlights": {
+      "Basic": [
+        "Full access to selected apps",
+        "All standard product features",
+        "Self-service usage",
+        "Email support (72 business hours response)"
+      ],
+      "Pro": [
+        "Everything in Basic",
+        "3 service hours included per month",
+        "Priority email support (24–48 hours)",
+        "Phone/Zoom support (2 calls/month)"
+      ],
+      "Enterprise": [
+        "Everything in Pro",
+        "5 service hours included per month",
+        "Dedicated support contact",
+        "Monthly check-ins & proactive service"
+      ]
+    },
+    "planDetails": {
+      "Basic": [
+        {
+          "title": "BASIC – “Software Only (Independent)”",
+          "subtitle": "Best for: Businesses that want to do everything on their own"
+        },
+        {
+          "title": "What’s Included:",
+          "list": [
+            "Full access to selected application(s)",
+            "All standard product features",
+            "Self-service usage",
+            "Knowledge base / documentation"
+          ]
+        },
+        {
+          "title": "Support:",
+          "list": [
+            "Email support (technical issues only)",
+            "72 business-hour response",
+            "Bug fixes and platform issues"
+          ]
+        },
+        {
+          "title": "Services",
+          "negative": "No included services",
+          "positive": "Optional Service Hours Pack can be purchased anytime"
+        },
+        {
+          "title": "Positioning",
+          "text": "“Use the platform independently. Add help only when you need it.”"
+        }
+      ],
+
+      "Pro": [
+        {
+          "title": "PRO – “Software + Included Service Hours”",
+          "subtitle": "Best for: Businesses that want occasional help"
+        },
+        {
+          "title": "What’s Included",
+          "text": "Everything in Basic, plus",
+          "list": ["3 service hours included per month (Block of 30 mins)"]
+        },
+        {
+          "title": "Support:",
+          "list": [
+            "Priority email support with 24–48 business-hours response time",
+            "30 mins Phone/Zoom support - 2 calls/month (part of service hours)"
+          ]
+        },
+        {
+          "title": "How Service Hours Can Be Used",
+          "list": [
+            "Campaign setup or updates",
+            "Data uploads or corrections",
+            "Answering business/data questions",
+            "Monthly performance summary",
+            "Configuration guidance"
+          ]
+        },
+        {
+          "title": "Positioning",
+          "text": "“A little expert help included — no long-term commitment.”"
+        }
+      ],
+
+      "Enterprise": [
+        {
+          "title": "ENTERPRISE – “Software + Managed Service Hours”",
+          "subtitle": "Best for: Businesses that want predictable, hands-off support"
+        },
+        {
+          "title": "What’s Included",
+          "text": "Everything in Pro, plus",
+          "list": ["5 service hours included per month (Block of 30 mins)"]
+        },
+        {
+          "title": "Support:",
+          "list": [
+            "Dedicated support contact",
+            "Monthly check-ins (30 mins) Scheduled calls",
+            "Dedicated email support within 24 business-hours response time",
+            "30 mins Phone/Zoom support - 5 calls/month (part of service hours)"
+          ]
+        },
+        {
+          "title": "How Service Hours Are Used",
+          "list": [
+            "Running campaigns on their behalf",
+            "Proactive data review",
+            "Performance reporting & insights",
+            "POS integration support",
+            "Custom configuration"
+          ]
+        },
+        {
+          "title": "Positioning",
+          "text": "“Predictable support hours with proactive service.”"
+        }
+      ]
+    }
   },
 
   "subscriptionCard": {
@@ -45,7 +167,8 @@
     "perMonth": "/month",
     "perQuarter": "/quarter",
     "perYear": "/year",
-    "access": "Access"
+    "access": "Access",
+    "viewFullPlanDetails": "View full plan details →"
   },
 
   "planDetails": {
@@ -273,5 +396,10 @@
     "subscriptionChanged": "Subscription Changed!",
     "planChangeScheduled": "Your plan change has been scheduled and will take effect at the end of the current billing period.",
     "planChangedConfirmation": "Plan changed successfully. You will receive a confirmation email soon."
+  },
+
+  "featureDetailsModal": {
+    "done": "Got it",
+    "title": "{{tier}} Plan Details"
   }
 }

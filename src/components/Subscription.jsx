@@ -894,6 +894,7 @@ import { toast } from 'react-toastify';
 import { useLocation } from '../contexts/LocationContext';
 import Header from './Header';
 import { useTranslation } from 'react-i18next';
+import FeatureDetailsModal from './Modal/FeatureDetailsModal';
 
 const Subscription = ({ defaultApp = '' }) => {
   const { t } = useTranslation();
@@ -911,6 +912,7 @@ const Subscription = ({ defaultApp = '' }) => {
   const [availableTypes, setAvailableTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedTierForModal, setSelectedTierForModal] = useState(null);
 
   const fetchWithBackoff = async (url, options, retries = 3, delay = 1000) => {
     for (let i = 0; i < retries; i++) {
@@ -1137,6 +1139,12 @@ const Subscription = ({ defaultApp = '' }) => {
     }
   };
 
+  const planHighlights = {
+    Basic: t('subscription.planHighlights.Basic', { returnObjects: true }),
+    Pro: t('subscription.planHighlights.Pro', { returnObjects: true }),
+    Enterprise: t('subscription.planHighlights.Enterprise', { returnObjects: true }),
+  };
+
   const plans = ['Basic', 'Pro', 'Enterprise'].map(tier => ({
     title: tier,
     // price: {
@@ -1151,20 +1159,34 @@ const Subscription = ({ defaultApp = '' }) => {
     },
     discountPercent: mergedPricing[tier].discount,
     planIds: mergedPricing[tier].planIds,
-    features: mergedPricing[tier].features?.length > 0
-      ? mergedPricing[tier].features
-      : (tier === 'Basic'
-          ? [t('subscription.basicFeature1'), t('subscription.basicFeature2'), t('subscription.basicFeature3'), t('subscription.basicFeature4')]
-          : tier === 'Pro'
-          ? [t('subscription.proFeature1'), t('subscription.proFeature2'), t('subscription.proFeature3'), t('subscription.proFeature4'), t('subscription.proFeature5')]
-          : [
-              t('subscription.enterpriseFeature1'),
-              t('subscription.enterpriseFeature2'),
-              t('subscription.enterpriseFeature3'),
-              t('subscription.enterpriseFeature4'),
-              t('subscription.enterpriseFeature5'),
-              t('subscription.enterpriseFeature6'),
-            ]),
+    // features: mergedPricing[tier].features?.length > 0
+    //   ? mergedPricing[tier].features
+    //   : (tier === 'Basic'
+    //       ? [
+    //           t('subscription.basicFeature1'),
+    //           t('subscription.basicFeature2'),
+    //           t('subscription.basicFeature3'),
+    //           t('subscription.basicFeature4')
+    //         ]
+    //       : tier === 'Pro'
+    //       ? [ 
+    //           t('subscription.proFeature1'),
+    //           t('subscription.proFeature2'),
+    //           t('subscription.proFeature3'),
+    //           t('subscription.proFeature4'),
+    //           t('subscription.proFeature5')
+    //         ]
+    //       : [
+    //           t('subscription.enterpriseFeature1'),
+    //           t('subscription.enterpriseFeature2'),
+    //           t('subscription.enterpriseFeature3'),
+    //           t('subscription.enterpriseFeature4'),
+    //           t('subscription.enterpriseFeature5'),
+    //           t('subscription.enterpriseFeature6'),
+    //         ]),
+
+    features: planHighlights[tier] || [],
+
     buttonText: `${t('subscription.add')} ${tier} ${t('subscription.plan')}`,
     color: tier === 'Basic' ? 'bg-purple-500' : tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 'bg-blue-600',
     icon: User,
@@ -1173,30 +1195,15 @@ const Subscription = ({ defaultApp = '' }) => {
   console.log('Merged Pricing:', mergedPricing);
   console.log('Plans:', plans);
   console.log('country code:', countryCode);
-  // console.log('Received plans:', data);
-  // console.log('After country filter:', data.filter(plan => plan.countryCode === countryCode));
+
+  const planDetails = {
+    Basic: t('subscription.planDetails.Basic', { returnObjects: true }),
+    Pro: t('subscription.planDetails.Pro', { returnObjects: true }),
+    Enterprise: t('subscription.planDetails.Enterprise', { returnObjects: true }),
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <a 
-                href="https://www.ifaceh.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-3"
-              >
-                
-                <span className="font-bold text-xl sm:text-2xl">
-                  <span className="text-gray-900">Interface</span>
-                  <span className="text-violet-600">Hub</span>
-                </span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </header> */}
       <Header />
       
       <motion.div
@@ -1265,7 +1272,7 @@ const Subscription = ({ defaultApp = '' }) => {
                   type="checkbox"
                   checked={selectedTypes.includes(type)}
                   onChange={() => handleCheckboxChange(type)}
-                  className="appearance-none w-5 h-5 border-2 rounded-full transition-all duration-200 accent-violet-600 checked:bg-violet-600 checked:border-violet-600 focus:ring-2 focus:ring-violet-500"
+                  className="appearance-none w-4 h-4 border-2 rounded-full transition-all duration-200 accent-violet-600 checked:bg-violet-600 checked:border-violet-600 focus:ring-2 focus:ring-violet-500"
                   aria-checked={selectedTypes.includes(type)}
                   aria-label={`Select ${type} application`}
                 />
@@ -1311,6 +1318,7 @@ const Subscription = ({ defaultApp = '' }) => {
                         billingCycle={billingCycle}
                         icon={plan.icon}
                         selectedTypes={selectedTypes}
+                        onShowMore={() => setSelectedTierForModal(plan.title)}
                       />
                     </div>
                   ))
@@ -1349,6 +1357,12 @@ const Subscription = ({ defaultApp = '' }) => {
             </div>
           )}
         </div>
+        <FeatureDetailsModal
+          isOpen={!!selectedTierForModal}
+          onClose={() => setSelectedTierForModal(null)}
+          tier={selectedTierForModal || ''}
+          content={planDetails[selectedTierForModal] || []}
+        />
       </div>
     </div>
   );

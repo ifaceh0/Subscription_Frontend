@@ -1134,6 +1134,7 @@ import AddProductCard from './AddProductCard';
 import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 import { useTranslation } from 'react-i18next';
 import Header from '../../components/Header';
+import FeatureDetailsModal from '../Modal/FeatureDetailsModal';
 
 const AddProduct = () => {
   const { t } = useTranslation();
@@ -1150,6 +1151,7 @@ const AddProduct = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
   const { countryCode } = useCountryLocation();
+  const [selectedTierForModal, setSelectedTierForModal] = useState(null);
 
   useEffect(() => {
     console.log('Selected Apps from location.state:', selectedApps);
@@ -1242,43 +1244,97 @@ const AddProduct = () => {
     }
   };
 
+  const planHighlights = {
+    Basic: t('subscription.planHighlights.Basic', { returnObjects: true }) || [],
+    Pro: t('subscription.planHighlights.Pro', { returnObjects: true }) || [],
+    Enterprise: t('subscription.planHighlights.Enterprise', { returnObjects: true }) || [],
+  };
+
+  const planDetails = {
+    Basic: t('subscription.planDetails.Basic', { returnObjects: true }) || [],
+    Pro: t('subscription.planDetails.Pro', { returnObjects: true }) || [],
+    Enterprise: t('subscription.planDetails.Enterprise', { returnObjects: true }) || [],
+  };
+
   const uniqueTiers = [...new Set(pricingData.map(plan => 
     plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()
   ))];
 
-  const plans = uniqueTiers
-    .map((tier) => {
-      const matchingPlan = pricingData.find(plan => 
-        plan.planName.toLowerCase() === tier.toLowerCase() &&
-        plan.interval.toLowerCase().includes(billingCycle) && 
-        plan.applicationNames?.length === selectedTypes.length &&
-        selectedTypes.every(app => 
-          plan.applicationNames?.map(n => n.toLowerCase()).includes(app.toLowerCase())
-        )
-      );
+  // const plans = uniqueTiers
+  //   .map((tier) => {
+  //     const matchingPlan = pricingData.find(plan => 
+  //       plan.planName.toLowerCase() === tier.toLowerCase() &&
+  //       plan.interval.toLowerCase().includes(billingCycle) && 
+  //       plan.applicationNames?.length === selectedTypes.length &&
+  //       selectedTypes.every(app => 
+  //         plan.applicationNames?.map(n => n.toLowerCase()).includes(app.toLowerCase())
+  //       )
+  //     );
 
-      if (!matchingPlan) return null;
+  //     if (!matchingPlan) return null;
 
-      const intervalKey = billingCycle;
+  //     const intervalKey = billingCycle;
 
-      return {
-        title: tier,
-        price: {
-            month: matchingPlan.formattedPrice || '0.00',
-            quarter: matchingPlan.formattedPrice || '0.00',
-            year: matchingPlan.formattedPrice || '0.00',
-          },
-        discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
-        planIds: { [intervalKey]: matchingPlan.planId },
-        features: matchingPlan.features || [],
-        applications: matchingPlan.applicationNames || [],
-        buttonText: `${t('addProduct.add')} ${tier} ${t('addProduct.plan')}`,
-        color: tier === 'Basic' ? 'bg-purple-500' : 
-              tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
-              'bg-blue-600',
-      };
-    })
-    .filter(plan => plan !== null && plan.planIds[billingCycle] !== null);
+  //     return {
+  //       title: tier,
+  //       price: {
+  //           month: matchingPlan.formattedPrice || '0.00',
+  //           quarter: matchingPlan.formattedPrice || '0.00',
+  //           year: matchingPlan.formattedPrice || '0.00',
+  //         },
+  //       discountPercent: { [intervalKey]: matchingPlan.discountPercent || 0 },
+  //       planIds: { [intervalKey]: matchingPlan.planId },
+  //       features: matchingPlan.features || [],
+  //       applications: matchingPlan.applicationNames || [],
+  //       buttonText: `${t('addProduct.add')} ${tier} ${t('addProduct.plan')}`,
+  //       color: tier === 'Basic' ? 'bg-purple-500' : 
+  //             tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' : 
+  //             'bg-blue-600',
+  //     };
+  //   })
+  //   .filter(plan => plan !== null && plan.planIds[billingCycle] !== null);
+
+  const plans = ['Basic', 'Pro', 'Enterprise'].map(tier => {
+    const tierPlans = pricingData.filter(plan =>
+      plan.planName.toLowerCase() === tier.toLowerCase() &&
+      plan.applicationNames?.length === selectedTypes.length &&
+      selectedTypes.every(app =>
+        plan.applicationNames.map(n => n.toLowerCase()).includes(app.toLowerCase())
+      )
+    );
+
+    if (tierPlans.length === 0) return null;
+
+    const priceObj = {};
+    const discountObj = {};
+    const planIdObj = {};
+
+    tierPlans.forEach(plan => {
+      let key;
+      const intervalLower = plan.interval.toLowerCase();
+      if (intervalLower === 'monthly') key = 'month';
+      else if (intervalLower === 'quarterly') key = 'quarter';
+      else if (intervalLower === 'yearly') key = 'year';
+      else return;
+
+      priceObj[key] = plan.formattedPrice || '0.00';
+      discountObj[key] = plan.discountPercent || 0;
+      planIdObj[key] = plan.planId;
+    });
+
+    return {
+      title: tier,
+      price: priceObj,
+      discountPercent: discountObj,
+      planIds: planIdObj,
+      features: planHighlights[tier] || [],
+      applications: tierPlans[0]?.applicationNames || [],
+      buttonText: `${t('addProduct.add')} ${tier} ${t('addProduct.plan')}`,
+      color: tier === 'Basic' ? 'bg-purple-500' :
+            tier === 'Pro' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' :
+            'bg-blue-600',
+    };
+  }).filter(Boolean);
 
   if (loading) {
     return (
@@ -1360,7 +1416,7 @@ const AddProduct = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto p-4"
+        className="max-w-7xl mx-auto p-4 sm:px-6 lg:px-8"
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -1369,7 +1425,7 @@ const AddProduct = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
           >
             {plans.length > 0 ? (
               plans.map((plan, index) => (
@@ -1394,6 +1450,7 @@ const AddProduct = () => {
                       setShowConfirmModal(true);
                     }}
                     isSelected={selectedPlan?.planId === plan.planIds[billingCycle]}
+                    onShowMore={() => setSelectedTierForModal(plan.title)}
                   />
                 </motion.div>
               ))
@@ -1455,6 +1512,12 @@ const AddProduct = () => {
             </motion.div>
           </div>
         )}
+        <FeatureDetailsModal
+          isOpen={!!selectedTierForModal}
+          onClose={() => setSelectedTierForModal(null)}
+          tier={selectedTierForModal || ''}
+          content={planDetails[selectedTierForModal] || []}
+        />
       </motion.div>
     </div>
   );

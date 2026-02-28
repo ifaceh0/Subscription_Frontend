@@ -647,7 +647,7 @@ const PlanDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />  {/* ← Added Header component here */}
+      <Header />
 
       <div className="flex items-center justify-center px-6 py-12">
         <motion.div

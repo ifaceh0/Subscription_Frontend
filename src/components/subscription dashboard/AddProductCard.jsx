@@ -132,16 +132,22 @@
 import { Check, Package, PlusCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const AddProductCard = ({ title, price, features, color, billingCycle, selectedTypes, applications, discountPercent, planIds, onSelect, isSelected }) => {
+const AddProductCard = ({ title, price, features, color, billingCycle, selectedTypes, applications, discountPercent, planIds, onSelect, isSelected, onShowMore }) => {
   const { t } = useTranslation();
 
-  if (!planIds[billingCycle]) return null; // Only render if planId exists
+  if (!planIds[billingCycle]) return null;
 
-  const calculateOriginalPrice = (formattedPrice, discountPercent) => {
-    if (!formattedPrice || discountPercent === 0) return null;
-    const priceMatch = formattedPrice.match(/[\d.]+/);
-    const price = priceMatch ? parseFloat(priceMatch[0]) : 0;
-    return (price / (1 - discountPercent / 100)).toFixed(2);
+  const calculateOriginalPrice = (formattedDiscounted, discountPercent) => {
+    if (!formattedDiscounted || discountPercent <= 0) return null;
+
+    const numeric = parseFloat(formattedDiscounted.replace(/[^0-9.]/g, '')) || 0;
+    if (numeric === 0) return null;
+
+    const original = numeric / (1 - discountPercent / 100);
+
+    const currencySymbol = formattedDiscounted.replace(/[0-9., ]/g, '').trim() || '$';
+
+    return `${currencySymbol} ${original.toFixed(2)}`;
   };
 
   const getIntervalText = () => {
@@ -157,20 +163,20 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
 
   return (
     <div
-      className={`relative rounded-xl overflow-hidden shadow-md max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
-      onClick={onSelect}
-      role="button"
-      tabIndex={0}
-      aria-label={t('addProductCard.aria.addPlan', { title })}
-      onKeyDown={(e) => e.key === 'Enter' && onSelect()}
+      className={`relative rounded-xl overflow-hidden shadow-md max-w-sm bg-white flex flex-col justify-between transition-all duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
+      // onClick={onSelect}
+      // role="button"
+      // tabIndex={0}
+      // aria-label={t('addProductCard.aria.addPlan', { title })}
+      // onKeyDown={(e) => e.key === 'Enter' && onSelect()}
     >
-      <div className={`px-6 py-3 flex justify-center text-center ${color}`}>
+      <div className={`px-5 py-4 sm:px-6 sm:py-5 flex justify-center text-center ${color}`}>
         <div>
           <div className="mb-2 flex justify-center">
-            <PlusCircle className="h-8 w-8 text-white" />
+            <PlusCircle className="h-9 w-9 sm:h-10 sm:w-10 text-white" />
           </div>
-          <h3 className="text-xl font-bold text-white">{title}</h3>
-          <p className="text-white text-sm">
+          <h3 className="text-xl sm:text-2xl font-bold text-white">{title}</h3>
+          <p className="text-white text-sm sm:text-base mt-1">
             {t('addProductCard.addNewFeatures')}
           </p>
         </div>
@@ -183,6 +189,13 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
           </p>
         )}
         <div className="space-y-1">
+          {discountPercent[billingCycle] > 0 && (
+            <div className="text-sm text-gray-400 line-through">
+              {t('subscriptionCard.originalPrice', {
+                price: calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])
+              })}
+            </div>
+          )}
           <div className="flex items-baseline gap-1">
             <span className="text-3xl font-bold text-gray-900">
               {price[billingCycle] || '0.00'}
@@ -216,6 +229,15 @@ const AddProductCard = ({ title, price, features, color, billingCycle, selectedT
             {feat}
           </li>
         ))}
+        <li className="pt-3">
+          <button
+            onClick={onShowMore}
+            className="flex items-center gap-1.5 text-violet-600 hover:text-violet-800 font-medium text-sm transition-colors"
+            type="button"
+          >
+            {t('subscriptionCard.viewFullPlanDetails') || 'View full plan details →'}
+          </button>
+        </li>
       </ul>
 
       <div className="px-6 pb-6">

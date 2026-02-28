@@ -118,17 +118,29 @@
 import { Check, Package } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycle, selectedTypes, discountPercent, planIds, onSelect, isSelected }) => {
+const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycle, selectedTypes, discountPercent, planIds, onSelect, isSelected, onShowMore }) => {
   const { t } = useTranslation();
 
   if (!price[billingCycle] || price[billingCycle] === 'N/A') return null;
 
-  const calculateOriginalPrice = (formattedPrice, discountPercent) => {
-    if (!formattedPrice || discountPercent === 0) return null; // Return null if no discount
-    // Extract the numeric part from the formatted price (e.g., "$4.99 /month" → "4.99")
-    const priceMatch = formattedPrice.match(/[\d.]+/);
-    const price = priceMatch ? parseFloat(priceMatch[0]) : 0;
-    return (price / (1 - discountPercent / 100)).toFixed(2);
+  // const calculateOriginalPrice = (formattedPrice, discountPercent) => {
+  //   if (!formattedPrice || discountPercent === 0) return null; // Return null if no discount
+  //   // Extract the numeric part from the formatted price (e.g., "$4.99 /month" → "4.99")
+  //   const priceMatch = formattedPrice.match(/[\d.]+/);
+  //   const price = priceMatch ? parseFloat(priceMatch[0]) : 0;
+  //   return (price / (1 - discountPercent / 100)).toFixed(2);
+  // };
+  const calculateOriginalPrice = (formattedDiscounted, discountPercent) => {
+    if (!formattedDiscounted || discountPercent <= 0) return null;
+
+    const numeric = parseFloat(formattedDiscounted.replace(/[^0-9.]/g, '')) || 0;
+    if (numeric === 0) return null;
+
+    const original = numeric / (1 - discountPercent / 100);
+
+    const currencySymbol = formattedDiscounted.replace(/[0-9., ]/g, '').trim() || '$';
+
+    return `${currencySymbol} ${original.toFixed(2)}`;
   };
 
   const getIntervalText = () => {
@@ -143,11 +155,11 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
   return (
     <div
       className={`relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
-      onClick={onSelect}
-      role="button"
-      tabIndex={0}
-      aria-label={t('changePlanCard.aria.selectPlan', { title })}
-      onKeyDown={(e) => e.key === 'Enter' && onSelect()}
+      // onClick={onSelect}
+      // role="button"
+      // tabIndex={0}
+      // aria-label={t('changePlanCard.aria.selectPlan', { title })}
+      // onKeyDown={(e) => e.key === 'Enter' && onSelect()}
     >
       <div className={`px-6 py-3 flex justify-center text-center ${color}`}>
         <div>
@@ -170,6 +182,14 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
           </p>
         )}
         <div className="space-y-1">
+          {discountPercent[billingCycle] > 0 && calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle]) && (
+            <div className="text-sm text-gray-400 line-through">
+              {t('subscriptionCard.originalPrice', {
+                price: calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])
+              })}
+              {/* {calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])} */}
+            </div>
+          )}
           <div className="flex items-baseline gap-1">
             <span className="text-3xl font-bold text-gray-900">
               {price[billingCycle] || '0.00'}
@@ -198,6 +218,16 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
             {feat}
           </li>
         ))}
+        <li className="pt-3">
+          <button
+            onClick={onShowMore}
+            className="flex items-center gap-1.5 text-violet-600 hover:text-violet-800 font-medium text-sm transition-colors"
+            type="button"
+          >
+            {t('subscriptionCard.viewFullPlanDetails') || 'View full plan details →'}
+            {/* <ChevronDown className="w-4 h-4" /> */}
+          </button>
+        </li>
       </ul>
 
       <div className="px-6 pb-6">

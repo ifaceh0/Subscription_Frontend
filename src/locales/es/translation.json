@@ -31,7 +31,129 @@
     "enterpriseFeature6": "Opción de implementación on-premise",
     "noPlansAvailable": "No hay planes disponibles que coincidan *exactamente* con tus productos seleccionados en {{country}}.",
     "tryDifferentCombination": "Por favor intenta seleccionar una combinación diferente.",
-    "chooseApplicationsSidebar": "Elige tus aplicaciones en la barra lateral para ver planes personalizados."
+    "chooseApplicationsSidebar": "Elige tus aplicaciones en la barra lateral para ver planes personalizados.",
+    "planHighlights": {
+      "Basic": [
+        "Acceso completo a las aplicaciones seleccionadas",
+        "Todas las funciones estándar del producto",
+        "Uso autónomo (self-service)",
+        "Soporte por email (respuesta en 72 horas hábiles)"
+      ],
+      "Pro": [
+        "Todo lo incluido en Basic",
+        "3 horas de servicio incluidas por mes",
+        "Soporte prioritario por email (24–48 horas)",
+        "Soporte telefónico/Zoom (2 llamadas/mes)"
+      ],
+      "Enterprise": [
+        "Todo lo incluido en Pro",
+        "5 horas de servicio incluidas por mes",
+        "Contacto de soporte dedicado",
+        "Revisiones mensuales y servicio proactivo"
+      ]
+    },
+    "planDetails": {
+      "Basic": [
+        {
+          "title": "BASIC – “Solo Software (Independiente)”",
+          "subtitle": "Ideal para: Empresas que quieren hacerlo todo por su cuenta"
+        },
+        {
+          "title": "Qué incluye:",
+          "list": [
+            "Acceso completo a la(s) aplicación(es) seleccionada(s)",
+            "Todas las funciones estándar del producto",
+            "Uso autónomo",
+            "Base de conocimientos / documentación"
+          ]
+        },
+        {
+          "title": "Soporte:",
+          "list": [
+            "Soporte por email (solo problemas técnicos)",
+            "Respuesta en 72 horas hábiles",
+            "Corrección de errores y problemas de plataforma"
+          ]
+        },
+        {
+          "title": "Servicios",
+          "negative": "No incluye servicios",
+          "positive": "Paquete de Horas de Servicio opcional disponible para compra en cualquier momento"
+        },
+        {
+          "title": "Posicionamiento",
+          "text": "“Usa la plataforma de forma independiente. Agrega ayuda solo cuando la necesites.”"
+        }
+      ],
+
+      "Pro": [
+        {
+          "title": "PRO – “Software + Horas de Servicio Incluidas”",
+          "subtitle": "Ideal para: Empresas que quieren ayuda ocasional"
+        },
+        {
+          "title": "Qué incluye",
+          "text": "Todo lo de Basic, más",
+          "list": ["3 horas de servicio incluidas por mes (bloques de 30 min)"]
+        },
+        {
+          "title": "Soporte:",
+          "list": [
+            "Soporte prioritario por email con respuesta en 24–48 horas hábiles",
+            "Soporte telefónico/Zoom de 30 min - 2 llamadas/mes (parte de las horas de servicio)"
+          ]
+        },
+        {
+          "title": "Cómo se pueden usar las Horas de Servicio",
+          "list": [
+            "Configuración o actualización de campañas",
+            "Carga o corrección de datos",
+            "Respuestas a preguntas de negocio/datos",
+            "Resumen mensual de rendimiento",
+            "Orientación en configuración"
+          ]
+        },
+        {
+          "title": "Posicionamiento",
+          "text": "“Un poco de ayuda experta incluida — sin compromiso a largo plazo.”"
+        }
+      ],
+
+      "Enterprise": [
+        {
+          "title": "ENTERPRISE – “Software + Horas de Servicio Gestionadas”",
+          "subtitle": "Ideal para: Empresas que quieren soporte predecible y sin complicaciones"
+        },
+        {
+          "title": "Qué incluye",
+          "text": "Todo lo de Pro, más",
+          "list": ["5 horas de servicio incluidas por mes (bloques de 30 min)"]
+        },
+        {
+          "title": "Soporte:",
+          "list": [
+            "Contacto de soporte dedicado",
+            "Revisiones mensuales (30 min) - Llamadas programadas",
+            "Soporte dedicado por email con respuesta en 24 horas hábiles",
+            "Soporte telefónico/Zoom de 30 min - 5 llamadas/mes (parte de las horas de servicio)"
+          ]
+        },
+        {
+          "title": "Cómo se usan las Horas de Servicio",
+          "list": [
+            "Ejecución de campañas en su nombre",
+            "Revisión proactiva de datos",
+            "Reportes e insights de rendimiento",
+            "Soporte para integración POS",
+            "Configuración personalizada"
+          ]
+        },
+        {
+          "title": "Posicionamiento",
+          "text": "“Horas de soporte predecibles con servicio proactivo.”"
+        }
+      ]
+    }
   },
 
   "subscriptionCard": {
@@ -45,7 +167,8 @@
     "perMonth": "/mes",
     "perQuarter": "/trimestre",
     "perYear": "/año",
-    "access": "Acceder"
+    "access": "Acceder",
+    "viewFullPlanDetails": "Ver detalles completos del plan →"
   },
 
   "planDetails": {
@@ -270,5 +393,10 @@
     "subscriptionChanged": "¡Suscripción Cambiada!",
     "planChangeScheduled": "Tu cambio de plan ha sido programado y tendrá efecto al final del período de facturación actual.",
     "planChangedConfirmation": "Plan cambiado exitosamente. Recibirás un correo de confirmación pronto."
+  },
+
+  "featureDetailsModal": {
+    "done": "Entiendo",
+    "title": "Detalles del plan {{tier}}"
   }
 }
