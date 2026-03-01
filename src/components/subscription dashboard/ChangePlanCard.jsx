@@ -1,25 +1,35 @@
 // import { Check, Package } from 'lucide-react';
 
 // const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycle, selectedTypes, discountPercent, planIds, onSelect, isSelected }) => {
-//   if (!price[billingCycle]) return null;
+//   if (!price[billingCycle] || price[billingCycle] === 'N/A') return null;
 
-//   const calculateOriginalPrice = (discountedPrice, discountPercent) => {
-//     if (!discountedPrice || discountPercent === 0) return discountedPrice;
-//     return (discountedPrice / (1 - discountPercent / 100)).toFixed(2);
+//   const calculateOriginalPrice = (formattedPrice, discountPercent) => {
+//     if (!formattedPrice || discountPercent === 0) return null; // Return null if no discount
+//     // Extract the numeric part from the formatted price (e.g., "$4.99 /month" → "4.99")
+//     const priceMatch = formattedPrice.match(/[\d.]+/);
+//     const price = priceMatch ? parseFloat(priceMatch[0]) : 0;
+//     return (price / (1 - discountPercent / 100)).toFixed(2);
+//   };
+
+//   const getIntervalText = () => {
+//     switch (billingCycle) {
+//       case 'month': return '/month';
+//       case 'quarter': return '/quarter';
+//       case 'year': return '/year';
+//       default: return '/month';
+//     }
 //   };
 
 //   return (
 //     <div
-//       className={`relative rounded-2xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${title === 'Pro' ? 'ring-4 ring-yellow-300' : ''} ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
+//       className={`relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
 //       onClick={onSelect}
+//       role="button"
+//       tabIndex={0}
+//       aria-label={`Select ${title} plan`}
+//       onKeyDown={(e) => e.key === 'Enter' && onSelect()}
 //     >
-//       {title === 'Pro' && (
-//         <div className="absolute top-2 right-2 bg-yellow-300 text-yellow-900 px-2 py-1 text-xs font-semibold rounded">
-//           Most Popular
-//         </div>
-//       )}
-
-//       <div className={`px-6 py-4 flex justify-center text-center ${color}`}>
+//       <div className={`px-6 py-3 flex justify-center text-center ${color}`}>
 //         <div>
 //           {Icon && (
 //             <div className="mb-2 flex justify-center">
@@ -28,11 +38,7 @@
 //           )}
 //           <h3 className="text-xl font-bold text-white">{title}</h3>
 //           <p className="text-white text-sm">
-//             {title === 'Basic'
-//               ? 'Perfect for individuals and small teams'
-//               : title === 'Pro'
-//               ? 'Ideal for growing businesses'
-//               : 'For large organizations with complex needs'}
+//             Perfect for individuals and small teams
 //           </p>
 //         </div>
 //       </div>
@@ -40,16 +46,13 @@
 //       <div className="px-6 py-4 text-left">
 //         {discountPercent[billingCycle] > 0 && (
 //           <p className="text-sm text-green-600 font-medium mb-1">
-//             Save {discountPercent[billingCycle]}% compared to monthly
+//             Save {discountPercent[billingCycle]}%
 //           </p>
 //         )}
 //         <div className="space-y-1">
-//           {discountPercent[billingCycle] > 0 && (
+//           {/* {discountPercent[billingCycle] > 0 && (
 //             <div className="text-sm text-gray-400 line-through">
-//               Original: ${calculateOriginalPrice(
-//                 parseFloat(price[billingCycle]?.replace(/[^0-9.]/g, '') || 0),
-//                 discountPercent[billingCycle]
-//               )}
+//               Original: ${calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])}
 //             </div>
 //           )}
 //           <div className="flex items-baseline gap-1">
@@ -58,6 +61,14 @@
 //             </span>
 //             <span className="text-gray-500 text-base font-medium">
 //               {price[billingCycle]?.split(' ')[1] || '/month'}
+//             </span>
+//           </div> */}
+//           <div className="flex items-baseline gap-1">
+//             <span className="text-3xl font-bold text-gray-900">
+//               {price[billingCycle] || '0.00'}  {/* ← This is now "₹ 300.00" */}
+//             </span>
+//             <span className="text-gray-500 text-base font-medium">
+//               {getIntervalText()}
 //             </span>
 //           </div>
 //         </div>
@@ -85,13 +96,8 @@
 //       <div className="px-6 pb-6">
 //         <button
 //           onClick={onSelect}
-//           className={`w-full py-2 rounded-lg font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 ${
-//             title === 'Basic'
-//               ? 'bg-purple-600 hover:bg-purple-700'
-//               : title === 'Pro'
-//               ? 'bg-orange-500 hover:bg-orange-600'
-//               : 'bg-blue-600 hover:bg-blue-700'
-//           }`}
+//           className="w-full py-2 rounded-full font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
+//           aria-label={`Select ${title} plan`}
 //         >
 //           Select Plan
 //         </button>
@@ -106,28 +112,54 @@
 
 
 
-//new
-import { Check, Package } from 'lucide-react';
 
-const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycle, selectedTypes, discountPercent, planIds, onSelect, isSelected }) => {
+
+// updated code for language change
+import { Check, Package } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycle, selectedTypes, discountPercent, planIds, onSelect, isSelected, onShowMore }) => {
+  const { t } = useTranslation();
+
   if (!price[billingCycle] || price[billingCycle] === 'N/A') return null;
 
-  const calculateOriginalPrice = (formattedPrice, discountPercent) => {
-    if (!formattedPrice || discountPercent === 0) return null; // Return null if no discount
-    // Extract the numeric part from the formatted price (e.g., "$4.99 /month" → "4.99")
-    const priceMatch = formattedPrice.match(/[\d.]+/);
-    const price = priceMatch ? parseFloat(priceMatch[0]) : 0;
-    return (price / (1 - discountPercent / 100)).toFixed(2);
+  // const calculateOriginalPrice = (formattedPrice, discountPercent) => {
+  //   if (!formattedPrice || discountPercent === 0) return null; // Return null if no discount
+  //   // Extract the numeric part from the formatted price (e.g., "$4.99 /month" → "4.99")
+  //   const priceMatch = formattedPrice.match(/[\d.]+/);
+  //   const price = priceMatch ? parseFloat(priceMatch[0]) : 0;
+  //   return (price / (1 - discountPercent / 100)).toFixed(2);
+  // };
+  const calculateOriginalPrice = (formattedDiscounted, discountPercent) => {
+    if (!formattedDiscounted || discountPercent <= 0) return null;
+
+    const numeric = parseFloat(formattedDiscounted.replace(/[^0-9.]/g, '')) || 0;
+    if (numeric === 0) return null;
+
+    const original = numeric / (1 - discountPercent / 100);
+
+    const currencySymbol = formattedDiscounted.replace(/[0-9., ]/g, '').trim() || '$';
+
+    return `${currencySymbol} ${original.toFixed(2)}`;
+  };
+
+  const getIntervalText = () => {
+    switch (billingCycle) {
+      case 'month': return t('changePlanCard.perMonth');
+      case 'quarter': return t('changePlanCard.perQuarter');
+      case 'year': return t('changePlanCard.perYear');
+      default: return t('changePlanCard.perMonth');
+    }
   };
 
   return (
     <div
-      className={`relative rounded overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
-      onClick={onSelect}
-      role="button"
-      tabIndex={0}
-      aria-label={`Select ${title} plan`}
-      onKeyDown={(e) => e.key === 'Enter' && onSelect()}
+      className={`relative rounded-xl overflow-hidden shadow-lg w-full max-w-sm bg-white flex flex-col justify-between transition-transform duration-300 hover:scale-105 hover:shadow-xl ${isSelected ? 'ring-4 ring-blue-500' : ''}`}
+      // onClick={onSelect}
+      // role="button"
+      // tabIndex={0}
+      // aria-label={t('changePlanCard.aria.selectPlan', { title })}
+      // onKeyDown={(e) => e.key === 'Enter' && onSelect()}
     >
       <div className={`px-6 py-3 flex justify-center text-center ${color}`}>
         <div>
@@ -138,7 +170,7 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
           )}
           <h3 className="text-xl font-bold text-white">{title}</h3>
           <p className="text-white text-sm">
-            Perfect for individuals and small teams
+            {t('changePlanCard.perfectForIndividuals')}
           </p>
         </div>
       </div>
@@ -146,28 +178,31 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
       <div className="px-6 py-4 text-left">
         {discountPercent[billingCycle] > 0 && (
           <p className="text-sm text-green-600 font-medium mb-1">
-            Save {discountPercent[billingCycle]}%
+            {t('changePlanCard.savePercent', { percent: discountPercent[billingCycle] })}
           </p>
         )}
         <div className="space-y-1">
-          {discountPercent[billingCycle] > 0 && (
+          {discountPercent[billingCycle] > 0 && calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle]) && (
             <div className="text-sm text-gray-400 line-through">
-              Original: ${calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])}
+              {t('subscriptionCard.originalPrice', {
+                price: calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])
+              })}
+              {/* {calculateOriginalPrice(price[billingCycle], discountPercent[billingCycle])} */}
             </div>
           )}
           <div className="flex items-baseline gap-1">
             <span className="text-3xl font-bold text-gray-900">
-              {price[billingCycle]?.split(' ')[0] || '$0.00'}
+              {price[billingCycle] || '0.00'}
             </span>
             <span className="text-gray-500 text-base font-medium">
-              {price[billingCycle]?.split(' ')[1] || '/month'}
+              {getIntervalText()}
             </span>
           </div>
         </div>
       </div>
 
       <div className="px-6 pb-4 space-y-2 text-left">
-        <p className="text-sm font-medium text-gray-500">Applications</p>
+        <p className="text-sm font-medium text-gray-500">{t('changePlanCard.applications')}</p>
         {selectedTypes.map((app, index) => (
           <div key={index} className="flex items-center gap-2">
             <Package className="h-5 w-5 text-purple-600" />
@@ -183,15 +218,25 @@ const ChangePlanCard = ({ title, price, features, color, icon: Icon, billingCycl
             {feat}
           </li>
         ))}
+        <li className="pt-3">
+          <button
+            onClick={onShowMore}
+            className="flex items-center gap-1.5 text-violet-600 hover:text-violet-800 font-medium text-sm transition-colors"
+            type="button"
+          >
+            {t('subscriptionCard.viewFullPlanDetails') || 'View full plan details →'}
+            {/* <ChevronDown className="w-4 h-4" /> */}
+          </button>
+        </li>
       </ul>
 
       <div className="px-6 pb-6">
         <button
           onClick={onSelect}
-          className="w-full py-2 rounded font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
-          aria-label={`Select ${title} plan`}
+          className="w-full py-2 rounded-full font-semibold text-white transition-all duration-200 hover:brightness-110 hover:-translate-y-1 bg-purple-600 hover:bg-purple-700"
+          aria-label={t('changePlanCard.aria.selectPlan', { title })}
         >
-          Select Plan
+          {t('changePlanCard.selectPlan')}
         </button>
       </div>
     </div>
