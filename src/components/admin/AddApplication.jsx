@@ -341,6 +341,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, RefreshCw, Plus, X, Edit } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+import { Home } from "lucide-react";
 
 const ToastNotification = ({ message, type, isVisible }) => {
   if (!isVisible) return null;
@@ -407,6 +409,7 @@ const ApplicationManager = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
   const [isToastVisible, setIsToastVisible] = useState(false);
+  const navigate = useNavigate();
 
   const showToast = useCallback((message, type = 'success', duration = 3200) => {
     setIsToastVisible(false);
@@ -538,11 +541,25 @@ const ApplicationManager = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
           {/* Header */}
-          <div className="mb-10">
-            <h1 className="text-3xl font-semibold text-slate-900">Applications</h1>
-            <p className="mt-2 text-slate-600">
-              Manage subscription-enabled applications and their Stripe integration
-            </p>
+          <div className="mb-10 flex items-start justify-between">
+            
+            {/* Left Side */}
+            <div>
+              <h1 className="text-3xl font-semibold text-slate-900">
+                Applications
+              </h1>
+              <p className="mt-2 text-slate-600">
+                Manage subscription-enabled applications and their Stripe integration
+              </p>
+            </div>
+
+            {/* Right Side - Home Button */}
+            <button
+              onClick={() => navigate("/admin")}
+              className="p-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition"
+            >
+              <Home size={20} />
+            </button>
           </div>
 
           {/* Main container */}

@@ -895,6 +895,8 @@ import { useLocation } from '../contexts/LocationContext';
 import Header from './Header';
 import { useTranslation } from 'react-i18next';
 import FeatureDetailsModal from './Modal/FeatureDetailsModal';
+import LanguageSelector from './LanguageSelector';
+import CountrySelector from './CountrySelector';
 
 const Subscription = ({ defaultApp = '' }) => {
   const { t } = useTranslation();
@@ -1204,13 +1206,37 @@ const Subscription = ({ defaultApp = '' }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      {/* <Header /> */}
+      <header className="bg-white sticky top-0 z-40">
+            <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center gap-4">
+                  <a
+                    href="https://www.ifaceh.com/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3"
+                  >
+                    <span className="font-bold text-xl sm:text-2xl">
+                      <span className="text-gray-900">Interface</span>
+                      <span className="text-violet-600">Hub</span>
+                    </span>
+                  </a>
+                </div>
+      
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <CountrySelector />
+                  <LanguageSelector />
+                </div>
+              </div>
+            </div>
+          </header>
       
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-7xl mx-auto mt-5"
+        className="max-w-7xl mx-auto mt-4"
       >
         <div className="text-center mb-6">
           <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
@@ -1223,7 +1249,7 @@ const Subscription = ({ defaultApp = '' }) => {
       </motion.div>
 
       <div className="flex justify-center mb-4">
-        <div className="inline-flex bg-white rounded-full p-1 shadow-xl border border-gray-100">
+        <div className="inline-flex bg-white rounded-full p-0.5 shadow-xl border border-gray-100">
           {['month', 'quarter', 'year'].map(cycle => (
             <div key={cycle} className="relative mx-1">
               <button

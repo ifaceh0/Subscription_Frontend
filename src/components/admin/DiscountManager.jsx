@@ -258,8 +258,9 @@
 
 import { useState, useEffect } from 'react';
 import adminApi from '../../services/adminApi';
-import { Plus, Trash2, Search, Mail, Tag, Loader2, Calendar, X } from 'lucide-react';
+import { Plus, Trash2, Search, Mail, Tag, Loader2, Calendar, X, Home } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 export default function DiscountManager() {
   const [discounts, setDiscounts] = useState([]);
@@ -269,6 +270,7 @@ export default function DiscountManager() {
   const [coupon, setCoupon] = useState('');
   const [validUntil, setValidUntil] = useState('');
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDiscounts();
@@ -352,6 +354,11 @@ export default function DiscountManager() {
             </p>
           </div>
         </div>
+        <button
+          onClick={() => navigate("/admin")}
+          className="p-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition">
+          <Home size={20} />
+        </button>
       </div>
 
       {/* Assign Form */}

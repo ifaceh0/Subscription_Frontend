@@ -380,8 +380,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Loader, X, Edit, Plus
+  Loader, X, Edit, Plus, Home
 } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 const ToastNotification = ({ message, type, isVisible }) => {
   if (!isVisible) return null;
@@ -457,6 +458,7 @@ const PlanTypeManager = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
   const [isToastVisible, setIsToastVisible] = useState(false);
+  const navigate = useNavigate();
 
   const intervals = ['Monthly', 'Quarterly', 'Yearly'];
 
@@ -575,16 +577,26 @@ const PlanTypeManager = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-10"
-          >
-            <h1 className="text-3xl font-semibold text-slate-900">Plan Types</h1>
-            <p className="mt-2 text-slate-600">
-              Manage subscription billing cycles and intervals
-            </p>
-          </motion.div>
+          <div className="mb-10 flex items-start justify-between">
+                      
+                      {/* Left Side */}
+                      <div>
+                        <h1 className="text-3xl font-semibold text-slate-900">
+                          Plan Types
+                        </h1>
+                        <p className="mt-2 text-slate-600">
+                          Manage subscription billing cycles and intervals
+                        </p>
+                      </div>
+          
+                      {/* Right Side - Home Button */}
+                      <button
+                        onClick={() => navigate("/admin")}
+                        className="p-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition"
+                      >
+                        <Home size={20} />
+                      </button>
+                    </div>
 
           {/* Main content */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">

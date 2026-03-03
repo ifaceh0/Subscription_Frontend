@@ -18,6 +18,7 @@ import AddSuccess from './components/subscription dashboard/AddSuccess';
 import TrailDaysSettingsPage from './components/admin/TrialDaysSettingsPage';
 import DiscountManager from './components/admin/DiscountManager';
 import CurrencyConfigManager from './components/admin/CurrencyConfigManager';
+import EnterCompanyEmail from './components/subscription dashboard/EnterCompanyEmail';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/admin/trial-days-settings" element={<TrailDaysSettingsPage />} />
           <Route path="/admin/discounts" element={<DiscountManager />} />
           <Route path="/admin/currency-config" element={<CurrencyConfigManager />} />
+          <Route path="/view-dashboard" element={<EnterCompanyEmail />} />
         </Routes>
         <ToastContainer position="top-right" autoClose={3000} />
       </ErrorBoundary>
