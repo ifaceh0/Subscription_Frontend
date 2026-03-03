@@ -1544,7 +1544,7 @@ function AdminPlanManager() {
     { label: 'Add Application',    icon: Plus,     path: '/admin/add-application'    },
     { label: 'Add Plan Type',      icon: Layers, path: '/admin/plan-type'           },
     { label: 'Trial Days Setting', icon: Clock, path: '/admin/trial-days-settings' },
-    { label: 'Add Discounts',      icon: Tag, path: '/admin/discounts'           },
+    { label: 'User Discounts',      icon: Tag, path: '/admin/discounts'           },
     { label: 'Currency Config',    icon: DollarSign, path: '/admin/currency-config'     },
   ];
 
@@ -1581,7 +1581,7 @@ function AdminPlanManager() {
   }, []);
 
   useEffect(() => {
-    setSelectedCountryFilter('');
+    // setSelectedCountryFilter('');
     if (selectedApps.length > 0) {
       fetchPlans(selectedApps);
     } else {
@@ -1693,6 +1693,10 @@ function AdminPlanManager() {
       setIsLoading(false);
       setIsSyncModalOpen(false);
       setPlanToSync(null);
+      // new block
+      if (selectedApps.length > 0) {
+        fetchPlans(selectedApps);
+      }
     }
   };
 
@@ -1715,6 +1719,10 @@ function AdminPlanManager() {
       setIsLoading(false);
       setIsDeleteModalOpen(false);
       setPlanToDelete(null);
+      // new block
+      if (selectedApps.length > 0) {
+        fetchPlans(selectedApps);
+      }
     }
   };
 
@@ -1761,6 +1769,10 @@ function AdminPlanManager() {
       toast.error(`Error updating plan: ${error.message}`);
     } finally {
       setIsLoading(false);
+      // new block
+      if (selectedApps.length > 0) {
+        fetchPlans(selectedApps);
+      }
     }
   };
 
@@ -1785,7 +1797,7 @@ function AdminPlanManager() {
       discountPercent: plan.discountPercent !== undefined ? String(plan.discountPercent) : '0',
       stripePriceId: plan.stripePriceId || '',
     });
-    setSelectedApps(plan.applications.map((app) => app.name));
+    // setSelectedApps(plan.applications.map((app) => app.name));
     setIsEditModalOpen(true);
   };
 
@@ -1900,6 +1912,29 @@ function AdminPlanManager() {
   const filteredPlans = selectedCountryFilter
     ? plans.filter((plan) => plan.countryCode === selectedCountryFilter)
     : plans;
+  
+  const getCurrencySymbol = () => {
+    if (!form.countryCode) return '$';
+
+    const selectedCountry = countries.find(c => c.countryCode === form.countryCode);
+    
+    if (selectedCountry?.currencySymbol) {
+      return selectedCountry.currencySymbol;
+    }
+
+    const symbolMap = {
+      'IN': '₹',
+      'US': '$',
+      'GB': '£',
+      'EU': '€',
+      'JP': '¥',
+      'CN': '¥',
+      'CA': 'C$',
+      'AU': 'A$',
+    };
+
+    return symbolMap[form.countryCode] || '$';
+  };
 
   return (
     <>
@@ -2420,18 +2455,23 @@ function AdminPlanManager() {
                   {selectedApps.length === 1 && isMonthlyPlan() && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Monthly Base Price ($)
+                        Monthly Base Price
                       </label>
-                      <input
-                        type="number"
-                        name="monthlyBasePrice"
-                        value={form.monthlyBasePrice}
-                        onChange={handleChange}
-                        step="0.01"
-                        min="0"
-                        required
-                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500 outline-none transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                          {getCurrencySymbol()}
+                        </div>
+                        <input
+                          type="number"
+                          name="monthlyBasePrice"
+                          value={form.monthlyBasePrice}
+                          onChange={handleChange}
+                          step="0.01"
+                          min="0"
+                          required
+                          className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500 outline-none transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                      </div>
                     </div>
                   )}
 

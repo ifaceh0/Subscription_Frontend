@@ -32,7 +32,7 @@ export default function LanguageSelector() {
             flex items-center gap-2 bg-white border border-gray-300 
             text-gray-700 text-sm rounded-md px-3 py-1.5
             focus:outline-none focus:ring-2 focus:ring-violet-500
-            cursor-pointer min-w-[140px]
+            cursor-pointer
           "
           aria-expanded="false"
           aria-haspopup="listbox"

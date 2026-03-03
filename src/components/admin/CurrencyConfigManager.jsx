@@ -346,8 +346,9 @@
 
 import { useState, useEffect } from 'react';
 import adminApi from '../../services/adminApi';
-import { Plus, Edit2, Trash2, X, Globe, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Globe, Loader2, Home } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 export default function CurrencyConfigManager() {
   const [countries, setCountries] = useState([]);
@@ -365,6 +366,7 @@ export default function CurrencyConfigManager() {
   });
   const [editingCode, setEditingCode] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadCountries();
@@ -470,6 +472,12 @@ export default function CurrencyConfigManager() {
             </p>
           </div>
         </div>
+
+        <button
+          onClick={() => navigate("/admin")}
+          className="p-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition">
+          <Home size={20} />
+        </button>
 
         {!editingCode && (
           <button

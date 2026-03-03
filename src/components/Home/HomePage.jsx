@@ -8,7 +8,10 @@ import {
   ChartBarIcon,
   ShieldCheckIcon,
   BellIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  Squares2X2Icon,
+  Cog6ToothIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline';
 
 const Feature = ({ icon: Icon, title, description }) => (
@@ -17,10 +20,10 @@ const Feature = ({ icon: Icon, title, description }) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.7, ease: "easeOut" }}
-    className="group flex items-start gap-5 p-7 bg-white rounded border border-gray-100 
+    className="group flex items-start gap-5 p-7 bg-white rounded-xl border border-gray-100 
                hover:border-violet-200 hover:shadow-lg transition-all duration-400"
   >
-    <div className="flex-shrink-0 w-12 h-12 bg-violet-100 rounded flex items-center justify-center 
+    <div className="flex-shrink-0 w-12 h-12 bg-violet-100 rounded-full flex items-center justify-center 
                     group-hover:bg-violet-600 transition-colors duration-300">
       <Icon className="w-7 h-7 text-violet-600 group-hover:text-white transition-colors" />
     </div>
@@ -70,7 +73,7 @@ export default function HomePage() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => navigate('/subscription')}
-                className="px-10 py-4 bg-violet-600 text-white font-semibold text-lg rounded
+                className="px-10 py-4 bg-violet-600 text-white font-semibold text-lg rounded-full
                            shadow-xl hover:bg-violet-700 hover:shadow-2xl transition-all duration-300 
                            flex items-center gap-3 min-w-[240px] justify-center"
               >
@@ -81,12 +84,25 @@ export default function HomePage() {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('/subscription-dashboard')}
-                className="px-10 py-4 bg-white text-violet-700 font-semibold text-lg rounded 
+                onClick={() => navigate('/admin')}
+                className="px-10 py-4 bg-white text-violet-700 font-semibold text-lg rounded-full
                            border-2 border-violet-200 hover:border-violet-300 hover:bg-violet-50 
-                           transition-all duration-300 min-w-[240px]"
+                           transition-all flex items-center gap-3 duration-300 min-w-[240px]"
+              >
+                Admin Dashboard
+                <WrenchScrewdriverIcon className="w-5 h-5 text-violet-700" />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/view-dashboard')}
+                className="px-10 py-4 bg-violet-600 text-white font-semibold text-lg rounded-full
+                           shadow-xl hover:bg-violet-700 hover:shadow-2xl transition-all duration-300 
+                           flex items-center gap-3 min-w-[240px] justify-center"
               >
                 View Dashboard
+                <Squares2X2Icon className="w-5 h-5 text-white" />
               </motion.button>
             </div>
 
@@ -141,41 +157,6 @@ export default function HomePage() {
               title="Enterprise Security"
               description="SOC 2 compliant, encrypted data, role-based access, audit logs, and 99.9% uptime."
             />
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA – Full Width, Strong Close */}
-      <section className="py-18 bg-gradient-to-r from-violet-600 to-purple-700">
-        <div className="max-w-4xl mx-auto text-center px-6">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to take control of your subscriptions?
-          </h2>
-          <p className="text-xl text-violet-100 mb-10">
-            Join thousands of businesses growing with our platform.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-5 justify-center">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/subscription')}
-              className="px-12 py-4 bg-white text-violet-700 font-bold text-xl rounded 
-                         shadow-2xl hover:shadow-white/30 transition-all duration-300"
-            >
-              Start Your Free Trial
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/admin')}
-              className="px-12 py-4 bg-transparent text-white font-bold text-xl rounded 
-                         border-2 border-white/40 hover:border-white hover:bg-white/10 
-                         transition-all duration-300"
-            >
-              Admin Panel
-            </motion.button>
           </div>
         </div>
       </section>

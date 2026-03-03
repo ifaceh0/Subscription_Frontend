@@ -1455,7 +1455,7 @@ const SubscriptionDashboard = () => {
 
     return (
       <section className="mb-12">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
           <Package className="w-8 h-8 text-indigo-600" />
           {t('dashboard.activeSubscriptions', { count: subscriptions.length })}
         </h2>
@@ -1465,7 +1465,7 @@ const SubscriptionDashboard = () => {
             <p className="text-gray-500">{t('dashboard.noActiveSubscriptions')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6">
             <AnimatePresence>
               {subscriptions.map((sub, index) => {
                 const statusColors = getStatusColor(sub.status, sub.paymentStatus);
@@ -1478,7 +1478,7 @@ const SubscriptionDashboard = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -30, scale: 0.95 }}
                     transition={{ duration: 0.4, delay: index * 0.08 }}
-                    className={`bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border-t-8 ${statusColors.border}`}
+                    className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border-l-8 ${statusColors.border}`}
                   >
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -1747,38 +1747,24 @@ const SubscriptionDashboard = () => {
 
   const { subscriptions, appHistory, plans, subscriptionHistory } = dashboardData;
   const newProducts = getNewProducts();
-  const customerName = localStorage.getItem('CompanyEmail') || t('dashboard.user');
+
+  const email = localStorage.getItem("CompanyEmail");
+
+  const customerName = email
+    ? email.split("@")[0].charAt(0).toUpperCase() + email.split("@")[0].slice(1)
+    : t("dashboard.user");
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <a 
-                href="https://www.ifaceh.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-3"
-              >
-                <span className="font-bold text-xl sm:text-2xl">
-                  <span className="text-gray-900">{t('dashboard.interface')}</span>
-                  <span className="text-violet-600">{t('dashboard.hub')}</span>
-                </span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </header> */}
       <Header />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto p-4"
+        className="max-w-8xl mx-auto p-4"
       >
-        <h1 className="text-4xl font-bold text-gray-800 mb-12 text-center">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-12 sm:mb-10 text-center">
           {t('dashboard.welcome', { name: customerName })}
         </h1>
 

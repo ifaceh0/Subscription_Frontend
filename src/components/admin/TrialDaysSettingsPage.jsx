@@ -309,7 +309,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Loader, Save } from 'lucide-react';
+import { Loader, Save, Home } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 const ToastNotification = ({ message, type, isVisible }) => {
   if (!isVisible) return null;
@@ -382,6 +383,7 @@ const TrialDaysSettingsPage = () => {
   const [toastType, setToastType] = useState('success');
   const [isToastVisible, setIsToastVisible] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
@@ -479,12 +481,26 @@ const TrialDaysSettingsPage = () => {
       <div className="min-h-screen bg-slate-50/70">
         <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 py-10 lg:py-14">
           {/* Header */}
-          <div className="mb-10">
-            <h1 className="text-3xl font-semibold text-slate-900">Trial Period</h1>
-            <p className="mt-2 text-slate-600">
-              Set the default free trial duration offered to new subscribers
-            </p>
-          </div>
+          <div className="mb-10 flex items-start justify-between">
+                      
+                      {/* Left Side */}
+                      <div>
+                        <h1 className="text-3xl font-semibold text-slate-900">
+                          Trial Period
+                        </h1>
+                        <p className="mt-2 text-slate-600">
+                          Set the default free trial duration offered to new subscribers
+                        </p>
+                      </div>
+          
+                      {/* Right Side - Home Button */}
+                      <button
+                        onClick={() => navigate("/admin")}
+                        className="p-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition"
+                      >
+                        <Home size={20} />
+                      </button>
+                    </div>
 
           {/* Main Card */}
           <motion.div
