@@ -1502,7 +1502,7 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-  Menu, X, Loader2, Plus, Edit, Trash2, RefreshCw, Check, Layers, Clock, Tag, DollarSign, Globe
+  Menu, X, Loader2, Plus, Edit, Trash2, RefreshCw, Check, Layers, Clock, Tag, DollarSign, Globe, Home
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -1951,12 +1951,16 @@ function AdminPlanManager() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                  className="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400"
                   aria-label="Toggle sidebar"
                 >
                   {isSidebarOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>
-
+                <button
+                  onClick={() => navigate("/")}
+                  className="p-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition">
+                  <Home size={20} />
+                </button>
                 <h1 className="text-2xl font-semibold text-slate-900">Plan Manager</h1>
               </div>
 

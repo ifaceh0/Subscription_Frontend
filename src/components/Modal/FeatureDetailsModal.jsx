@@ -1,93 +1,117 @@
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, CheckCircle2, AlertCircle, Circle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const FeatureDetailsModal = ({ isOpen, onClose, tier, content }) => {
-  if (!isOpen) return null;
   const { t } = useTranslation();
+  
+  if (!isOpen) return null;
 
   const title = t('featureDetailsModal.title', { tier: tier.toUpperCase() });
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={onClose}
-          />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+        {/* Backdrop: Solid soft blur for focus */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+          onClick={onClose}
+        />
 
-          {/* Modal content */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.88, y: 40 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.88, y: 30 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative bg-white rounded-xl shadow-2xl max-w-md sm:max-w-lg w-full max-h-[90vh] overflow-y-auto"
-          >
-            <div className="sticky top-0 bg-white z-10 px-6 pt-5 pb-4 border-b flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                aria-label="Close modal"
-              >
-                <X className="w-6 h-6 text-gray-600" />
-              </button>
+        {/* Modal Window */}
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 15, scale: 0.98 }}
+          transition={{ type: 'spring', duration: 0.4, bounce: 0 }}
+          className="relative bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden"
+        >
+          {/* Header: Clean & Integrated */}
+          <div className="px-8 pt-8 pb-4 flex items-start justify-between">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-violet-600 mb-1 block">
+                Plan Details
+              </span>
+              <h2 className="text-2xl font-semibold text-slate-900 leading-tight">
+                {title}
+              </h2>
             </div>
+            <button
+              onClick={onClose}
+              className="p-2 -mr-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
-            <div className="px-6 py-6 space-y-6">
-              {content.map((section, idx) => (
-                <div key={idx} className="space-y-3">
-                  {section.title && (
-                    <h3 className="text-lg font-semibold text-violet-700">
-                      {section.title}
-                    </h3>
-                  )}
+          {/* Content Area */}
+          <div className="flex-1 overflow-y-auto px-8 py-4 space-y-10">
+            {content.map((section, idx) => (
+              <section key={idx} className="space-y-4">
+                {/* Section Branding */}
+                {section.title && (
+                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
+                    {section.title}
+                  </h3>
+                )}
+
+                <div className="space-y-3">
                   {section.subtitle && (
-                    <p className="text-gray-700 font-medium">{section.subtitle}</p>
+                    <p className="text-lg font-medium text-slate-800">{section.subtitle}</p>
                   )}
+                  
                   {section.text && (
-                    <p className="text-gray-600 leading-relaxed">{section.text}</p>
+                    <p className="text-slate-500 leading-relaxed text-sm">
+                      {section.text}
+                    </p>
                   )}
+
+                  {/* List: Using soft bullets */}
                   {section.list && (
-                    <ul className="space-y-2 pl-5 list-disc text-gray-600 marker:text-violet-500">
+                    <ul className="space-y-3 pt-2">
                       {section.list.map((item, i) => (
-                        <li key={i}>{item}</li>
+                        <li key={i} className="flex items-start gap-3 text-sm text-slate-600">
+                          <Circle className="w-1.5 h-1.5 mt-2 fill-violet-400 text-violet-400" />
+                          <span>{item}</span>
+                        </li>
                       ))}
                     </ul>
                   )}
+
+                  {/* Status Blocks: Minimalist treatment */}
                   {section.negative && (
-                    <div className="flex items-start gap-2 text-red-600">
-                      <span className="font-bold text-xl leading-none">❌</span>
-                      <span>{section.negative}</span>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-rose-50 border border-rose-100/50 text-rose-700 text-sm italic">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      {section.negative}
                     </div>
                   )}
+
                   {section.positive && (
-                    <div className="flex items-start gap-2 text-green-600">
-                      <span className="font-bold text-xl leading-none">✅</span>
-                      <span>{section.positive}</span>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100/50 text-emerald-700 text-sm font-medium">
+                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                      {section.positive}
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
+              </section>
+            ))}
+          </div>
 
-            <div className="px-6 py-5 border-t bg-gray-50 text-right">
-              <button
-                onClick={onClose}
-                className="px-6 py-2 bg-violet-600 text-white rounded-full hover:bg-violet-700 transition font-medium"
-              >
-                {t('featureDetailsModal.done')}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+          {/* Footer: Floating appearance */}
+          <div className="px-8 py-6 bg-white/80 backdrop-blur-sm border-t border-slate-50 flex justify-end">
+            <button
+              onClick={onClose}
+              className="px-8 py-2.5 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all active:scale-95 font-medium text-sm shadow-sm"
+            >
+              {t('featureDetailsModal.done')}
+            </button>
+          </div>
+        </motion.div>
+      </div>
     </AnimatePresence>
   );
 };
