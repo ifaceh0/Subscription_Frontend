@@ -146,7 +146,7 @@ export default function LanguageSelector() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute right-0 mt-2 w-40 origin-top-right bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden z-50"
+            className="absolute right-0 mt-2 w-40 origin-top-right bg-white rounded-lg shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden z-50"
           >
             <div className="py-1.5 px-1.5">
               {languages.map((lang) => {
@@ -156,7 +156,7 @@ export default function LanguageSelector() {
                     key={lang.code}
                     onClick={() => changeLanguage(lang.code)}
                     className={`
-                      w-full flex items-center justify-between px-3 py-2 text-sm rounded-xl transition-colors
+                      w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors
                       ${isSelected 
                         ? "bg-violet-50 text-violet-700 font-bold" 
                         : "text-slate-600 hover:bg-slate-50"}

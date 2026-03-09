@@ -123,7 +123,7 @@ export default function CountrySelector() {
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
-            className="absolute right-0 mt-2 w-48 origin-top-right bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden z-50"
+            className="absolute right-0 mt-2 w-48 origin-top-right bg-white rounded-lg shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden z-50"
           >
             <div className="p-1.5">
               {/* Header inside dropdown */}
@@ -140,7 +140,7 @@ export default function CountrySelector() {
                     key={country.code}
                     onClick={() => handleSelect(country.code)}
                     className={`
-                      w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all
+                      w-full flex items-center justify-between px-3 py-2 rounded-lg transition-all
                       ${isSelected 
                         ? "bg-violet-50 text-violet-700" 
                         : "text-slate-600 hover:bg-slate-50"}

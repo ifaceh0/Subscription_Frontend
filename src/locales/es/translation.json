@@ -32,6 +32,7 @@
     "noPlansAvailable": "No hay planes disponibles que coincidan *exactamente* con tus productos seleccionados en {{country}}.",
     "tryDifferentCombination": "Por favor intenta seleccionar una combinación diferente.",
     "chooseApplicationsSidebar": "Elige tus aplicaciones en la barra lateral para ver planes personalizados.",
+    "buildYourPlan": "Construye tu plan",
     "planHighlights": {
       "Basic": [
         "Acceso completo a las aplicaciones seleccionadas",
@@ -168,7 +169,7 @@
     "perQuarter": "/trimestre",
     "perYear": "/año",
     "access": "Acceder",
-    "viewFullPlanDetails": "Ver detalles completos del plan →"
+    "viewFullPlanDetails": "Ver detalles completos del plan"
   },
 
   "planDetails": {
@@ -194,7 +195,14 @@
     "failedToInitiate": "No se pudo iniciar el pago. Inténtalo de nuevo.",
     "processingCheckout": "Procesando pago...",
     "payNow": "Pagar {{price}} ahora",
-    "redirectingToPayment": "Redirigiendo al pago seguro..."
+    "redirectingToPayment": "Redirigiendo al pago seguro...",
+    "billingText": "Facturado {{billingCycle}}mente — Cancela en cualquier momento.",
+    "saveText": "Ahorra {{discountPercent}}%",
+    "secureText": "Tus datos están encriptados y se procesan a través de una infraestructura global segura.",
+    "checkoutTitle": "Completa tu pedido",
+    "checkoutDescription": "Introduce tu correo electrónico de facturación para continuar con nuestra pasarela de pago segura.",
+    "agreementText": "Al continuar, aceptas nuestros Términos de Servicio y la Política de Privacidad.",
+    "billingStart": "La facturación para {{planId}} comienza inmediatamente."
   },
 
   "success": {
@@ -318,6 +326,7 @@
     "confirmAndAdd": "Confirmar y Agregar",
     "processing": "Procesando...",
     "next": "Siguiente",
+    "manageSubscriptions": "Administra tus suscripciones",
 
     "appsAddedSuccess": "¡Aplicaciones agregadas con éxito!",
     "redirectingToCheckoutForAdd": "Redirigiendo al pago para completar la adición...",
@@ -430,7 +439,11 @@
     "year": "Anual",
     "select": "Seleccionar",
     "plan": "Plan",
-    "newPriceNextCycle": "Nuevo precio aplica desde el próximo ciclo de facturación"
+    "newPriceNextCycle": "Nuevo precio aplica desde el próximo ciclo de facturación",
+    "upgradeExperience": "Mejora tu experiencia.",
+    "flexibleSubscriptions": "Suscripciones flexibles",
+    "switchToPlan": "¿Cambiar al plan {{plan}}?",
+    "goBack": "Volver"
   },
 
   "changePlanCard": {
@@ -443,7 +456,13 @@
     "selectPlan": "Seleccionar Plan",
     "aria": {
       "selectPlan": "Seleccionar plan {{title}}"
-    }
+    },
+    "mostPopular": "Más Popular",
+    "bestForYourNeeds": "Mejor para tus necesidades",
+    "topFeatures": "Características principales",
+    "fullFeatureList": "Lista completa de funciones",
+    "currentSelection": "Selección actual",
+    "selectPlanFor": "Seleccionar {{title}}"
   },
 
   "addSuccess": {
@@ -474,5 +493,68 @@
   "featureDetailsModal": {
     "done": "Entiendo",
     "title": "Detalles del plan {{tier}}"
+  },
+
+  "pricingTable": {
+    "title": "Comparar características entre planes",
+    "bestFor": "Ideal para",
+    "whatsIncluded": "Qué incluye",
+    "support": "Soporte",
+    "positioning": "Posicionamiento",
+
+    "plans": {
+      "basic": {
+        "name": "BÁSICO",
+        "subtitle": "Solo Software (Independiente)",
+        "bestFor": "Empresas que quieren hacerlo todo por sí mismas",
+        "positioning": "Usa la plataforma de forma independiente. Añade ayuda solo cuando la necesites."
+      },
+      "pro": {
+        "name": "PRO",
+        "subtitle": "Software + Horas de Servicio Incluidas",
+        "bestFor": "Empresas que quieren ayuda ocasional",
+        "positioning": "Un poco de ayuda experta incluida — sin compromiso a largo plazo."
+      },
+      "enterprise": {
+        "name": "EMPRESA",
+        "subtitle": "Software + Horas de Servicio Gestionadas",
+        "bestFor": "Empresas que quieren soporte predecible y sin preocupaciones",
+        "positioning": "Horas de soporte predecibles con servicio proactivo."
+      }
+    },
+
+    "features": {
+      "fullAccess": "Acceso completo a las aplicaciones",
+      "standardFeatures": "Todas las funciones estándar del producto",
+      "selfService": "Uso de autoservicio",
+      "knowledgeBase": "Base de conocimiento / documentación",
+      "includedHours": "Horas de servicio incluidas",
+      "optionalHours": "Paquete de horas de servicio opcional"
+    },
+
+    "featureValues": {
+      "no": "No",
+      "available": "Disponible",
+      "proHours": "3 horas/mes (bloques de 30 min)",
+      "enterpriseHours": "5 horas/mes (bloques de 30 min)"
+    },
+
+    "supportRows": {
+      "supportType": "Tipo de soporte",
+      "responseTime": "Tiempo de respuesta",
+      "phoneSupport": "Soporte telefónico/Zoom"
+    },
+
+    "supportValues": {
+      "emailTechnical": "Correo electrónico (solo técnico)",
+      "priorityEmail": "Correo prioritario",
+      "dedicatedEmail": "Correo dedicado",
+      "response72": "72 horas laborales",
+      "response48": "24–48 horas laborales",
+      "response24": "24 horas laborales",
+      "noPhone": "Ninguno",
+      "twoCalls": "2 llamadas/mes",
+      "fiveCalls": "5 llamadas/mes"
+    }
   }
 }

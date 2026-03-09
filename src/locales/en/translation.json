@@ -32,6 +32,7 @@
     "noPlansAvailable": "No plans available that match *exactly* your selected products in {{country}}.",
     "tryDifferentCombination": "Please try selecting a different combination.",
     "chooseApplicationsSidebar": "Choose your applications in the sidebar to view tailored plans.",
+    "buildYourPlan": "Build your plan",
     "planHighlights": {
       "Basic": [
         "Full access to selected apps",
@@ -168,7 +169,7 @@
     "perQuarter": "/quarter",
     "perYear": "/year",
     "access": "Access",
-    "viewFullPlanDetails": "View full plan details →"
+    "viewFullPlanDetails": "View full plan details"
   },
 
   "planDetails": {
@@ -194,7 +195,14 @@
     "failedToInitiate": "Failed to initiate checkout. Please try again.",
     "processingCheckout": "Processing Checkout...",
     "payNow": "Pay {{price}} Now",
-    "redirectingToPayment": "Redirecting to secure payment..."
+    "redirectingToPayment": "Redirecting to secure payment...",
+    "billingText": "Billed {{billingCycle}}ly — Cancel anytime.",
+    "saveText": "Save {{discountPercent}}%",
+    "secureText": "Your data is encrypted and processed via secure global infrastructure.",
+    "checkoutTitle": "Complete your order",
+    "checkoutDescription": "Enter your billing email to proceed to our secure payment gateway.",
+    "agreementText": "By continuing, you agree to our Terms of Service and Privacy Policy.",
+    "billingStart": "Billing for {{planId}} starts immediately."
   },
 
   "success": {
@@ -284,6 +292,7 @@
     "from": "from",
     "to": "to",
     "archivedOn": "archived on",
+    "manageSubscriptions": "Manage your subscriptions",
 
     "cancellationHistory": "Cancellation History",
     "wasCanceledOn": "was canceled on",
@@ -430,7 +439,11 @@
     "year": "Yearly",
     "select": "Select",
     "plan": "Plan",
-    "newPriceNextCycle": "New price applies from next billing cycle"
+    "newPriceNextCycle": "New price applies from next billing cycle",
+    "upgradeExperience": "Upgrade your experience.",
+    "flexibleSubscriptions": "Flexible Subscriptions",
+    "switchToPlan": "Switch to {{plan}}?",
+    "goBack": "Go Back"
   },
 
   "changePlanCard": {
@@ -443,7 +456,13 @@
     "selectPlan": "Select Plan",
     "aria": {
       "selectPlan": "Select {{title}} plan"
-    }
+    },
+    "mostPopular": "Most Popular",
+    "bestForYourNeeds": "Best for your needs",
+    "topFeatures": "Top Features",
+    "fullFeatureList": "Full feature list",
+    "currentSelection": "Current Selection",
+    "selectPlanFor": "Select {{title}}"
   },
 
   "addSuccess": {
@@ -474,5 +493,68 @@
   "featureDetailsModal": {
     "done": "Got it",
     "title": "{{tier}} Plan Details"
+  },
+
+  "pricingTable": {
+    "title": "Compare features across plans",
+    "bestFor": "Best For",
+    "whatsIncluded": "What's Included",
+    "support": "Support",
+    "positioning": "Positioning",
+
+    "plans": {
+      "basic": {
+        "name": "BASIC",
+        "subtitle": "Software Only (Independent)",
+        "bestFor": "Businesses want to do everything on their own",
+        "positioning": "Use the platform independently. Add help only when you need it."
+      },
+      "pro": {
+        "name": "PRO",
+        "subtitle": "Software + Included Service Hours",
+        "bestFor": "Businesses that want occasional help",
+        "positioning": "A little expert help included — no long-term commitment."
+      },
+      "enterprise": {
+        "name": "ENTERPRISE",
+        "subtitle": "Software + Managed Service Hours",
+        "bestFor": "Businesses that want predictable, hands-off support",
+        "positioning": "Predictable support hours with proactive service."
+      }
+    },
+
+    "features": {
+      "fullAccess": "Full access to applications",
+      "standardFeatures": "All standard product features",
+      "selfService": "Self-service usage",
+      "knowledgeBase": "Knowledge base / documentation",
+      "includedHours": "Included service hours",
+      "optionalHours": "Optional Service Hours Pack"
+    },
+
+    "featureValues": {
+      "no": "No",
+      "available": "Available",
+      "proHours": "3 hours/mo (30m blocks)",
+      "enterpriseHours": "5 hours/mo (30m blocks)"
+    },
+
+    "supportRows": {
+      "supportType": "Support Type",
+      "responseTime": "Response Time",
+      "phoneSupport": "Phone/Zoom Support"
+    },
+
+    "supportValues": {
+      "emailTechnical": "Email (Technical only)",
+      "priorityEmail": "Priority Email",
+      "dedicatedEmail": "Dedicated Email",
+      "response72": "72 business-hours",
+      "response48": "24–48 business-hours",
+      "response24": "24 business-hours",
+      "noPhone": "None",
+      "twoCalls": "2 calls/month",
+      "fiveCalls": "5 calls/month"
+    }
   }
 }

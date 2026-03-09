@@ -2003,11 +2003,17 @@ const SubscriptionDashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-8xl mx-auto p-4"
+        className="max-w-7xl mx-auto p-4"
       >
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-12 sm:mb-10 text-center">
+        {/* <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-12 sm:mb-10 text-center">
           {t('dashboard.welcome', { name: customerName })}
-        </h1>
+        </h1> */}
+        <header className="mb-16 text-center">
+          <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-3">
+            {t('dashboard.welcome', { name: customerName })}
+          </h1>
+          <p className="text-slate-500 font-medium">{t('dashboard.manageSubscriptions')}</p>
+        </header>
 
         {successMessage && (
           <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-r relative">
@@ -2262,12 +2268,12 @@ const SubscriptionDashboard = () => {
 
         {/* Cancel Selection Modal */}
         {showCancelSelectionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="cancel-selection-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="cancel-selection-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="cancel-selection-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.selectAppsToCancel')}</h3>
               <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 max-h-48 overflow-y-auto">
@@ -2296,14 +2302,14 @@ const SubscriptionDashboard = () => {
               )}
               <div className="flex justify-end space-x-4 mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Cancel selection"
                 >
                   {t('dashboard.cancel')}
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded-full transition-colors ${
+                  className={`px-6 py-2 text-white rounded-full transition-colors ${
                     isLoading || selectedCancelApps.length === 0
                       ? 'bg-red-400 cursor-not-allowed'
                       : 'bg-red-600 hover:bg-red-700'
@@ -2326,12 +2332,12 @@ const SubscriptionDashboard = () => {
 
         {/* Cancel Confirmation Modal */}
         {showCancelConfirmModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="cancel-confirm-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="cancel-confirm-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="cancel-confirm-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.confirmCancellation')}</h3>
               <p className="text-sm text-gray-600 mb-6">
@@ -2344,7 +2350,7 @@ const SubscriptionDashboard = () => {
               </p>
               <div className="flex justify-end space-x-4">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   disabled={cancelling}
                   aria-label="Cancel cancellation"
@@ -2352,7 +2358,7 @@ const SubscriptionDashboard = () => {
                   {t('dashboard.cancel')}
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded-full transition-colors min-w-[140px] ${
+                  className={`px-6 py-2 text-white rounded-full transition-colors min-w-[140px] ${
                     cancelling 
                       ? 'bg-red-400 cursor-not-allowed' 
                       : 'bg-red-600 hover:bg-red-700'
@@ -2377,12 +2383,12 @@ const SubscriptionDashboard = () => {
 
        {/* {changePlan} */}
         {showChangePlanSelectionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 {t('dashboard.changePlanFor')} {subscriptionToCancel?.planName}
@@ -2408,7 +2414,7 @@ const SubscriptionDashboard = () => {
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={closeAllModals}
-                  className="px-5 py-2.5 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300"
+                  className="px-5 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300"
                 >
                   {t('dashboard.cancel')}
                 </button>
@@ -2422,7 +2428,7 @@ const SubscriptionDashboard = () => {
                     });
                     closeAllModals();
                   }}
-                  className="px-5 py-2.5 bg-purple-600 text-white rounded-full hover:bg-purple-700"
+                  className="px-5 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700"
                 >
                   {t('dashboard.proceedToChange')}
                 </button>
@@ -2433,12 +2439,12 @@ const SubscriptionDashboard = () => {
 
         {/* Add Product Selection Modal */}
         {showAddProductSelectionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="add-product-selection-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="add-product-selection-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="add-product-selection-title" className="text-lg font-semibold text-gray-800 mb-4">
                 {t('dashboard.selectAppsToAdd')}
@@ -2480,16 +2486,16 @@ const SubscriptionDashboard = () => {
 
               <div className="flex justify-end space-x-4 mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Cancel selection"
-                  disabled={previewLoading} // optional: disable cancel while loading
+                  disabled={previewLoading}
                 >
                   {t('dashboard.cancel')}
                 </button>
 
                 <button
-                  className={`px-4 py-2 text-white rounded-full transition-colors min-w-[100px] flex items-center justify-center gap-2
+                  className={`px-6 py-2 text-white rounded-full transition-colors flex items-center justify-center gap-2
                     ${isLoading || selectedAddProductApps.length === 0 || newProducts.length === 0 || previewLoading
                       ? 'bg-purple-400 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
@@ -2513,12 +2519,12 @@ const SubscriptionDashboard = () => {
         )}
 
         {showAddConfirmModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 {t('dashboard.confirmAddApps')}
@@ -2534,7 +2540,7 @@ const SubscriptionDashboard = () => {
                   {t('dashboard.calculatingCharge')}
                 </div>
               ) : previewInfo ? (
-                <div className="p-4 bg-blue-50 rounded border border-blue-200 mb-6 text-sm">
+                <div className="p-4 bg-blue-50 rounded-lg shadow-inner border border-blue-200 mb-6 text-sm">
                   <p className="font-medium text-blue-800">
                     {t('dashboard.additionalChargeNow')}:
                   </p>
@@ -2559,8 +2565,8 @@ const SubscriptionDashboard = () => {
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={() => setShowAddConfirmModal(false)}
-                  className="px-5 py-2.5 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300"
-                  disabled={previewLoading || confirmLoading} // disable while processing
+                  className="px-5 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300"
+                  disabled={previewLoading || confirmLoading}
                 >
                   {t('dashboard.cancel')}
                 </button>
@@ -2568,7 +2574,7 @@ const SubscriptionDashboard = () => {
                 <button
                   onClick={handleConfirmAdd}
                   disabled={previewLoading || confirmLoading}
-                  className={`px-5 py-2.5 text-white rounded-full min-w-[140px] flex items-center justify-center gap-2
+                  className={`px-5 py-2 text-white rounded-full min-w-[140px] flex items-center justify-center gap-2
                     ${(previewLoading || confirmLoading)
                       ? 'bg-purple-400 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
@@ -2590,12 +2596,12 @@ const SubscriptionDashboard = () => {
 
         {/* Success Modal */}
         {showSuccessModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="success-modal-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="success-modal-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="success-modal-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.success')}</h3>
               <p className="text-sm text-gray-600 mb-6">{location.state?.successMessage}</p>
