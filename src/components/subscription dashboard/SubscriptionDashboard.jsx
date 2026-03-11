@@ -2547,10 +2547,14 @@ const SubscriptionDashboard = () => {
                   <p className="text-xl font-bold text-blue-700 mt-1">
                     {previewInfo.proratedFormatted}
                   </p>
-                  <p className="text-xs text-gray-600 mt-2">
+                  {/* <p className="text-xs text-gray-600 mt-2">
                     {t('dashboard.proratedForRemaining')} (
                     {previewInfo.remainingRatio ? `${(previewInfo.remainingRatio * 100).toFixed(0)}%` : ''}
                     )
+                  </p> */}
+
+                  <p className="text-xs text-gray-600 mt-1">
+                    {t('dashboard.proratedChargeDescription')}
                   </p>
                   <p className="text-sm text-gray-700 mt-3">
                     {t('dashboard.fromNextCycle')}: <strong>{previewInfo.nextCycleFormatted}</strong>

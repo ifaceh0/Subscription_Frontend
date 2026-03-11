@@ -671,15 +671,73 @@ const Subscription = ({ defaultApp = '' }) => {
     Enterprise: t('subscription.planDetails.Enterprise', { returnObjects: true }),
   };
 
+  // if (loading || availableTypes.length === 0) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-white">
+  //       <div className="text-center">
+  //         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
+  //           <RefreshCw className="w-10 h-10 text-violet-600 mx-auto mb-4" />
+  //         </motion.div>
+  //         <p className="text-slate-500 font-medium tracking-wide uppercase text-xs">{t('subscription.fetchingBestDeals')}</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
   if (loading || availableTypes.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-            <RefreshCw className="w-10 h-10 text-violet-600 mx-auto mb-4" />
-          </motion.div>
-          <p className="text-slate-500 font-medium tracking-wide uppercase text-xs">{t('subscription.fetchingBestDeals')}</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="polite">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="p-10 max-w-md w-full text-center rounded shadow-indigo-100/50" 
+        >
+          <div className="mx-auto mb-6 relative w-16 h-16">
+            
+            <div className="w-8 h-8 rounded-full bg-violet-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <motion.div
+              animate={{ 
+                scale: [0.8, 1.4],
+                opacity: [0.7, 0],
+              }}
+              transition={{ 
+                duration: 1.5, 
+                repeat: Infinity, 
+                ease: "easeOut",
+              }}
+              className="w-full h-full rounded-full border-4 border-violet-500 absolute top-0 left-0"
+            />
+          </div>
+
+          <p className="text-lg font-medium text-slate-600 uppercase tracking-tight">{t('subscription.fetchingBestDeals')}</p>
+          <p className="text-slate-500 mt-2 text-base">{t('subscription.loadingSubscriptionPlans')}</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6" role="alert" aria-live="assertive">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="p-10 max-w-md w-full text-center"
+        >
+          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-6" />
+          <p className="text-2xl font-bold text-red-600 mb-2">{t('subscription.connectionError')}</p>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition-all duration-200 font-medium shadow-md"
+            aria-label="Retry loading plans"
+          >
+            <RefreshCw className="w-5 h-5" />
+            {t('subscription.reloadPage')}
+          </button>
+        </motion.div>
       </div>
     );
   }

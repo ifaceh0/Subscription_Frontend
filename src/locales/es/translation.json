@@ -347,6 +347,7 @@
     "status.past_due": "Vencida",
     "success": "Éxito",
     "ok": "OK",
+    "proratedChargeDescription": "El cargo prorrateado se calcula en función de la diferencia de precio por las nuevas aplicaciones y el tiempo restante en tu ciclo de facturación actual. Se te cobrará este monto inmediatamente, y tu suscripción se actualizará para incluir las nuevas aplicaciones.",
 
     "previousPlan": "Plan anterior",
     "validUntil": "Válido hasta",

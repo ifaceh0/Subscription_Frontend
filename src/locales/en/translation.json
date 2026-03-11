@@ -347,6 +347,7 @@
     "status.past_due": "Past Due",
     "success": "Success",
     "ok": "OK",
+    "proratedChargeDescription": "The prorated charge is calculated based on the price difference for the new applications and the remaining time in your current billing cycle. You will be charged this amount immediately, and your subscription will be updated to include the new applications.",
 
     "previousPlan": "Previous Plan",
     "validUntil": "Valid Until",
