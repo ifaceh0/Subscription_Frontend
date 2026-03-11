@@ -19,30 +19,45 @@ import TrailDaysSettingsPage from './components/admin/TrialDaysSettingsPage';
 import DiscountManager from './components/admin/DiscountManager';
 import CurrencyConfigManager from './components/admin/CurrencyConfigManager';
 import EnterCompanyEmail from './components/subscription dashboard/EnterCompanyEmail';
-
+import RenewSuccess from './components/subscription dashboard/RenewSuccess';
+import Footer from './components/Footer';
+import Support from './components/support/Support';
+import TermsOfService from './components/support/TermsOfService';
+import PrivacyPolicy from './components/support/PrivacyPolicy';
+import Faq from './components/support/Faq';
 function App() {
   return (
     <>
       <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/subscription" element={<Subscription />} />
-          <Route path="/admin" element={<AdminLookUp />} />
-          <Route path="/subscription-dashboard" element={<SubscriptionDashboard />} />
-          <Route path="/subscription-dashboard/change-plan" element={<ChangePlan />} />
-          <Route path="/subscription-dashboard/add-product" element={<AddProduct />} />
-          <Route path="/plan/:planType" element={<PlanDetails />} />
-          <Route path="/success" element={<Success />} />
-          <Route path="/cancel" element={<Cancel />} />
-          <Route path="/changeSuccess" element={<ChangeSuccess/>}/>
-          <Route path="/addSuccess" element={<AddSuccess/>}/>
-          <Route path="/admin/add-application" element={<AddApplication />} />
-          <Route path="/admin/plan-type" element={<PlanType />} />
-          <Route path="/admin/trial-days-settings" element={<TrailDaysSettingsPage />} />
-          <Route path="/admin/discounts" element={<DiscountManager />} />
-          <Route path="/admin/currency-config" element={<CurrencyConfigManager />} />
-          <Route path="/view-dashboard" element={<EnterCompanyEmail />} />
-        </Routes>
+        <div className="min-h-screen flex flex-col bg-gray-50">
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/subscription" element={<Subscription />} />
+              <Route path="/admin" element={<AdminLookUp />} />
+              <Route path="/subscription-dashboard" element={<SubscriptionDashboard />} />
+              <Route path="/subscription-dashboard/change-plan" element={<ChangePlan />} />
+              <Route path="/subscription-dashboard/add-product" element={<AddProduct />} />
+              <Route path="/plan/:planType" element={<PlanDetails />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/cancel" element={<Cancel />} />
+              <Route path="/changeSuccess" element={<ChangeSuccess/>}/>
+              <Route path="/addSuccess" element={<AddSuccess/>}/>
+              <Route path="/admin/add-application" element={<AddApplication />} />
+              <Route path="/admin/plan-type" element={<PlanType />} />
+              <Route path="/admin/trial-days-settings" element={<TrailDaysSettingsPage />} />
+              <Route path="/admin/discounts" element={<DiscountManager />} />
+              <Route path="/admin/currency-config" element={<CurrencyConfigManager />} />
+              <Route path="/view-dashboard" element={<EnterCompanyEmail />} />
+              <Route path="/renew-success" element={<RenewSuccess />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/faq" element={<Faq />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
         <ToastContainer position="top-right" autoClose={3000} />
       </ErrorBoundary>
     </>

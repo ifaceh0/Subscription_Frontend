@@ -342,7 +342,7 @@ export default function DiscountManager() {
   return (
     <div className="space-y-8 pb-12 pt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-slate-100 text-slate-700 rounded-md">
             <Tag className="w-6 h-6" />

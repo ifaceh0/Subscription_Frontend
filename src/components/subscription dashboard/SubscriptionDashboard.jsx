@@ -1118,7 +1118,7 @@
 // updated code for language support using i18next
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Calendar, Package, AlertCircle, RefreshCw, CheckCircle, XCircle, Clock, PlusCircle, CreditCard, FileText, ArrowRight } from 'lucide-react';
+import { Calendar, Package, AlertCircle, RefreshCw, CheckCircle, Check, XCircle, Clock, PlusCircle, CreditCard, FileText, ArrowRight } from 'lucide-react';
 import { FiLoader } from "react-icons/fi";
 import { Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -1127,13 +1127,16 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 import { useTranslation } from 'react-i18next';
 import Header from '../../components/Header';
+import { div } from 'framer-motion/client';
 
 const SubscriptionDashboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [dashboardData, setDashboardData] = useState({ subscriptions: [], appHistory: [], plans: [], subscriptionHistory: [] });
-  const [error, setError] = useState(location.state?.successMessage || '');
+  // const [error, setError] = useState(location.state?.successMessage || '');
+  const [successMessage, setSuccessMessage] = useState(location.state?.successMessage || '');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
   const [showCancelSelectionModal, setShowCancelSelectionModal] = useState(false);
@@ -1148,10 +1151,15 @@ const SubscriptionDashboard = () => {
   const modalRef = useRef(null);
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewInfo, setPreviewInfo] = useState(null);
+  const [showAddConfirmModal, setShowAddConfirmModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
   const { countryCode } = useCountryLocation();
 
   const formatPriceDynamic = (rawFormatted, currencySymbol, currencyPosition) => {
-    if (!rawFormatted) return '0.00';
+    if (!rawFormatted) return `${currencySymbol}0.00`;
     
     if (rawFormatted.includes('₹') || rawFormatted.includes('$') || rawFormatted.includes('€')) {
       return rawFormatted;
@@ -1163,6 +1171,13 @@ const SubscriptionDashboard = () => {
     return currencyPosition === 'prefix'
       ? `${currencySymbol}${formattedAmount}`
       : `${formattedAmount}${currencySymbol}`;
+  };
+
+  const refreshDashboard = async () => {
+    const email = localStorage.getItem('CompanyEmail');
+    if (email) {
+      await fetchDashboardData(email);
+    }
   };
 
   useEffect(() => {
@@ -1229,6 +1244,28 @@ const SubscriptionDashboard = () => {
     }
   };
 
+  const fetchProrationPreview = async (type, payload) => {
+    setPreviewLoading(true);
+    setPreviewInfo(null);
+    try {
+      const res = await fetchWithBackoff(`${API_URL}/api/subscription/preview-proration`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPreviewInfo(data);
+      } else {
+        toast.error(data.error || t('dashboard.previewFailed'));
+      }
+    } catch (err) {
+      toast.error(t('dashboard.previewError'));
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
   const formatDate = (dateStr) => {
     if (!dateStr) return 'N/A';
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -1260,9 +1297,9 @@ const SubscriptionDashboard = () => {
           billingCycle: sub.interval,
           nextBillingDate: sub.endDate,
           currentPrice: sub.currentPrice,
-          currentPriceFormatted: sub.currentPriceFormatted || '0.00',
+          currentPriceFormatted: sub.currentPriceFormatted || `${data.currencySymbol}0.00`,
           oldPrice: sub.oldPrice || null,
-          oldPriceFormatted: sub.oldPriceFormatted || null,
+          oldPriceFormatted: sub.oldPriceFormatted || `${data.currencySymbol}0.00`,
           nextPlanPriceFormatted: sub.nextPlanPriceFormatted || null,
           currencySymbol: data.currencySymbol || '$',
           currencyPosition: data.currencyPosition || 'prefix',
@@ -1287,6 +1324,20 @@ const SubscriptionDashboard = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      setSuccessMessage(location.state.successMessage);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(''), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -1316,7 +1367,7 @@ const SubscriptionDashboard = () => {
       const selectedAppNames = dashboardData.subscriptions
         .find(sub => sub.id === subscriptionToCancel.id)
         ?.applications.filter(app => selectedCancelApps.includes(app.id))
-        .map(app => app.name);
+        .map(app => app.name.trim().toLowerCase());
       const response = await fetchWithBackoff(`${API_URL}/api/subscription/cancel-plan`, {
         method: 'POST',
         headers: {
@@ -1336,7 +1387,7 @@ const SubscriptionDashboard = () => {
           subscriptions: prev.subscriptions.filter(sub => sub.id !== subscriptionToCancel.id),
         }));
         closeAllModals();
-        fetchDashboardData(email);
+        await refreshDashboard();
       } else {
         setError(data.error || t('dashboard.failedToCancel'));
         toast.error(data.error || t('dashboard.cancellationFailed'));
@@ -1370,14 +1421,74 @@ const SubscriptionDashboard = () => {
     });
   };
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (selectedAddProductApps.length === 0) {
       toast.error(t('dashboard.selectAtLeastOneApp'));
       return;
     }
-    navigate('/subscription-dashboard/add-product', {
-      state: { selectedApps: selectedAddProductApps },
-    });
+
+    const payload = {
+      email: localStorage.getItem('CompanyEmail'),
+      appNamesToAdd: selectedAddProductApps,
+      action: 'add'
+    };
+
+    await fetchProrationPreview('add', payload);
+
+    // navigate('/subscription-dashboard/add-product', {
+    //   state: { selectedApps: selectedAddProductApps },
+    // });
+    setShowAddConfirmModal(true);
+  };
+
+  const handleConfirmAdd = async () => {
+    try {
+      const email = localStorage.getItem('CompanyEmail');
+      setConfirmLoading(true);
+
+      // Show final confirmation with price
+      const confirmText = previewInfo
+        ? `${t('dashboard.proratedChargeWillBe')}: ${previewInfo.proratedFormatted}\n` +
+          `${t('dashboard.fromNextCycle')}: ${previewInfo.nextCycleFormatted}\n\n${t('dashboard.proceed')}?`
+        : t('dashboard.addAppsConfirmNoPreview');
+
+      if (!window.confirm(confirmText)) {
+        setConfirmLoading(false);
+        return;
+      }
+
+      const response = await fetchWithBackoff(`${API_URL}/api/subscription/add-app`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Location': countryCode
+        },
+        body: JSON.stringify({
+          email,
+          appNames: selectedAddProductApps.map(name => name.trim().toLowerCase())
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.requiresCheckout === "true" && data.checkoutUrl) {
+          toast.info(t('dashboard.redirectingToCheckoutForAdd'));
+          window.location.href = data.checkoutUrl;
+        } else {
+          toast.success(t('dashboard.appsAddedSuccess'));
+          closeAllModals();
+          // await refreshDashboard();
+          window.location.href = '/subscription-dashboard';
+        }
+      } else {
+        toast.error(data.error || t('dashboard.addFailed') || "Failed to add apps");
+      }
+    } catch (err) {
+      toast.error(t('dashboard.error') || "Something went wrong");
+    } finally {
+      setConfirmLoading(false);
+    }
   };
 
   const handleUpdatePaymentMethod = async () => {
@@ -1398,9 +1509,36 @@ const SubscriptionDashboard = () => {
     }
   };
 
-  const handleRenewSubscription = (sub) => {
-    console.log('Renew subscription for', sub.planName);
-    toast.info(t('dashboard.renewalInitiated', { planName: sub.planName }));
+  const handleRenewSubscription = async (sub) => {
+    const email = localStorage.getItem('CompanyEmail');
+    if (!email) return toast.error(t('dashboard.noEmailFound'));
+
+    try {
+      const response = await fetchWithBackoff(`${API_URL}/api/subscription/renew`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Location': countryCode
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.requiresCheckout === "true" && data.checkoutUrl) {
+          toast.info(t('dashboard.renewRedirectingToPayment'));
+          window.location.href = data.checkoutUrl;
+        } else {
+          toast.success(data.message || t('dashboard.subscriptionRenewed'));
+          await refreshDashboard();
+        }
+      } else {
+        toast.error(data.error || t('dashboard.renewFailed'));
+      }
+    } catch (err) {
+      toast.error(t('dashboard.error'));
+    }
   };
 
   const closeAllModals = () => {
@@ -1482,7 +1620,14 @@ const SubscriptionDashboard = () => {
                   >
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-2xl font-extrabold text-gray-900">{sub.planName} {t('dashboard.plan')}</h3>
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-2xl font-extrabold text-gray-900">{sub.planName} {t('dashboard.plan')}</h3>
+                          {sub.hasRecentPlanChange && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                              {t('dashboard.recentPlanChangeBadge')}
+                            </span>
+                          )}
+                        </div>
                         <div className={`px-4 py-1 rounded-full text-sm font-semibold ${statusColors.bg} ${statusColors.text}`}>
                           {statusColors.label}
                         </div>
@@ -1515,25 +1660,104 @@ const SubscriptionDashboard = () => {
 
                       <div className="mt-5 pt-4 border-t border-gray-100">
                         <p className="font-semibold text-gray-800 mb-2">{t('dashboard.includedApplications')}:</p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-col gap-2">
                           {sub.applications.map(app => (
-                            <AppPill
-                              key={app.id}
-                              name={app.name}
-                              active={sub.applicationStatuses[app.name].active}
-                              changed={sub.applicationStatuses[app.name].changed}
-                            />
-                          ))}
-                          {sub.canceledApplications.length > 0 && (
-                            sub.canceledApplications.map(app => (
+                            <div className="flex flex-wrap items-start">
                               <AppPill
                                 key={app.id}
                                 name={app.name}
-                                canceled={true}
+                                active={sub.applicationStatuses[app.name]?.active}
+                                changed={sub.applicationStatuses[app.name]?.changed}
                               />
-                            ))
+                            </div>
+                          ))}
+                          {sub.canceledApplications?.length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-sm text-red-600 font-medium mb-2">
+                                {t('dashboard.canceledAppsStillActive')}
+                              </p>
+                              {sub.canceledApplications.map(app => (
+                                <AppPill
+                                  key={app.id}
+                                  name={app.name}
+                                  canceled={true}
+                                />
+                              ))}
+                            </div>
                           )}
                         </div>
+                        {/* {sub.hasRecentPlanChange && sub.previousPlanName && sub.previousPriceFormatted && (
+                          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-200 rounded-lg text-sm space-y-3">
+
+                            <div className="flex items-center gap-2 font-semibold text-indigo-800">
+                              <ArrowRight className="w-5 h-5" />
+                              {t('dashboard.recentPlanChangeTitle')}
+                            </div>
+
+                            <div className="flex justify-between text-gray-700">
+                              <span>{t('dashboard.previousPlan')}</span>
+                              <span className="font-medium">
+                                {sub.previousPlanName} (
+                                {formatPriceDynamic(
+                                  sub.previousPriceFormatted,
+                                  sub.currencySymbol,
+                                  sub.currencyPosition
+                                )}
+                                )
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between text-gray-700">
+                              <span>{t('dashboard.validUntil')}</span>
+                              <span className="font-medium">
+                                {formatDate(sub.periodEndDate || sub.endDate)}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between text-green-700 border-t pt-2">
+                              <span>{t('dashboard.newPriceFrom')}</span>
+                              <span className="font-semibold">
+                                {formatPriceDynamic(
+                                  sub.currentPriceFormatted,
+                                  sub.currencySymbol,
+                                  sub.currencyPosition
+                                )}
+                              </span>
+                            </div>
+
+                          </div>
+                        )}
+                        {sub.hasRecentAppAdd && sub.priceBeforeLastAddFormatted && (
+                          <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm space-y-2">
+                            
+                            <p className="font-semibold text-amber-800">
+                              New Apps Added to Your Plan
+                            </p>
+
+                            <div className="flex justify-between text-gray-700">
+                              <span>Previous Price</span>
+                              <span className="font-medium">
+                                {sub.priceBeforeLastAddFormatted}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between text-green-700">
+                              <span>Updated Price</span>
+                              <span className="font-semibold">
+                                {formatPriceDynamic(
+                                  sub.currentPriceFormatted,
+                                  sub.currencySymbol,
+                                  sub.currencyPosition
+                                )}
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-gray-500 pt-1 border-t">
+                              The additional cost has been prorated for the remaining billing period.
+                            </p>
+
+                          </div>
+                        )} */}
                       </div>
 
                       {sub.nextPlanName && (
@@ -1544,8 +1768,13 @@ const SubscriptionDashboard = () => {
                           </p>
                           <p className="text-sm text-indigo-800">
                             <span className="font-semibold">{sub.nextPlanName}</span>
-                            ({formatPriceDynamic(sub.nextPlanPriceFormatted, sub.currencySymbol, sub.currencyPosition)}/{sub.nextInterval}) 
-                            {t('dashboard.startingOn')} <strong>{formatDate(sub.nextPlanActiveDate)}</strong>.
+                            ({formatPriceDynamic(sub.nextPlanPriceFormatted, sub.currencySymbol, sub.currencyPosition)}/{sub.nextInterval})
+                            <br />
+                            {t('dashboard.startsOn')} <strong>{formatDate(sub.nextPlanActiveDate)}</strong>
+                            <br />
+                            <span className="text-green-600 font-medium">
+                              {t('dashboard.noExtraChargeNow')} {/* Add this translation */}
+                            </span>
                           </p>
                         </div>
                       )}
@@ -1595,7 +1824,7 @@ const SubscriptionDashboard = () => {
                           {t('dashboard.cancel')}
                         </button>
                       )}
-                      {sub.canRenew && (
+                      {/* {sub.canRenew && (
                         <button
                           onClick={() => handleRenewSubscription(sub)}
                           className="flex-1 py-2 rounded-full font-bold text-sm text-white bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-md disabled:bg-green-400"
@@ -1603,6 +1832,18 @@ const SubscriptionDashboard = () => {
                           aria-label={t('dashboard.aria.renewSubscription', { planName: sub.planName })}
                         >
                           {t('dashboard.renew')}
+                        </button>
+                      )} */}
+                      {sub.canRenew && (
+                        <button
+                          onClick={() => handleRenewSubscription(sub)}
+                          className="flex-1 py-2 rounded-full font-bold text-sm text-white bg-green-600 hover:bg-green-700 transition-all shadow-md disabled:bg-green-400"
+                          disabled={isLoading}
+                          aria-label={t('dashboard.aria.renewSubscription', { planName: sub.planName })}
+                        >
+                          {sub.cancelAtPeriodEnd 
+                            ? t('dashboard.reactivate') 
+                            : t('dashboard.renewSubscription')}
                         </button>
                       )}
                     </div>
@@ -1762,11 +2003,30 @@ const SubscriptionDashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-8xl mx-auto p-4"
+        className="max-w-7xl mx-auto p-4"
       >
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-12 sm:mb-10 text-center">
+        {/* <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-12 sm:mb-10 text-center">
           {t('dashboard.welcome', { name: customerName })}
-        </h1>
+        </h1> */}
+        <header className="mb-16 text-center">
+          <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-3">
+            {t('dashboard.welcome', { name: customerName })}
+          </h1>
+          <p className="text-slate-500 font-medium">{t('dashboard.manageSubscriptions')}</p>
+        </header>
+
+        {successMessage && (
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-r relative">
+            <p className="text-green-700 font-medium">{successMessage}</p>
+            <button
+              onClick={() => setSuccessMessage('')}
+              className="absolute top-2 right-2 text-green-700 hover:text-green-900"
+              aria-label="Close success message"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         <SubscriptionCardRedesign
           subscriptions={subscriptions}
@@ -1782,7 +2042,7 @@ const SubscriptionDashboard = () => {
               <CheckCircle className="w-6 h-6 text-green-600" />
               {t('dashboard.newProductsAvailable')}
             </h2>
-            <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+            <div className="bg-white rounded-lg shadow-md p-4 border border-gray-100">
               <p className="text-gray-600 mb-4">{t('dashboard.exploreNewOfferings')}</p>
               <div className="flex flex-wrap gap-2">
                 {newProducts.map((product, index) => (
@@ -1796,12 +2056,105 @@ const SubscriptionDashboard = () => {
               </div>
               <button
                 onClick={handleAddProductSelection}
-                className="mt-4 inline-flex items-center gap-2 py-2 px-4 rounded-full font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-all duration-200"
+                className="mt-4 inline-flex items-center gap-2 py-1.5 px-4 rounded-full font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-all duration-200"
                 aria-label="Explore new products"
               >
                 <PlusCircle className="w-5 h-5" />
                 {t('dashboard.exploreNewProducts')}
               </button>
+            </div>
+          </section>
+        )}
+
+        {(subscriptions.some(sub => sub.hasRecentPlanChange || sub.hasRecentAppAdd)) && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-6 flex items-center gap-2">
+              <RefreshCw className="w-6 h-6 text-indigo-600" />
+              {t('dashboard.recentActivity') || 'Recent Activity'}
+            </h2>
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
+              <div className="space-y-5">
+                {subscriptions
+                  .filter(sub => sub.hasRecentPlanChange || sub.hasRecentAppAdd)
+                  .map((sub, index) => (
+                    <div
+                      key={sub.id}
+                      className="border-l-4 border-indigo-500 pl-4 py-1"
+                    >
+                      {/* Plan Change Block */}
+                      {sub.hasRecentPlanChange && sub.previousPlanName && (
+                        <div className="mb-4">
+                          <div className="flex items-center gap-2 mb-1">
+                            <ArrowRight className="w-5 h-5 text-indigo-600" />
+                            <p className="font-semibold text-indigo-800">
+                              {t('dashboard.planUpgraded')} • {formatDate(sub.periodEndDate || sub.endDate)}
+                            </p>
+                          </div>
+                          <div className="text-sm text-gray-700 space-y-1 ml-7">
+                            <div className="flex justify-between">
+                              <span>{t('dashboard.previousPlan')}:</span>
+                              <span className="font-medium">
+                                {sub.previousPlanName} (
+                                {formatPriceDynamic(
+                                  sub.previousPriceFormatted,
+                                  sub.currencySymbol,
+                                  sub.currencyPosition
+                                )})
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-green-700">
+                              <span>{t('dashboard.newPlanFrom')}:</span>
+                              <span className="font-semibold">
+                                {formatPriceDynamic(
+                                  sub.currentPriceFormatted,
+                                  sub.currencySymbol,
+                                  sub.currencyPosition
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Recent App Add Block */}
+                      {sub.hasRecentAppAdd && sub.priceBeforeLastAddFormatted && (
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <PlusCircle className="w-5 h-5 text-green-600" />
+                            <p className="font-semibold text-green-800">
+                              {t('dashboard.appsAdded')} • {formatDate(sub.lastAppAddDate || sub.endDate)}
+                            </p>
+                          </div>
+                          <div className="text-sm text-gray-700 space-y-1 ml-7">
+                            <div className="flex justify-between">
+                              <span>{t('dashboard.priceBefore')}:</span>
+                              <span className="font-medium">
+                                {formatPriceDynamic(
+                                  sub.priceBeforeLastAddFormatted,
+                                  sub.currencySymbol,
+                                  sub.currencyPosition
+                                )}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-green-700">
+                              <span>{t('dashboard.priceAfter')}:</span>
+                              <span className="font-semibold">
+                                {formatPriceDynamic(
+                                  sub.currentPriceFormatted,
+                                  sub.currencySymbol,
+                                  sub.currencyPosition
+                                )}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 pt-1">
+                              {t('dashboard.proratedChargeApplied')}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
             </div>
           </section>
         )}
@@ -1812,7 +2165,7 @@ const SubscriptionDashboard = () => {
               <FileText className="w-6 h-6 text-blue-600" />
               {t('dashboard.billingHistory')}
             </h2>
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
@@ -1869,7 +2222,7 @@ const SubscriptionDashboard = () => {
               <FileText className="w-6 h-6 text-blue-600" />
               {t('dashboard.subscriptionHistory')}
             </h2>
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
               <div className="space-y-3">
                 {subscriptionHistory.map((history, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -1892,9 +2245,11 @@ const SubscriptionDashboard = () => {
               <XCircle className="w-6 h-6 text-red-600" />
               {t('dashboard.cancellationHistory')}
             </h2>
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
               <div className="space-y-3">
-                {appHistory.map((history, index) => (
+                {appHistory
+                  .filter(hist => hist.status === "CANCELLED")
+                  .map((history, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <XCircle className="w-5 h-5 text-red-600" />
                     <p className="text-gray-600">
@@ -1903,6 +2258,9 @@ const SubscriptionDashboard = () => {
                     </p>
                   </div>
                 ))}
+                {appHistory.filter(hist => hist.status === "CANCELLED").length === 0 && (
+                  <p className="text-gray-600">{t('dashboard.noCancellationsYet')}</p>
+                )}
               </div>
             </div>
           </section>
@@ -1910,12 +2268,12 @@ const SubscriptionDashboard = () => {
 
         {/* Cancel Selection Modal */}
         {showCancelSelectionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="cancel-selection-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="cancel-selection-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="cancel-selection-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.selectAppsToCancel')}</h3>
               <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 max-h-48 overflow-y-auto">
@@ -1944,14 +2302,14 @@ const SubscriptionDashboard = () => {
               )}
               <div className="flex justify-end space-x-4 mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Cancel selection"
                 >
                   {t('dashboard.cancel')}
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded-full transition-colors ${
+                  className={`px-6 py-2 text-white rounded-full transition-colors ${
                     isLoading || selectedCancelApps.length === 0
                       ? 'bg-red-400 cursor-not-allowed'
                       : 'bg-red-600 hover:bg-red-700'
@@ -1974,12 +2332,12 @@ const SubscriptionDashboard = () => {
 
         {/* Cancel Confirmation Modal */}
         {showCancelConfirmModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="cancel-confirm-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="cancel-confirm-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="cancel-confirm-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.confirmCancellation')}</h3>
               <p className="text-sm text-gray-600 mb-6">
@@ -1992,7 +2350,7 @@ const SubscriptionDashboard = () => {
               </p>
               <div className="flex justify-end space-x-4">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   disabled={cancelling}
                   aria-label="Cancel cancellation"
@@ -2000,7 +2358,7 @@ const SubscriptionDashboard = () => {
                   {t('dashboard.cancel')}
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded-full transition-colors min-w-[140px] ${
+                  className={`px-6 py-2 text-white rounded-full transition-colors min-w-[140px] ${
                     cancelling 
                       ? 'bg-red-400 cursor-not-allowed' 
                       : 'bg-red-600 hover:bg-red-700'
@@ -2023,59 +2381,56 @@ const SubscriptionDashboard = () => {
           </div>
         )}
 
-        {/* Change Plan Selection Modal */}
+       {/* {changePlan} */}
         {showChangePlanSelectionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="change-plan-selection-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
-              <h3 id="change-plan-selection-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.selectAppsForPlanChange')}</h3>
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 max-h-48 overflow-y-auto">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                {t('dashboard.changePlanFor')} {subscriptionToCancel?.planName}
+              </h3>
+
+              <p className="text-sm text-gray-600 mb-4">
+                {t('dashboard.changingAllApps')}:
+              </p>
+
+              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-6">
                 {subscriptionToCancel?.applications?.map(app => (
                   <div key={app.id} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={`change-app-${app.id}`}
-                      value={app.name}
-                      checked={selectedChangePlanApps.includes(app.name)}
-                      onChange={() => {
-                        setSelectedChangePlanApps(prev =>
-                          prev.includes(app.name) ? prev.filter(name => name !== app.name) : [...prev, app.name]
-                        );
-                      }}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                      aria-checked={selectedChangePlanApps.includes(app.name)}
-                      aria-label={t('dashboard.aria.selectAppForChange', { appName: app.name })}
-                    />
-                    <label htmlFor={`change-app-${app.id}`} className="ml-2 text-sm text-gray-600">{app.name}</label>
+                    <Check className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-gray-800">{app.name}</span>
                   </div>
                 ))}
               </div>
-              {selectedChangePlanApps.length === 0 && (
-                <p className="text-red-500 text-sm mt-2" role="alert">{t('dashboard.atLeastOneAppRequired')}</p>
-              )}
-              <div className="flex justify-end space-x-4 mt-6">
+
+              <p className="text-sm text-gray-500 mb-6">
+                {t('dashboard.allAppsIncluded')} {subscriptionToCancel?.planName} → {t('dashboard.newTier')}
+              </p>
+
+              <div className="flex justify-end space-x-4">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
-                  aria-label="Cancel selection"
+                  className="px-5 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300"
                 >
                   {t('dashboard.cancel')}
                 </button>
                 <button
-                  className={`px-4 py-2 text-white rounded-full transition-colors ${
-                    isLoading || selectedChangePlanApps.length === 0
-                      ? 'bg-purple-400 cursor-not-allowed'
-                      : 'bg-purple-600 hover:bg-purple-700'
-                  }`}
-                  onClick={handleChangePlan}
-                  disabled={isLoading || selectedChangePlanApps.length === 0}
-                  aria-label="Proceed to change plan"
+                  onClick={() => {
+                    navigate('/subscription-dashboard/change-plan', {
+                      state: {
+                        selectedApps: subscriptionToCancel?.applicationNames || [],
+                        subscriptionId: subscriptionToCancel?.id
+                      }
+                    });
+                    closeAllModals();
+                  }}
+                  className="px-5 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700"
                 >
-                  {t('dashboard.next')}
+                  {t('dashboard.proceedToChange')}
                 </button>
               </div>
             </motion.div>
@@ -2084,14 +2439,17 @@ const SubscriptionDashboard = () => {
 
         {/* Add Product Selection Modal */}
         {showAddProductSelectionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="add-product-selection-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="add-product-selection-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
-              <h3 id="add-product-selection-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.selectAppsToAdd')}</h3>
+              <h3 id="add-product-selection-title" className="text-lg font-semibold text-gray-800 mb-4">
+                {t('dashboard.selectAppsToAdd')}
+              </h3>
+
               <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 max-h-48 overflow-y-auto">
                 {newProducts.map(app => (
                   <div key={app.id} className="flex items-center mb-2">
@@ -2109,35 +2467,131 @@ const SubscriptionDashboard = () => {
                       aria-checked={selectedAddProductApps.includes(app.name)}
                       aria-label={t('dashboard.aria.selectAppToAdd', { appName: app.name })}
                     />
-                    <label htmlFor={`add-app-${app.id}`} className="ml-2 text-sm text-gray-600">{app.name}</label>
+                    <label htmlFor={`add-app-${app.id}`} className="ml-2 text-sm text-gray-600">
+                      {app.name}
+                    </label>
                   </div>
                 ))}
               </div>
+
               {newProducts.length === 0 && (
                 <p className="text-gray-600 text-sm mt-2">{t('dashboard.noUnsubscribedApps')}</p>
               )}
+
               {selectedAddProductApps.length === 0 && newProducts.length > 0 && (
-                <p className="text-red-500 text-sm mt-2" role="alert">{t('dashboard.atLeastOneAppRequired')}</p>
+                <p className="text-red-500 text-sm mt-2" role="alert">
+                  {t('dashboard.atLeastOneAppRequired')}
+                </p>
               )}
+
               <div className="flex justify-end space-x-4 mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors"
                   onClick={closeAllModals}
                   aria-label="Cancel selection"
+                  disabled={previewLoading}
                 >
                   {t('dashboard.cancel')}
                 </button>
+
                 <button
-                  className={`px-4 py-2 text-white rounded-full transition-colors ${
-                    isLoading || selectedAddProductApps.length === 0 || newProducts.length === 0
+                  className={`px-6 py-2 text-white rounded-full transition-colors flex items-center justify-center gap-2
+                    ${isLoading || selectedAddProductApps.length === 0 || newProducts.length === 0 || previewLoading
                       ? 'bg-purple-400 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
-                  }`}
+                    }`}
                   onClick={handleAddProduct}
-                  disabled={isLoading || selectedAddProductApps.length === 0 || newProducts.length === 0}
+                  disabled={isLoading || selectedAddProductApps.length === 0 || newProducts.length === 0 || previewLoading}
                   aria-label="Proceed to add product"
                 >
-                  {t('dashboard.next')}
+                  {previewLoading ? (
+                    <>
+                      <FiLoader className="h-4 w-4 animate-spin" />
+                      {t('dashboard.processing')}
+                    </>
+                  ) : (
+                    t('dashboard.next')
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {showAddConfirmModal && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
+            >
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                {t('dashboard.confirmAddApps')}
+              </h3>
+
+              <p className="text-sm text-gray-600 mb-4">
+                {t('dashboard.adding')}: <strong>{selectedAddProductApps.join(', ')}</strong>
+              </p>
+
+              {previewLoading ? (
+                <div className="flex items-center justify-center gap-2 text-blue-600 mb-6">
+                  <FiLoader className="h-5 w-5 animate-spin" />
+                  {t('dashboard.calculatingCharge')}
+                </div>
+              ) : previewInfo ? (
+                <div className="p-4 bg-blue-50 rounded-lg shadow-inner border border-blue-200 mb-6 text-sm">
+                  <p className="font-medium text-blue-800">
+                    {t('dashboard.additionalChargeNow')}:
+                  </p>
+                  <p className="text-xl font-bold text-blue-700 mt-1">
+                    {previewInfo.proratedFormatted}
+                  </p>
+                  {/* <p className="text-xs text-gray-600 mt-2">
+                    {t('dashboard.proratedForRemaining')} (
+                    {previewInfo.remainingRatio ? `${(previewInfo.remainingRatio * 100).toFixed(0)}%` : ''}
+                    )
+                  </p> */}
+
+                  <p className="text-xs text-gray-600 mt-1">
+                    {t('dashboard.proratedChargeDescription')}
+                  </p>
+                  <p className="text-sm text-gray-700 mt-3">
+                    {t('dashboard.fromNextCycle')}: <strong>{previewInfo.nextCycleFormatted}</strong>
+                    <br />
+                    {t('dashboard.startsOn')} <strong>{previewInfo.nextCycleDateFormatted}</strong>
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-600 mb-6">{t('dashboard.noProrationInfo')}</p>
+              )}
+
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setShowAddConfirmModal(false)}
+                  className="px-5 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300"
+                  disabled={previewLoading || confirmLoading}
+                >
+                  {t('dashboard.cancel')}
+                </button>
+
+                <button
+                  onClick={handleConfirmAdd}
+                  disabled={previewLoading || confirmLoading}
+                  className={`px-5 py-2 text-white rounded-full min-w-[140px] flex items-center justify-center gap-2
+                    ${(previewLoading || confirmLoading)
+                      ? 'bg-purple-400 cursor-not-allowed'
+                      : 'bg-purple-600 hover:bg-purple-700'
+                    }`}
+                >
+                  {confirmLoading ? (
+                    <>
+                      <FiLoader className="h-4 w-4 animate-spin" />
+                      {t('dashboard.processing')}
+                    </>
+                  ) : (
+                    t('dashboard.confirmAndAdd')
+                  )}
                 </button>
               </div>
             </motion.div>
@@ -2146,12 +2600,12 @@ const SubscriptionDashboard = () => {
 
         {/* Success Modal */}
         {showSuccessModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="success-modal-title" ref={modalRef}>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] px-6" role="dialog" aria-modal="true" aria-labelledby="success-modal-title" ref={modalRef}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-[0.5rem] p-8 max-w-md w-full shadow-2xl"
             >
               <h3 id="success-modal-title" className="text-lg font-semibold text-gray-800 mb-4">{t('dashboard.success')}</h3>
               <p className="text-sm text-gray-600 mb-6">{location.state?.successMessage}</p>

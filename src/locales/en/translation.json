@@ -32,6 +32,7 @@
     "noPlansAvailable": "No plans available that match *exactly* your selected products in {{country}}.",
     "tryDifferentCombination": "Please try selecting a different combination.",
     "chooseApplicationsSidebar": "Choose your applications in the sidebar to view tailored plans.",
+    "buildYourPlan": "Build your plan",
     "planHighlights": {
       "Basic": [
         "Full access to selected apps",
@@ -168,7 +169,7 @@
     "perQuarter": "/quarter",
     "perYear": "/year",
     "access": "Access",
-    "viewFullPlanDetails": "View full plan details →"
+    "viewFullPlanDetails": "View full plan details"
   },
 
   "planDetails": {
@@ -194,7 +195,14 @@
     "failedToInitiate": "Failed to initiate checkout. Please try again.",
     "processingCheckout": "Processing Checkout...",
     "payNow": "Pay {{price}} Now",
-    "redirectingToPayment": "Redirecting to secure payment..."
+    "redirectingToPayment": "Redirecting to secure payment...",
+    "billingText": "Billed {{billingCycle}}ly — Cancel anytime.",
+    "saveText": "Save {{discountPercent}}%",
+    "secureText": "Your data is encrypted and processed via secure global infrastructure.",
+    "checkoutTitle": "Complete your order",
+    "checkoutDescription": "Enter your billing email to proceed to our secure payment gateway.",
+    "agreementText": "By continuing, you agree to our Terms of Service and Privacy Policy.",
+    "billingStart": "Billing for {{planId}} starts immediately."
   },
 
   "success": {
@@ -224,74 +232,148 @@
   },
 
   "dashboard": {
+    "welcome": "Welcome, {{name}}!",
     "activeSubscriptions": "Active Subscriptions ({{count}})",
-    "noActiveSubscriptions": "You don't have any active subscriptions.",
+    "noActiveSubscriptions": "You don't have any active subscriptions yet.",
+    "loadingDashboard": "Loading your subscription dashboard...",
+    "failedToLoad": "Failed to load dashboard data",
+    "error": "Error",
+    "retry": "Retry",
+    "noEmailFound": "No email found. Please sign in again.",
+
+    "plan": "Plan",
+    "nextBilling": "Next billing date",
+    "startDate": "Start date",
+    "autoRenew": "Auto-renew",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "cancelAtPeriodEnd": "Cancel at period end",
+    "yes": "Yes",
+    "no": "No",
+    "trialEnds": "Trial ends",
+    "includedApplications": "Included applications",
+    "canceled": "Canceled",
+    "changed": "Changed",
+
+    "upcomingPlanChange": "Upcoming plan change",
+    "startsOn": "Starts on",
+    "noExtraChargeNow": "No extra charge now",
+    "priceChangeNextCycle": "Price change will apply next cycle",
+
+    "recentPlanChangeTitle": "You recently changed your plan",
+    "recentPlanChangeFrom": "From {{oldPlan}} ({{oldPrice}})",
+    "recentPlanChangeUntil": "You're still paying the old price until",
+    "recentPlanChangeNewPriceFrom": "New price starts from {{date}}",
+
+    "paymentAndBilling": "Payment & Billing",
+    "noPaymentMethod": "No payment method on file",
+    "endingIn": "ending in",
+    "expires": "expires",
+
+    "changePlan": "Change Plan",
+    "cancel": "Cancel",
+    "reactivate": "Reactivate",
+    "renewSubscription": "Renew Subscription",
+
     "newProductsAvailable": "New Products Available",
     "exploreNewOfferings": "Explore our new offerings to enhance your subscription:",
-    "exploreNewProducts": "Explore New Products",
+    "exploreNewProducts": "Add New Products",
+    "noUnsubscribedApps": "No additional products available to add.",
+
     "billingHistory": "Billing History",
     "date": "Date",
     "amount": "Amount",
-    "status": {
-      "active": "ACTIVE",
-      "canceled": "CANCELED",
-      "trialing": "TRIALING"
-    },
+    "status": "Status",
     "action": "Action",
-    "download": "Download",
+    "download": "Download / View",
+
     "subscriptionHistory": "Subscription History",
     "was": "was",
     "from": "from",
     "to": "to",
     "archivedOn": "archived on",
+    "manageSubscriptions": "Manage your subscriptions",
+
     "cancellationHistory": "Cancellation History",
     "wasCanceledOn": "was canceled on",
-    "selectAppsToCancel": "Select Applications to Cancel",
-    "atLeastOneAppRequired": "At least one application must be selected.",
-    "cancel": "Cancel",
-    "next": "Next",
+    "noCancellationsYet": "No cancellations recorded yet",
+
+    "selectAppsToCancel": "Select applications to cancel",
+    "atLeastOneAppRequired": "Please select at least one application.",
     "confirmCancellation": "Confirm Cancellation",
-    "confirmCancelMessage": "Are you sure you want to cancel the subscription for {{apps}}? This action cannot be undone.",
-    "confirmCancellationButton": "Confirm Cancellation",
+    "confirmCancelMessage": "Are you sure you want to cancel {{apps}}? This cannot be undone.",
+    "confirmCancellationButton": "Yes, Cancel Now",
     "cancelling": "Cancelling...",
-    "cancellationInitiated": "Subscription cancellation initiated.",
-    "failedToCancel": "Failed to cancel subscription.",
-    "cancellationFailed": "Cancellation failed.",
-    "selectAppsForPlanChange": "Select Applications for Plan Change",
-    "selectAppsToAdd": "Select Applications to Add",
-    "noUnsubscribedApps": "No unsubscribed applications available.",
+    "cancellationInitiated": "Cancellation request has been submitted.",
+    "failedToCancel": "Failed to cancel subscription",
+    "cancellationFailed": "Cancellation failed",
+
+    "changePlanFor": "Change Plan for",
+    "changingAllApps": "This will apply to all applications in the current plan:",
+    "allAppsIncluded": "All applications in",
+    "proceedToChange": "Proceed to Change Plan",
+    "newTier": "new plan",
+    "recentPlanChangeBadge": "Recent Plan Change",
+    "canceledAppsStillActive": "Canceled apps (still active until end of period):",
+
+    "selectAppsToAdd": "Select products to add",
+    "confirmAddApps": "Confirm Adding Applications",
+    "adding": "Adding",
+    "additionalChargeNow": "Prorated charge due now",
+    "proratedForRemaining": "Prorated for remaining period",
+    "fromNextCycle": "From next billing cycle",
+    "calculatingCharge": "Calculating charge...",
+    "noProrationInfo": "No proration preview available at this moment.",
+    "confirmAndAdd": "Confirm & Add",
+    "processing": "Processing...",
+    "next": "Next",
+
+    "appsAddedSuccess": "Applications added successfully!",
+    "redirectingToCheckoutForAdd": "Redirecting to payment to complete addition...",
+    "renewRedirectingToPayment": "Redirecting to payment to renew...",
+
+    "previewFailed": "Preview failed",
+    "previewError": "Failed to fetch proration preview",
+    "selectAtLeastOneAppToCancel": "Please select at least one app to cancel",
+    "addFailed": "Failed to add applications",
+    "renewFailed": "Failed to renew subscription",
+    "failedToLoadPaymentPage": "Failed to load payment management page",
+    "proratedChargeWillBe": "Prorated charge will be",
+    "proceed": "Proceed?",
+    "addAppsConfirmNoPreview": "Are you sure you want to add these apps?",
+    "status.active": "Active",
+    "status.trialing": "Trialing",
+    "status.canceled": "Canceled",
+    "status.past_due": "Past Due",
     "success": "Success",
     "ok": "OK",
-    "noEmailFound": "No email found. Please provide an email to view dashboard.",
-    "failedToLoad": "Failed to load dashboard data",
-    "error": "Error",
-    "retry": "Retry",
-    "loadingDashboard": "Loading Your Subscription dashboard...",
-    "plan": "Plan",
-    "nextBilling": "Next Billing",
-    "startDate": "Start Date",
-    "autoRenew": "Auto-Renew",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "cancelAtPeriodEnd": "Cancel at Period End",
-    "yes": "Yes",
-    "no": "No",
-    "trialEnds": "Trial Ends",
-    "includedApplications": "Included Applications",
-    "canceled": "Canceled",
-    "changed": "Changed",
-    "upcomingPlanChange": "Upcoming Plan Change",
-    "startingOn": "starting on",
-    "priceChangeNextCycle": "Price change applied next cycle",
-    "paymentAndBilling": "Payment & Billing",
-    "noPaymentMethod": "No payment method on file.",
-    "endingIn": "ending in",
-    "expires": "expires",
-    "changePlan": "Change Plan",
-    "renew": "Renew",
-    "welcome": "Welcome, {{name}}!",
+    "proratedChargeDescription": "The prorated charge is calculated based on the price difference for the new applications and the remaining time in your current billing cycle. You will be charged this amount immediately, and your subscription will be updated to include the new applications.",
+
+    "previousPlan": "Previous Plan",
+    "validUntil": "Valid Until",
+    "newPriceFrom": "New Price",
+
+    "recentActivity": "Recent Activity",
+    "planUpgraded": "Plan upgraded",
+    "appsAdded": "Apps added to plan",
+    "priceBefore": "Price before change",
+    "priceAfter": "Price after change",
+    "proratedChargeApplied": "Prorated charge has been applied for the remaining period.",
+    "newPlanFrom": "New plan price from",
+    "appsAddedOn": "Apps added on",
+
+    "appsAddedTitle": "New Apps Added to Your Plan",
+    "previousPrice": "Previous Price",
+    "updatedPrice": "Updated Price",
+    "prorationNote": "The additional cost has been prorated for the remaining billing period.",
+
     "aria": {
-      "renewSubscription": "Renew subscription for"
+      "changePlan": "Change plan for {{planName}}",
+      "cancelSubscription": "Cancel subscription for {{planName}}",
+      "renewSubscription": "Renew / reactivate subscription for {{planName}}",
+      "selectAppForCancel": "Select {{appName}} for cancellation",
+      "selectAppForChange": "Select {{appName}} for plan change",
+      "selectAppToAdd": "Add {{appName}} to your subscription"
     }
   },
 
@@ -357,7 +439,12 @@
     "quarter": "Quarterly",
     "year": "Yearly",
     "select": "Select",
-    "plan": "Plan"
+    "plan": "Plan",
+    "newPriceNextCycle": "New price applies from next billing cycle",
+    "upgradeExperience": "Upgrade your experience.",
+    "flexibleSubscriptions": "Flexible Subscriptions",
+    "switchToPlan": "Switch to {{plan}}?",
+    "goBack": "Go Back"
   },
 
   "changePlanCard": {
@@ -370,7 +457,13 @@
     "selectPlan": "Select Plan",
     "aria": {
       "selectPlan": "Select {{title}} plan"
-    }
+    },
+    "mostPopular": "Most Popular",
+    "bestForYourNeeds": "Best for your needs",
+    "topFeatures": "Top Features",
+    "fullFeatureList": "Full feature list",
+    "currentSelection": "Current Selection",
+    "selectPlanFor": "Select {{title}}"
   },
 
   "addSuccess": {
@@ -401,5 +494,68 @@
   "featureDetailsModal": {
     "done": "Got it",
     "title": "{{tier}} Plan Details"
+  },
+
+  "pricingTable": {
+    "title": "Compare features across plans",
+    "bestFor": "Best For",
+    "whatsIncluded": "What's Included",
+    "support": "Support",
+    "positioning": "Positioning",
+
+    "plans": {
+      "basic": {
+        "name": "BASIC",
+        "subtitle": "Software Only (Independent)",
+        "bestFor": "Businesses want to do everything on their own",
+        "positioning": "Use the platform independently. Add help only when you need it."
+      },
+      "pro": {
+        "name": "PRO",
+        "subtitle": "Software + Included Service Hours",
+        "bestFor": "Businesses that want occasional help",
+        "positioning": "A little expert help included — no long-term commitment."
+      },
+      "enterprise": {
+        "name": "ENTERPRISE",
+        "subtitle": "Software + Managed Service Hours",
+        "bestFor": "Businesses that want predictable, hands-off support",
+        "positioning": "Predictable support hours with proactive service."
+      }
+    },
+
+    "features": {
+      "fullAccess": "Full access to applications",
+      "standardFeatures": "All standard product features",
+      "selfService": "Self-service usage",
+      "knowledgeBase": "Knowledge base / documentation",
+      "includedHours": "Included service hours",
+      "optionalHours": "Optional Service Hours Pack"
+    },
+
+    "featureValues": {
+      "no": "No",
+      "available": "Available",
+      "proHours": "3 hours/mo (30m blocks)",
+      "enterpriseHours": "5 hours/mo (30m blocks)"
+    },
+
+    "supportRows": {
+      "supportType": "Support Type",
+      "responseTime": "Response Time",
+      "phoneSupport": "Phone/Zoom Support"
+    },
+
+    "supportValues": {
+      "emailTechnical": "Email (Technical only)",
+      "priorityEmail": "Priority Email",
+      "dedicatedEmail": "Dedicated Email",
+      "response72": "72 business-hours",
+      "response48": "24–48 business-hours",
+      "response24": "24 business-hours",
+      "noPhone": "None",
+      "twoCalls": "2 calls/month",
+      "fiveCalls": "5 calls/month"
+    }
   }
 }

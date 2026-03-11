@@ -462,6 +462,11 @@ export default function CurrencyConfigManager() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/admin")}
+            className="p-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition">
+            <Home size={20} />
+          </button>
           <div className="p-2.5 bg-slate-100 text-slate-700 rounded-md">
             <Globe className="w-6 h-6" />
           </div>
@@ -471,13 +476,8 @@ export default function CurrencyConfigManager() {
               Manage supported countries, currencies and subscription payment rules
             </p>
           </div>
+          
         </div>
-
-        <button
-          onClick={() => navigate("/admin")}
-          className="p-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition">
-          <Home size={20} />
-        </button>
 
         {!editingCode && (
           <button

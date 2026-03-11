@@ -32,6 +32,7 @@
     "noPlansAvailable": "No hay planes disponibles que coincidan *exactamente* con tus productos seleccionados en {{country}}.",
     "tryDifferentCombination": "Por favor intenta seleccionar una combinación diferente.",
     "chooseApplicationsSidebar": "Elige tus aplicaciones en la barra lateral para ver planes personalizados.",
+    "buildYourPlan": "Construye tu plan",
     "planHighlights": {
       "Basic": [
         "Acceso completo a las aplicaciones seleccionadas",
@@ -168,7 +169,7 @@
     "perQuarter": "/trimestre",
     "perYear": "/año",
     "access": "Acceder",
-    "viewFullPlanDetails": "Ver detalles completos del plan →"
+    "viewFullPlanDetails": "Ver detalles completos del plan"
   },
 
   "planDetails": {
@@ -194,7 +195,14 @@
     "failedToInitiate": "No se pudo iniciar el pago. Inténtalo de nuevo.",
     "processingCheckout": "Procesando pago...",
     "payNow": "Pagar {{price}} ahora",
-    "redirectingToPayment": "Redirigiendo al pago seguro..."
+    "redirectingToPayment": "Redirigiendo al pago seguro...",
+    "billingText": "Facturado {{billingCycle}}mente — Cancela en cualquier momento.",
+    "saveText": "Ahorra {{discountPercent}}%",
+    "secureText": "Tus datos están encriptados y se procesan a través de una infraestructura global segura.",
+    "checkoutTitle": "Completa tu pedido",
+    "checkoutDescription": "Introduce tu correo electrónico de facturación para continuar con nuestra pasarela de pago segura.",
+    "agreementText": "Al continuar, aceptas nuestros Términos de Servicio y la Política de Privacidad.",
+    "billingStart": "La facturación para {{planId}} comienza inmediatamente."
   },
 
   "success": {
@@ -224,72 +232,149 @@
   },
 
   "dashboard": {
+    "welcome": "¡Bienvenido, {{name}}!",
     "activeSubscriptions": "Suscripciones Activas ({{count}})",
-    "noActiveSubscriptions": "No tienes suscripciones activas.",
+    "noActiveSubscriptions": "Aún no tienes suscripciones activas.",
+    "loadingDashboard": "Cargando tu panel de suscripciones...",
+    "failedToLoad": "No pudimos cargar los datos del panel",
+    "error": "Error",
+    "retry": "Reintentar",
+    "noEmailFound": "No se encontró correo electrónico. Por favor inicia sesión nuevamente.",
+
+    "plan": "Plan",
+    "nextBilling": "Próxima fecha de cobro",
+    "startDate": "Fecha de inicio",
+    "autoRenew": "Renovación automática",
+    "enabled": "Activada",
+    "disabled": "Desactivada",
+    "cancelAtPeriodEnd": "Cancelar al finalizar el período",
+    "yes": "Sí",
+    "no": "No",
+    "trialEnds": "Finaliza período de prueba",
+    "includedApplications": "Aplicaciones incluidas",
+    "canceled": "Cancelada",
+    "changed": "Modificada",
+
+    "upcomingPlanChange": "Próximo cambio de plan",
+    "startsOn": "Comienza el",
+    "noExtraChargeNow": "Sin cargo adicional ahora",
+    "priceChangeNextCycle": "El cambio de precio se aplicará en el próximo ciclo",
+
+    "recentPlanChangeTitle": "Recientemente cambiaste de plan",
+    "recentPlanChangeFrom": "De {{oldPlan}} ({{oldPrice}})",
+    "recentPlanChangeUntil": "Sigues pagando el precio anterior hasta",
+    "recentPlanChangeNewPriceFrom": "El nuevo precio comienza desde {{date}}",
+
+    "paymentAndBilling": "Pago y Facturación",
+    "noPaymentMethod": "No hay método de pago registrado",
+    "endingIn": "termina en",
+    "expires": "expira",
+
+    "changePlan": "Cambiar Plan",
+    "cancel": "Cancelar",
+    "reactivate": "Reactivar",
+    "renewSubscription": "Renovar Suscripción",
+
     "newProductsAvailable": "Nuevos Productos Disponibles",
-    "exploreNewOfferings": "Explora nuestras nuevas ofertas para mejorar tu suscripción:",
-    "exploreNewProducts": "Explorar Nuevos Productos",
+    "exploreNewOfferings": "Explora nuestras nuevas ofertas para potenciar tu suscripción:",
+    "exploreNewProducts": "Agregar Nuevos Productos",
+    "noUnsubscribedApps": "No hay productos adicionales disponibles para agregar.",
+
     "billingHistory": "Historial de Facturación",
     "date": "Fecha",
     "amount": "Monto",
-    "status": {
-      "active": "ACTIVO",
-      "canceled": "CANCELADO",
-      "trialing": "EN PRUEBA"
-    },
+    "status": "Estado",
     "action": "Acción",
-    "download": "Descargar",
-    "subscriptionHistory": "Historial de Suscripción",
+    "download": "Descargar / Ver",
+
+    "subscriptionHistory": "Historial de Suscripciones",
     "was": "fue",
     "from": "desde",
     "to": "hasta",
     "archivedOn": "archivado el",
+
     "cancellationHistory": "Historial de Cancelaciones",
-    "wasCanceledOn": "fue cancelado el",
-    "selectAppsToCancel": "Selecciona Aplicaciones para Cancelar",
-    "atLeastOneAppRequired": "Debe seleccionar al menos una aplicación.",
-    "cancel": "Cancelar",
-    "next": "Siguiente",
+    "wasCanceledOn": "fue cancelada el",
+    "noCancellationsYet": "Aún no hay cancelaciones registradas",
+
+    "selectAppsToCancel": "Selecciona las aplicaciones a cancelar",
+    "atLeastOneAppRequired": "Debes seleccionar al menos una aplicación.",
     "confirmCancellation": "Confirmar Cancelación",
-    "confirmCancelMessage": "¿Estás seguro de que deseas cancelar la suscripción para {{apps}}? Esta acción no se puede deshacer.",
-    "confirmCancellationButton": "Confirmar Cancelación",
+    "confirmCancelMessage": "¿Estás seguro de cancelar {{apps}}? Esta acción no se puede deshacer.",
+    "confirmCancellationButton": "Sí, Cancelar Ahora",
     "cancelling": "Cancelando...",
-    "cancellationInitiated": "Cancelación de suscripción iniciada.",
-    "failedToCancel": "No se pudo cancelar la suscripción.",
-    "cancellationFailed": "Cancelación fallida.",
-    "selectAppsForPlanChange": "Selecciona Aplicaciones para Cambiar Plan",
-    "selectAppsToAdd": "Selecciona Aplicaciones para Agregar",
-    "noUnsubscribedApps": "No hay aplicaciones sin suscribir disponibles.",
+    "cancellationInitiated": "Se ha enviado la solicitud de cancelación.",
+    "failedToCancel": "No se pudo cancelar la suscripción",
+    "cancellationFailed": "Falló la cancelación",
+
+    "changePlanFor": "Cambiar plan de",
+    "changingAllApps": "Esto aplicará a todas las aplicaciones del plan actual:",
+    "allAppsIncluded": "Todas las aplicaciones en",
+    "proceedToChange": "Continuar al cambio de plan",
+    "newTier": "nuevo plan",
+    "recentPlanChangeBadge": "Cambio de plan reciente",
+    "canceledAppsStillActive": "Aplicaciones canceladas (siguen activas hasta el final del período):",
+
+    "selectAppsToAdd": "Selecciona productos a agregar",
+    "confirmAddApps": "Confirmar Agregar Aplicaciones",
+    "adding": "Agregando",
+    "additionalChargeNow": "Cargo prorrateado a pagar ahora",
+    "proratedForRemaining": "Prorrateado por el período restante",
+    "fromNextCycle": "A partir del próximo ciclo de facturación",
+    "calculatingCharge": "Calculando cargo...",
+    "noProrationInfo": "No hay vista previa de prorrateo disponible en este momento.",
+    "confirmAndAdd": "Confirmar y Agregar",
+    "processing": "Procesando...",
+    "next": "Siguiente",
+    "manageSubscriptions": "Administra tus suscripciones",
+
+    "appsAddedSuccess": "¡Aplicaciones agregadas con éxito!",
+    "redirectingToCheckoutForAdd": "Redirigiendo al pago para completar la adición...",
+    "renewRedirectingToPayment": "Redirigiendo al pago para renovar...",
+
+    "previewFailed": "Vista previa fallida",
+    "previewError": "No se pudo obtener la vista previa de prorrateo",
+    "selectAtLeastOneAppToCancel": "Por favor selecciona al menos una aplicación para cancelar",
+    "addFailed": "No se pudieron agregar las aplicaciones",
+    "renewFailed": "No se pudo renovar la suscripción",
+    "failedToLoadPaymentPage": "No se pudo cargar la página de gestión de pagos",
+    "proratedChargeWillBe": "El cargo prorrateado será",
+    "proceed": "¿Proceder?",
+    "addAppsConfirmNoPreview": "¿Estás seguro de que quieres agregar estas aplicaciones?",
+    "status.active": "Activa",
+    "status.trialing": "Últimos",
+    "status.canceled": "Cancelada",
+    "status.past_due": "Vencida",
     "success": "Éxito",
-    "ok": "Aceptar",
-    "noEmailFound": "No se encontró correo. Proporciona un correo para ver el panel.",
-    "failedToLoad": "No se pudieron cargar los datos del panel",
-    "error": "Error",
-    "retry": "Reintentar",
-    "loadingDashboard": "Cargando tu panel de suscripciones...",
-    "plan": "Plan",
-    "nextBilling": "Próxima Facturación",
-    "startDate": "Fecha de Inicio",
-    "autoRenew": "Renovación Automática",
-    "enabled": "Activado",
-    "disabled": "Desactivado",
-    "cancelAtPeriodEnd": "Cancelar al Final del Período",
-    "yes": "Sí",
-    "no": "No",
-    "trialEnds": "Finaliza Prueba",
-    "includedApplications": "Aplicaciones Incluidas",
-    "canceled": "Cancelado",
-    "changed": "Cambiado",
-    "upcomingPlanChange": "Próximo Cambio de Plan",
-    "startingOn": "comenzando el",
-    "priceChangeNextCycle": "Cambio de precio aplicado en el próximo ciclo",
-    "paymentAndBilling": "Pago y Facturación",
-    "noPaymentMethod": "No hay método de pago registrado.",
-    "endingIn": "termina en",
-    "expires": "expira",
-    "changePlan": "Cambiar Plan",
-    "renew": "Renovar",
-    "welcome": "¡Bienvenido, {{name}}!"
+    "ok": "OK",
+    "proratedChargeDescription": "El cargo prorrateado se calcula en función de la diferencia de precio por las nuevas aplicaciones y el tiempo restante en tu ciclo de facturación actual. Se te cobrará este monto inmediatamente, y tu suscripción se actualizará para incluir las nuevas aplicaciones.",
+
+    "previousPlan": "Plan anterior",
+    "validUntil": "Válido hasta",
+    "newPriceFrom": "Nuevo precio",
+
+    "recentActivity": "Actividad reciente",
+    "planUpgraded": "Plan actualizado",
+    "appsAdded": "Aplicaciones añadidas al plan",
+    "priceBefore": "Precio antes del cambio",
+    "priceAfter": "Precio después del cambio",
+    "proratedChargeApplied": "Se ha aplicado un cargo prorrateado por el período restante.",
+    "newPlanFrom": "Nuevo precio del plan desde",
+    "appsAddedOn": "Aplicaciones añadidas el",
+
+    "appsAddedTitle": "Nuevas aplicaciones añadidas a tu plan",
+    "previousPrice": "Precio anterior",
+    "updatedPrice": "Precio actualizado",
+    "prorationNote": "El costo adicional se ha prorrateado para el período de facturación restante.",
+
+    "aria": {
+      "changePlan": "Cambiar plan para {{planName}}",
+      "cancelSubscription": "Cancelar suscripción para {{planName}}",
+      "renewSubscription": "Renovar / reactivar suscripción para {{planName}}",
+      "selectAppForCancel": "Seleccionar {{appName}} para cancelar",
+      "selectAppForChange": "Seleccionar {{appName}} para cambio de plan",
+      "selectAppToAdd": "Agregar {{appName}} a tu suscripción"
+    }
   },
 
   "addProduct": {
@@ -354,7 +439,12 @@
     "quarter": "Trimestral",
     "year": "Anual",
     "select": "Seleccionar",
-    "plan": "Plan"
+    "plan": "Plan",
+    "newPriceNextCycle": "Nuevo precio aplica desde el próximo ciclo de facturación",
+    "upgradeExperience": "Mejora tu experiencia.",
+    "flexibleSubscriptions": "Suscripciones flexibles",
+    "switchToPlan": "¿Cambiar al plan {{plan}}?",
+    "goBack": "Volver"
   },
 
   "changePlanCard": {
@@ -367,7 +457,13 @@
     "selectPlan": "Seleccionar Plan",
     "aria": {
       "selectPlan": "Seleccionar plan {{title}}"
-    }
+    },
+    "mostPopular": "Más Popular",
+    "bestForYourNeeds": "Mejor para tus necesidades",
+    "topFeatures": "Características principales",
+    "fullFeatureList": "Lista completa de funciones",
+    "currentSelection": "Selección actual",
+    "selectPlanFor": "Seleccionar {{title}}"
   },
 
   "addSuccess": {
@@ -398,5 +494,68 @@
   "featureDetailsModal": {
     "done": "Entiendo",
     "title": "Detalles del plan {{tier}}"
+  },
+
+  "pricingTable": {
+    "title": "Comparar características entre planes",
+    "bestFor": "Ideal para",
+    "whatsIncluded": "Qué incluye",
+    "support": "Soporte",
+    "positioning": "Posicionamiento",
+
+    "plans": {
+      "basic": {
+        "name": "BÁSICO",
+        "subtitle": "Solo Software (Independiente)",
+        "bestFor": "Empresas que quieren hacerlo todo por sí mismas",
+        "positioning": "Usa la plataforma de forma independiente. Añade ayuda solo cuando la necesites."
+      },
+      "pro": {
+        "name": "PRO",
+        "subtitle": "Software + Horas de Servicio Incluidas",
+        "bestFor": "Empresas que quieren ayuda ocasional",
+        "positioning": "Un poco de ayuda experta incluida — sin compromiso a largo plazo."
+      },
+      "enterprise": {
+        "name": "EMPRESA",
+        "subtitle": "Software + Horas de Servicio Gestionadas",
+        "bestFor": "Empresas que quieren soporte predecible y sin preocupaciones",
+        "positioning": "Horas de soporte predecibles con servicio proactivo."
+      }
+    },
+
+    "features": {
+      "fullAccess": "Acceso completo a las aplicaciones",
+      "standardFeatures": "Todas las funciones estándar del producto",
+      "selfService": "Uso de autoservicio",
+      "knowledgeBase": "Base de conocimiento / documentación",
+      "includedHours": "Horas de servicio incluidas",
+      "optionalHours": "Paquete de horas de servicio opcional"
+    },
+
+    "featureValues": {
+      "no": "No",
+      "available": "Disponible",
+      "proHours": "3 horas/mes (bloques de 30 min)",
+      "enterpriseHours": "5 horas/mes (bloques de 30 min)"
+    },
+
+    "supportRows": {
+      "supportType": "Tipo de soporte",
+      "responseTime": "Tiempo de respuesta",
+      "phoneSupport": "Soporte telefónico/Zoom"
+    },
+
+    "supportValues": {
+      "emailTechnical": "Correo electrónico (solo técnico)",
+      "priorityEmail": "Correo prioritario",
+      "dedicatedEmail": "Correo dedicado",
+      "response72": "72 horas laborales",
+      "response48": "24–48 horas laborales",
+      "response24": "24 horas laborales",
+      "noPhone": "Ninguno",
+      "twoCalls": "2 llamadas/mes",
+      "fiveCalls": "5 llamadas/mes"
+    }
   }
 }
