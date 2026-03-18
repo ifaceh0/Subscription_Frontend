@@ -343,6 +343,7 @@ import { motion } from 'framer-motion';
 import { Loader2, RefreshCw, Plus, X, Edit } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { Home } from "lucide-react";
+import { apiFetch } from '../dashboard/api';
 
 const ToastNotification = ({ message, type, isVisible }) => {
   if (!isVisible) return null;
@@ -425,10 +426,17 @@ const ApplicationManager = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchApplications = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`${API_BASE_URL}/api/admin/applications`);
+        const res = await apiFetch(`${API_BASE_URL}/api/admin/applications`);
         if (!res.ok) throw new Error('Failed to load applications');
         const data = await res.json();
         setApplications(data || []);
@@ -444,7 +452,7 @@ const ApplicationManager = () => {
   const handleSyncStripe = async (app) => {
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/sync-stripe-app`, {
+      const res = await apiFetch(`${API_BASE_URL}/api/admin/sync-stripe-app`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(app),
@@ -508,7 +516,7 @@ const ApplicationManager = () => {
         : `${API_BASE_URL}/api/admin/updateApp/${form.id}`;
       const method = isCreatingNew ? 'POST' : 'PUT';
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

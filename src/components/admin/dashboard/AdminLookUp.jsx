@@ -1508,6 +1508,10 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiFetch } from './api';
+
+import AdminHeader from './AdminHeader';
+import AdminSidebar from './AdminSidebar';
 
 function AdminPlanManager() {
   const [applications, setApplications] = useState([]);
@@ -1575,6 +1579,18 @@ function AdminPlanManager() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  useEffect(() => {
     fetchApplications();
     fetchPlanTypes();
     fetchCountries();
@@ -1591,7 +1607,7 @@ function AdminPlanManager() {
 
   const fetchCountries = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/admin/getCountries`);
+      const res = await apiFetch(`${API_BASE}/api/admin/getCountries`);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const data = await res.json();
       setCountries(data);
@@ -1603,7 +1619,7 @@ function AdminPlanManager() {
   const fetchApplications = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/applications`);
+      const res = await apiFetch(`${API_BASE}/api/admin/applications`);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const data = await res.json();
       setApplications(data);
@@ -1618,7 +1634,7 @@ function AdminPlanManager() {
   const fetchPlanTypes = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/plan-types`);
+      const res = await apiFetch(`${API_BASE}/api/admin/plan-types`);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const data = await res.json();
       setPlanTypes(data);
@@ -1634,7 +1650,7 @@ function AdminPlanManager() {
     setIsLoading(true);
     try {
       const query = appNames.map((name) => `appNames=${encodeURIComponent(name)}`).join('&');
-      const res = await fetch(`${API_BASE}/api/admin/plansByApp?${query}`);
+      const res = await apiFetch(`${API_BASE}/api/admin/plansByApp?${query}`);
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
       const data = await res.json();
       const filteredPlans = data
@@ -1666,7 +1682,7 @@ function AdminPlanManager() {
   const handleStripeSync = async (planId) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/sync-stripe-price/${planId}`, {
+      const res = await apiFetch(`${API_BASE}/api/admin/sync-stripe-price/${planId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -1703,7 +1719,7 @@ function AdminPlanManager() {
   const handleDeletePlan = async (planId) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/deletePlans/${planId}`, {
+      const res = await apiFetch(`${API_BASE}/api/admin/deletePlans/${planId}`, {
         method: 'DELETE',
       });
       const responseData = await res.json();
@@ -1737,7 +1753,7 @@ function AdminPlanManager() {
     }
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/updatePlans/${planToEdit.id}`, {
+      const res = await apiFetch(`${API_BASE}/api/admin/updatePlans/${planToEdit.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1861,7 +1877,7 @@ function AdminPlanManager() {
     }
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/admin/create`, {
+      const res = await apiFetch(`${API_BASE}/api/admin/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1943,11 +1959,11 @@ function AdminPlanManager() {
       <div className="min-h-screen bg-slate-50">
 
         {/* ─── HEADER ──────────────────────────────────────────────── */}
-        <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+        {/* <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
           <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               
-              {/* Left side: Hamburger + Title */}
+              
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -1964,12 +1980,12 @@ function AdminPlanManager() {
                 <h1 className="text-2xl font-semibold text-slate-900">Plan Manager</h1>
               </div>
 
-              {/* Right side: Country Filter */}
+              
               <div className="flex items-center">
                 <div className="flex items-center gap-3">
                   <label className="text-sm font-medium text-slate-700 hidden sm:block">
                     <span><Globe size={16} /></span>
-                    {/* Country: */}
+                    
                   </label>
                   <select
                     value={selectedCountryFilter}
@@ -1990,13 +2006,13 @@ function AdminPlanManager() {
 
             </div>
           </div>
-        </header>
+        </header> */}
 
         {/* ─── DRAWER (used on all screen sizes) ───────────────────── */}
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {isSidebarOpen && (
             <>
-              {/* Backdrop */}
+              
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -2005,7 +2021,7 @@ function AdminPlanManager() {
                 onClick={() => setIsSidebarOpen(false)}
               />
 
-              {/* Drawer panel */}
+              
               <motion.aside
                 initial={{ x: '-100%' }}
                 animate={{ x: 0 }}
@@ -2044,7 +2060,22 @@ function AdminPlanManager() {
               </motion.aside>
             </>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
+        <AdminHeader
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+          title="Plan Manager"
+          countries={countries}
+          selectedCountryFilter={selectedCountryFilter}
+          setSelectedCountryFilter={setSelectedCountryFilter}
+        />
+
+        {/* Reusable Sidebar */}
+        <AdminSidebar
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          quickActions={quickActions}
+        />
 
         {/* ─── MAIN CONTENT ────────────────────────────────────────── */}
         <main className="flex-1 min-h-screen">

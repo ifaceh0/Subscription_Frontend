@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Shield, Lock, EyeOff, Scale } from 'lucide-react';
-import Header from '../Header';
+import Header from '../subscription/Header';
 
 const PrivacyPolicy = () => {
   const currentYear = new Date().getFullYear();

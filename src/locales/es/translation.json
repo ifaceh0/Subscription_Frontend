@@ -359,13 +359,17 @@
     "priceBefore": "Precio antes del cambio",
     "priceAfter": "Precio después del cambio",
     "proratedChargeApplied": "Se ha aplicado un cargo prorrateado por el período restante.",
-    "newPlanFrom": "Nuevo precio del plan desde",
+    "newPlanFrom": "Precio del nuevo plan",
     "appsAddedOn": "Aplicaciones añadidas el",
 
     "appsAddedTitle": "Nuevas aplicaciones añadidas a tu plan",
     "previousPrice": "Precio anterior",
     "updatedPrice": "Precio actualizado",
     "prorationNote": "El costo adicional se ha prorrateado para el período de facturación restante.",
+    "newOfferings": "Nuevas Lanzamiento",
+    "upgrade": "Actualizar",
+    "expansion": "Expansión",
+    "inactive": "Inactiva",
 
     "aria": {
       "changePlan": "Cambiar plan para {{planName}}",
@@ -375,6 +379,65 @@
       "selectAppForChange": "Seleccionar {{appName}} para cambio de plan",
       "selectAppToAdd": "Agregar {{appName}} a tu suscripción"
     }
+  },
+
+  "paymentPage": {
+    "paymentMethods": "Métodos de pago",
+    "addNewCard": "Agregar nueva tarjeta",
+    "noCardsSaved": "No hay tarjetas guardadas",
+    "addPaymentDescription": "Agrega un método de pago para mantener tus suscripciones activas y actualizadas.",
+    "setupPaymentMethod": "Configurar método de pago",
+    "paymentAddedSuccess": "Método de pago agregado correctamente",
+    "failedToLoadPayments": "Error al cargar los métodos de pago",
+    "networkErrorPayments": "Error de red al cargar los métodos de pago",
+    "secureAdd": "Agrega tu método de pago de forma segura",
+    "initializing": "Inicializando enlace seguro",
+    "cardInfo": "Información de la tarjeta",
+    "validatingCard": "Validando tarjeta...",
+    "addPaymentMethod": "Agregar método de pago",
+    "pciSecure": "Cifrado compatible con PCI DSS",
+    "cardAddedSuccess": "Tarjeta agregada correctamente",
+    "prepareCardFailed": "Error al preparar el formulario de tarjeta",
+    "networkPrepareError": "Error de red al preparar el formulario",
+    "unexpectedError": "Error inesperado durante la configuración de la tarjeta",
+    "setDefaultSuccess": "Método de pago principal actualizado",
+    "setDefaultFailed": "Error al establecer como principal",
+    "networkError": "Error de red",
+    "primary": "Principal",
+    "expiry": "Vencimiento",
+    "setDefault": "Establecer como principal",
+    "deleteSuccess": "Tarjeta eliminada correctamente",
+    "deleteFailed": "No se pudo eliminar la tarjeta",
+    "confirmDeleteTitle": "¿Eliminar esta tarjeta?",
+    "confirmDeleteDesc": "Se eliminará permanentemente la tarjeta terminada en •••• {last4} de tu cuenta.",
+    "actionIrreversible": "Esta acción no se puede deshacer.",
+    "removeCard": "Eliminar",
+    "deleteConfirm": "quitar tarjeta",
+    "confirmDeleteQuick": "¿Estás segura de que quieres eliminar esta tarjeta?"
+  },
+
+  "common": {
+    "cancel": "Cancelar"
+  },
+
+  "invoicePage": {
+    "billingHistory": "Historial de facturación",
+    "fetchingRecords": "Cargando registros...",
+    "noInvoices": "Aún no hay facturas.",
+    "noInvoicesDesc": "Tu historial de facturación aparecerá aquí después de tu primera transacción exitosa.",
+    "failedToLoad": "Error al cargar las facturas",
+    "networkError": "Error de red al cargar el historial de facturación",
+    "invoice": "Factura",
+    "processing": "Procesando...",
+    "unknown": "Desconocido",
+    "paid": "Pagado",
+    "open": "Pendiente",
+    "void": "Anulado",
+    "nextBilling": "Próximo cobro",
+    "amount": "Importe",
+    "due": "Fecha",
+    "noActiveSubscription": "No tienes una suscripción activa",
+    "automaticallyCharged": "Se cargará automáticamente"
   },
 
   "addProduct": {

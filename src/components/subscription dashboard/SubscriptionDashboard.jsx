@@ -1118,7 +1118,7 @@
 // updated code for language support using i18next
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Calendar, Package, AlertCircle, RefreshCw, CheckCircle, Check, XCircle, Clock, PlusCircle, CreditCard, FileText, ArrowRight } from 'lucide-react';
+import { Calendar, Package, AlertCircle, RefreshCw, Sparkles, Check, XCircle, Info, MinusCircle, CreditCard, FileText, ArrowRight, Plus } from 'lucide-react';
 import { FiLoader } from "react-icons/fi";
 import { Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -1126,8 +1126,10 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 import { useTranslation } from 'react-i18next';
-import Header from '../../components/Header';
+import Header from '../../components/subscription/Header';
 import { div } from 'framer-motion/client';
+import InvoicesSection from './invoice/InvoicesSection';
+import PaymentMethodsSection from './invoice/PaymentMethodsSection';
 
 const SubscriptionDashboard = () => {
   const { t } = useTranslation();
@@ -1577,33 +1579,37 @@ const SubscriptionDashboard = () => {
 
     const getStatusColor = (status, paymentStatus) => {
       if (paymentStatus === 'past_due' || paymentStatus === 'unpaid') {
-        return { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-500', label: paymentStatus.replace('_', ' ').toUpperCase() };
+        return { bg: 'bg-red-50', text: 'text-red-600', dot: 'bg-red-500', label: paymentStatus.replace('_', ' ').toUpperCase() };
       }
       switch (status) {
         case 'ACTIVE':
-          return { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-500', label: t('dashboard.status.active') };
+          return { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', label: t('dashboard.status.active') };
         case 'TRIALING':
-          return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-500', label: t('dashboard.status.trialing') };
+          return { bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500', label: t('dashboard.status.trialing') };
         case 'CANCELLED':
-          return { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-500', label: t('dashboard.status.canceled') };
+          return { bg: 'bg-orange-50', text: 'text-orange-700', dot: 'bg-orange-500', label: t('dashboard.status.canceled') };
         default:
-          return { bg: 'bg-gray-50', text: 'text-gray-600', border: 'border-gray-300', label: status };
+          return { bg: 'bg-gray-50', text: 'text-gray-600', dot: 'bg-gray-400', label: status };
       }
     };
 
     return (
       <section className="mb-12">
-        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-          <Package className="w-8 h-8 text-indigo-600" />
-          {t('dashboard.activeSubscriptions', { count: subscriptions.length })}
-        </h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+            <div className="p-2 bg-violet-200 rounded-lg">
+              <Package className="w-5 h-5 text-violet-600" />
+            </div>
+            {t('dashboard.activeSubscriptions', { count: subscriptions.length })}
+          </h2>
+        </div>
         
         {subscriptions.length === 0 ? (
-          <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-xl">
-            <p className="text-gray-500">{t('dashboard.noActiveSubscriptions')}</p>
+          <div className="text-center py-16 border border-dashed border-gray-200 rounded-2xl bg-gray-50/30">
+            <p className="text-gray-400 font-medium">{t('dashboard.noActiveSubscriptions')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-8">
             <AnimatePresence>
               {subscriptions.map((sub, index) => {
                 const statusColors = getStatusColor(sub.status, sub.paymentStatus);
@@ -1612,65 +1618,73 @@ const SubscriptionDashboard = () => {
                 return (
                   <motion.div
                     key={sub.stripeSubscriptionId}
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -30, scale: 0.95 }}
-                    transition={{ duration: 0.4, delay: index * 0.08 }}
-                    className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border-l-8 ${statusColors.border}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-xl border border-gray-100 transition-all duration-300 overflow-hidden"
                   >
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-2xl font-extrabold text-gray-900">{sub.planName} {t('dashboard.plan')}</h3>
-                          {sub.hasRecentPlanChange && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                              {t('dashboard.recentPlanChangeBadge')}
+                    <div className="p-6 lg:p-8">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                              {sub.planName} {t('dashboard.plan')}
+                            </h3>
+                            {sub.hasRecentPlanChange && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-violet-100 text-violet-700">
+                                {t('dashboard.recentPlanChangeBadge')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 mt-3">
+                            <div className={`w-2 h-2 rounded-full ${statusColors.dot}`} />
+                            <span className={`text-xs font-bold uppercase tracking-wide ${statusColors.text}`}>
+                              {statusColors.label}
                             </span>
+                          </div>
+                        </div>
+
+                        <div className="text-right">
+                          <p className={`text-xl lg:text-3xl font-bold tracking-tight ${isPriceChange ? 'text-emerald-600' : 'text-gray-900'}`}>
+                            {formatPriceDynamic(sub.currentPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
+                            <span className="text-sm font-medium text-gray-400 ml-1">/{sub.billingCycle.toLowerCase()}</span>
+                          </p>
+                          {isPriceChange && sub.oldPriceFormatted && (
+                            <p className="text-xs text-red-500 mt-1 font-medium">
+                              <span className="line-through opacity-60 mr-1">
+                                {formatPriceDynamic(sub.oldPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
+                              </span>
+                              {t('dashboard.priceChangeNextCycle')}
+                            </p>
                           )}
                         </div>
-                        <div className={`px-4 py-1 rounded-full text-sm font-semibold ${statusColors.bg} ${statusColors.text}`}>
-                          {statusColors.label}
-                        </div>
                       </div>
 
-                      <div className="border-b pb-4 mb-4">
-                        <p className={`text-4xl font-black ${isPriceChange ? 'text-green-600' : 'text-gray-600'}`}>
-                          {formatPriceDynamic(sub.currentPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
-                          <span className="text-lg font-medium text-gray-500">/{sub.billingCycle.toLowerCase()}</span>
-                        </p>
-                        {isPriceChange && sub.oldPriceFormatted && (
-                          <p className="text-sm text-red-500 mt-1 flex items-center">
-                            <span className="line-through mr-1">
-                              {formatPriceDynamic(sub.oldPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
-                            </span>
-                            <span className="font-semibold">{t('dashboard.priceChangeNextCycle')}</span>
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-3 text-gray-700 text-sm">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 py-6 border-y border-gray-200">
                         <DetailRow icon={Calendar} label={t('dashboard.nextBilling')} value={formatDate(sub.endDate)} highlight={true} />
+                        <DetailRow label={t('dashboard.autoRenew')} value={sub.autoRenew ? t('dashboard.enabled') : t('dashboard.disabled')} valueColor={sub.autoRenew ? 'text-emerald-600' : 'text-red-500'} />
                         <DetailRow icon={Calendar} label={t('dashboard.startDate')} value={formatDate(sub.startDate)} />
-                        <DetailRow label={t('dashboard.autoRenew')} value={sub.autoRenew ? t('dashboard.enabled') : t('dashboard.disabled')} valueColor={sub.autoRenew ? 'text-green-600' : 'text-red-600'} />
-                        <DetailRow label={t('dashboard.cancelAtPeriodEnd')} value={sub.cancelAtPeriodEnd ? t('dashboard.yes') : t('dashboard.no')} valueColor={sub.cancelAtPeriodEnd ? 'text-red-600' : 'text-green-600'} />
+                        <DetailRow label={t('dashboard.cancelAtPeriodEnd')} value={sub.cancelAtPeriodEnd ? t('dashboard.yes') : t('dashboard.no')} valueColor={sub.cancelAtPeriodEnd ? 'text-red-500' : 'text-emerald-600'} />
+            
                         {sub.trialEndDate && (
                           <DetailRow icon={Calendar} label={t('dashboard.trialEnds')} value={formatDate(sub.trialEndDate)} valueColor="text-blue-600" />
                         )}
                       </div>
 
-                      <div className="mt-5 pt-4 border-t border-gray-100">
-                        <p className="font-semibold text-gray-800 mb-2">{t('dashboard.includedApplications')}:</p>
-                        <div className="flex flex-col gap-2">
+                      <div className="mt-8">
+                        <h4 className="text-[13px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+                          {t('dashboard.includedApplications')}
+                        </h4>
+                        <div className="flex flex-wrap gap-4">
                           {sub.applications.map(app => (
-                            <div className="flex flex-wrap items-start">
-                              <AppPill
-                                key={app.id}
-                                name={app.name}
-                                active={sub.applicationStatuses[app.name]?.active}
-                                changed={sub.applicationStatuses[app.name]?.changed}
-                              />
-                            </div>
+                            <AppPill
+                              key={app.id}
+                              name={app.name}
+                              active={sub.applicationStatuses[app.name]?.active}
+                              changed={sub.applicationStatuses[app.name]?.changed}
+                            />
                           ))}
+                        </div>  
+                        <div className="mt-4">
                           {sub.canceledApplications?.length > 0 && (
                             <div className="mt-2">
                               <p className="text-sm text-red-600 font-medium mb-2">
@@ -1685,79 +1699,7 @@ const SubscriptionDashboard = () => {
                               ))}
                             </div>
                           )}
-                        </div>
-                        {/* {sub.hasRecentPlanChange && sub.previousPlanName && sub.previousPriceFormatted && (
-                          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-200 rounded-lg text-sm space-y-3">
-
-                            <div className="flex items-center gap-2 font-semibold text-indigo-800">
-                              <ArrowRight className="w-5 h-5" />
-                              {t('dashboard.recentPlanChangeTitle')}
-                            </div>
-
-                            <div className="flex justify-between text-gray-700">
-                              <span>{t('dashboard.previousPlan')}</span>
-                              <span className="font-medium">
-                                {sub.previousPlanName} (
-                                {formatPriceDynamic(
-                                  sub.previousPriceFormatted,
-                                  sub.currencySymbol,
-                                  sub.currencyPosition
-                                )}
-                                )
-                              </span>
-                            </div>
-
-                            <div className="flex justify-between text-gray-700">
-                              <span>{t('dashboard.validUntil')}</span>
-                              <span className="font-medium">
-                                {formatDate(sub.periodEndDate || sub.endDate)}
-                              </span>
-                            </div>
-
-                            <div className="flex justify-between text-green-700 border-t pt-2">
-                              <span>{t('dashboard.newPriceFrom')}</span>
-                              <span className="font-semibold">
-                                {formatPriceDynamic(
-                                  sub.currentPriceFormatted,
-                                  sub.currencySymbol,
-                                  sub.currencyPosition
-                                )}
-                              </span>
-                            </div>
-
-                          </div>
-                        )}
-                        {sub.hasRecentAppAdd && sub.priceBeforeLastAddFormatted && (
-                          <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm space-y-2">
-                            
-                            <p className="font-semibold text-amber-800">
-                              New Apps Added to Your Plan
-                            </p>
-
-                            <div className="flex justify-between text-gray-700">
-                              <span>Previous Price</span>
-                              <span className="font-medium">
-                                {sub.priceBeforeLastAddFormatted}
-                              </span>
-                            </div>
-
-                            <div className="flex justify-between text-green-700">
-                              <span>Updated Price</span>
-                              <span className="font-semibold">
-                                {formatPriceDynamic(
-                                  sub.currentPriceFormatted,
-                                  sub.currencySymbol,
-                                  sub.currencyPosition
-                                )}
-                              </span>
-                            </div>
-
-                            <p className="text-xs text-gray-500 pt-1 border-t">
-                              The additional cost has been prorated for the remaining billing period.
-                            </p>
-
-                          </div>
-                        )} */}
+                        </div>    
                       </div>
 
                       {sub.nextPlanName && (
@@ -1778,62 +1720,19 @@ const SubscriptionDashboard = () => {
                           </p>
                         </div>
                       )}
-
-                      <div className="mt-5 pt-4 border-t border-gray-100">
-                        <p className="font-semibold text-gray-800 mb-2">{t('dashboard.paymentAndBilling')}:</p>
-                        {sub.paymentMethods && sub.paymentMethods.length ? (
-                          <div className="space-y-2">
-                            {(() => {
-                              const lastPm = sub.paymentMethods[sub.paymentMethods.length - 1];
-                              return (
-                                <p key={lastPm.id} className="text-sm text-gray-600 flex items-center gap-2">
-                                  <CreditCard className="w-4 h-4 text-gray-500" />
-                                  {lastPm.cardType} {t('dashboard.endingIn')} <strong>{lastPm.last4}</strong>, {t('dashboard.expires')} {lastPm.expMonth}/{lastPm.expYear}
-                                </p>
-                              );
-                            })()}
-                          </div>
-                        ) : (
-                          <p className="text-sm text-gray-600">{t('dashboard.noPaymentMethod')}</p>
-                        )}
-                      </div>
                     </div>
 
-                    <div className="p-6 pt-0 flex space-x-3">
+                    <div className="px-8 py-5 bg-gray-50/50 flex flex-wrap gap-3 border-t border-gray-200">
                       {sub.canChangePlan && (
-                        <button
-                          onClick={() => handleChangePlanSelection(sub)}
-                          className="flex-1 py-2 rounded-full font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-200 shadow-md disabled:bg-indigo-400"
-                          disabled={isLoading}
-                          aria-label={t('dashboard.aria.changePlan', { planName: sub.planName })}
-                        >
+                        <button onClick={() => handleChangePlanSelection(sub)} className="px-6 py-2 rounded-full font-bold text-sm bg-violet-600 text-white hover:bg-violet-700 transition-all shadow-sm">
                           {t('dashboard.changePlan')}
                         </button>
                       )}
                       {sub.canCancel && (
-                        <button
-                          onClick={() => {
-                            setSubscriptionToCancel(sub);
-                            setSelectedCancelApps(sub.applicationIds || []);
-                            setShowCancelSelectionModal(true);
-                          }}
-                          className={`flex-1 py-2 rounded-full font-bold text-sm text-red-600 border border-red-200 bg-white hover:bg-red-50 transition-all duration-200 shadow-md ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          disabled={isLoading}
-                          aria-label={t('dashboard.aria.cancelSubscription', { planName: sub.planName })}
-                        >
+                        <button onClick={() => { setSubscriptionToCancel(sub); setSelectedCancelApps(sub.applicationIds || []); setShowCancelSelectionModal(true); }} className="px-6 py-2 rounded-full font-bold text-sm text-gray-600 bg-white border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all">
                           {t('dashboard.cancel')}
                         </button>
                       )}
-                      {/* {sub.canRenew && (
-                        <button
-                          onClick={() => handleRenewSubscription(sub)}
-                          className="flex-1 py-2 rounded-full font-bold text-sm text-white bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-md disabled:bg-green-400"
-                          disabled={isLoading}
-                          aria-label={t('dashboard.aria.renewSubscription', { planName: sub.planName })}
-                        >
-                          {t('dashboard.renew')}
-                        </button>
-                      )} */}
                       {sub.canRenew && (
                         <button
                           onClick={() => handleRenewSubscription(sub)}
@@ -1999,20 +1898,12 @@ const SubscriptionDashboard = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto p-4"
-      >
-        {/* <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-12 sm:mb-10 text-center">
-          {t('dashboard.welcome', { name: customerName })}
-        </h1> */}
-        <header className="mb-16 text-center">
-          <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-3">
+      <motion.div className="max-w-full mx-auto px-6 lg:px-16 py-4">
+        <header className="mb-6 text-center border-b border-gray-100">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
             {t('dashboard.welcome', { name: customerName })}
           </h1>
-          <p className="text-slate-500 font-medium">{t('dashboard.manageSubscriptions')}</p>
+          <p className="text-gray-500 font-medium">{t('dashboard.manageSubscriptions')}</p>
         </header>
 
         {successMessage && (
@@ -2036,185 +1927,183 @@ const SubscriptionDashboard = () => {
           setShowCancelSelectionModal={setShowCancelSelectionModal}
         />
 
-        {newProducts.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-              {t('dashboard.newProductsAvailable')}
-            </h2>
-            <div className="bg-white rounded-lg shadow-md p-4 border border-gray-100">
-              <p className="text-gray-600 mb-4">{t('dashboard.exploreNewOfferings')}</p>
-              <div className="flex flex-wrap gap-2">
-                {newProducts.map((product, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
-                  >
-                    {product.name}
-                  </span>
-                ))}
-              </div>
-              <button
-                onClick={handleAddProductSelection}
-                className="mt-4 inline-flex items-center gap-2 py-1.5 px-4 rounded-full font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-all duration-200"
-                aria-label="Explore new products"
-              >
-                <PlusCircle className="w-5 h-5" />
-                {t('dashboard.exploreNewProducts')}
-              </button>
-            </div>
-          </section>
-        )}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {newProducts.length > 0 && (
+            <div className="flex-1">
+              <section className="mb-12">
+                {/* Section Header with refined typography */}
+                <h2 className="text-sm font-bold text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                  <span className="w-8 h-[1px] bg-gray-300"></span>
+                  {t('dashboard.newProductsAvailable')}
+                </h2>
 
-        {(subscriptions.some(sub => sub.hasRecentPlanChange || sub.hasRecentAppAdd)) && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6 flex items-center gap-2">
-              <RefreshCw className="w-6 h-6 text-indigo-600" />
-              {t('dashboard.recentActivity') || 'Recent Activity'}
-            </h2>
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
-              <div className="space-y-5">
-                {subscriptions
-                  .filter(sub => sub.hasRecentPlanChange || sub.hasRecentAppAdd)
-                  .map((sub, index) => (
-                    <div
-                      key={sub.id}
-                      className="border-l-4 border-indigo-500 pl-4 py-1"
-                    >
-                      {/* Plan Change Block */}
-                      {sub.hasRecentPlanChange && sub.previousPlanName && (
-                        <div className="mb-4">
-                          <div className="flex items-center gap-2 mb-1">
-                            <ArrowRight className="w-5 h-5 text-indigo-600" />
-                            <p className="font-semibold text-indigo-800">
-                              {t('dashboard.planUpgraded')} • {formatDate(sub.periodEndDate || sub.endDate)}
-                            </p>
-                          </div>
-                          <div className="text-sm text-gray-700 space-y-1 ml-7">
-                            <div className="flex justify-between">
-                              <span>{t('dashboard.previousPlan')}:</span>
-                              <span className="font-medium">
-                                {sub.previousPlanName} (
-                                {formatPriceDynamic(
-                                  sub.previousPriceFormatted,
-                                  sub.currencySymbol,
-                                  sub.currencyPosition
-                                )})
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-green-700">
-                              <span>{t('dashboard.newPlanFrom')}:</span>
-                              <span className="font-semibold">
-                                {formatPriceDynamic(
-                                  sub.currentPriceFormatted,
-                                  sub.currencySymbol,
-                                  sub.currencyPosition
-                                )}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Recent App Add Block */}
-                      {sub.hasRecentAppAdd && sub.priceBeforeLastAddFormatted && (
+                <div className="relative overflow-hidden bg-white border border-gray-100 rounded-xl p-8 transition-all duration-300 hover:border-emerald-200/50 group">
+                  {/* Subtle background glow effect */}
+                  <div className="absolute -right-16 -top-16 w-64 h-64 bg-emerald-50 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-opacity" />
+                  
+                  <div className="relative z-10">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div className="space-y-4">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <PlusCircle className="w-5 h-5 text-green-600" />
-                            <p className="font-semibold text-green-800">
-                              {t('dashboard.appsAdded')} • {formatDate(sub.lastAppAddDate || sub.endDate)}
-                            </p>
+                            <Sparkles className="w-4 h-4 text-emerald-500" />
+                            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                              {t('dashboard.newOfferings')}
+                            </span>
                           </div>
-                          <div className="text-sm text-gray-700 space-y-1 ml-7">
-                            <div className="flex justify-between">
-                              <span>{t('dashboard.priceBefore')}:</span>
-                              <span className="font-medium">
-                                {formatPriceDynamic(
-                                  sub.priceBeforeLastAddFormatted,
-                                  sub.currencySymbol,
-                                  sub.currencyPosition
-                                )}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-green-700">
-                              <span>{t('dashboard.priceAfter')}:</span>
-                              <span className="font-semibold">
-                                {formatPriceDynamic(
-                                  sub.currentPriceFormatted,
-                                  sub.currencySymbol,
-                                  sub.currencyPosition
-                                )}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-500 pt-1">
-                              {t('dashboard.proratedChargeApplied')}
-                            </p>
+                          <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-md">
+                            {t('dashboard.exploreNewOfferings')}
+                          </p>
+                        </div>
+
+                        {/* Refined Pill Tags */}
+                        <div className="flex flex-wrap gap-2">
+                          {newProducts.map((product, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex items-center px-3 py-1.5 rounded-full text-[13px] font-semibold bg-gray-50 text-gray-700 border border-gray-100 group-hover:bg-white group-hover:border-emerald-100 transition-colors"
+                            >
+                              <Plus className="w-3 h-3 mr-1.5 text-emerald-500" />
+                              {product.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Clean, Soft Action Button */}
+                      <button
+                        onClick={handleAddProductSelection}
+                        className="inline-flex items-center justify-center gap-2 py-2 px-6 rounded-full font-bold text-sm text-white bg-gray-900 hover:bg-violet-600 transition-all duration-300 shadow-sm hover:shadow-violet-200 active:scale-95"
+                        aria-label="Explore new products"
+                      >
+                        {t('dashboard.exploreNewProducts')}
+                        <ArrowRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>  
+          )}
+
+          {subscriptions.some(sub => sub.hasRecentPlanChange || sub.hasRecentAppAdd) && (
+            <div className="flex-1">
+              <section className="mb-12">
+                {/* Minimalist Section Header */}
+                <h2 className="text-sm font-bold text-gray-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
+                  <span className="w-8 h-[1px] bg-gray-300"></span>
+                  {t('dashboard.recentActivity') || 'Recent Activity'}
+                </h2>
+
+                <div className="relative">
+                  {/* Vertical Timeline Track */}
+                  <div className="absolute left-[11px] top-2 bottom-2 w-[1.5px] bg-gray-100" />
+
+                  <div className="space-y-10">
+                    {subscriptions
+                      .filter(sub => sub.hasRecentPlanChange || sub.hasRecentAppAdd)
+                      .map((sub) => (
+                        <div key={sub.id} className="relative pl-10 group">
+                          
+                          {/* Timeline Node Icon */}
+                          <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-white border-2 border-indigo-100 flex items-center justify-center z-10 group-hover:border-indigo-400 transition-colors duration-300">
+                            <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                          </div>
+
+                          <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 border border-gray-100 transition-all hover:bg-white hover:shadow-xl hover:shadow-gray-200/40">
+                            
+                            {/* Plan Change Block */}
+                            {sub.hasRecentPlanChange && sub.previousPlanName && (
+                              <div className="animate-in fade-in slide-in-from-left-2 duration-500">
+                                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-50 text-indigo-600 tracking-wider">
+                                      {t('dashboard.upgrade')}
+                                    </span>
+                                    <p className="text-sm font-bold text-gray-800">
+                                      {t('dashboard.planUpgraded')}
+                                    </p>
+                                  </div>
+                                  <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
+                                    {formatDate(sub.periodEndDate || sub.endDate)}
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 bg-gray-50/50 rounded-xl p-4 border border-gray-50">
+                                  <div>
+                                    <p className="text-[11px] text-gray-400 uppercase font-bold tracking-tight mb-1">{t('dashboard.previousPlan')}</p>
+                                    <p className="text-sm font-medium text-gray-600 line-through decoration-gray-300">
+                                      {sub.previousPlanName}(
+                                            {formatPriceDynamic(
+                                              sub.previousPriceFormatted,
+                                              sub.currencySymbol,
+                                              sub.currencyPosition
+                                            )})
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[11px] text-indigo-400 uppercase font-bold tracking-tight mb-1">{t('dashboard.newPlanFrom')}</p>
+                                    <p className="text-sm font-bold text-indigo-700">
+                                      {formatPriceDynamic(sub.currentPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Recent App Add Block */}
+                            {sub.hasRecentAppAdd && sub.priceBeforeLastAddFormatted && (
+                              <div className={`${sub.hasRecentPlanChange ? 'mt-6 pt-6 border-t border-dashed border-gray-200' : ''} animate-in fade-in slide-in-from-left-2 duration-700`}>
+                                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-600 tracking-wider">
+                                      {t('dashboard.expansion')}
+                                    </span>
+                                    <p className="text-sm font-bold text-gray-800">
+                                      {t('dashboard.appsAdded')}
+                                    </p>
+                                  </div>
+                                  <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
+                                    {formatDate(sub.lastAppAddDate || sub.endDate)}
+                                  </span>
+                                </div>
+
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between text-sm px-1">
+                                    <span className="text-gray-500">{t('dashboard.priceBefore')}</span>
+                                    <span className="font-medium text-gray-700">
+                                      {formatPriceDynamic(sub.priceBeforeLastAddFormatted, sub.currencySymbol, sub.currencyPosition)}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between text-sm px-1">
+                                    <span className="text-gray-500 font-bold">{t('dashboard.priceAfter')}</span>
+                                    <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+                                      {formatPriceDynamic(sub.currentPriceFormatted, sub.currencySymbol, sub.currencyPosition)}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] italic text-gray-400 flex items-center gap-1.5 ml-1">
+                                    <Info size={12} />
+                                    {t('dashboard.proratedChargeApplied')}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
                           </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {subscriptions.some(sub => sub.invoices?.length > 0) && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
-              <FileText className="w-6 h-6 text-blue-600" />
-              {t('dashboard.billingHistory')}
-            </h2>
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="py-2 px-4 text-gray-600 font-semibold">{t('dashboard.date')}</th>
-                      <th className="py-2 px-4 text-gray-600 font-semibold">{t('dashboard.amount')}</th>
-                      <th className="py-2 px-4 text-gray-600 font-semibold">{t('dashboard.status')}</th>
-                      <th className="py-2 px-4 text-gray-600 font-semibold">{t('dashboard.action')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {subscriptions
-                      .flatMap(sub => sub.invoices || [])
-                      .sort((a, b) => new Date(b.date) - new Date(a.date))
-                      .slice(0, 5)
-                      .map((invoice, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="py-2 px-4 text-gray-600">{formatDate(invoice.date)}</td>
-                          <td className="py-2 px-4 text-gray-600">{formatPriceDynamic(invoice.amount.toFixed(2), dashboardData.currencySymbol, dashboardData.currencyPosition)}</td>
-                          <td className="py-2 px-4 text-gray-600">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                invoice.status === 'paid'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}
-                            >
-                              {invoice.status.toUpperCase()}
-                            </span>
-                          </td>
-                          <td className="py-2 px-4">
-                            <a
-                              href={invoice.invoiceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-purple-600 hover:underline"
-                              aria-label={`${t('dashboard.downloadInvoice')} ${invoice.id}`}
-                            >
-                              {t('dashboard.download')}
-                            </a>
-                          </td>
-                        </tr>
                       ))}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+                </div>
+              </section>
             </div>
-          </section>
-        )}
+          )}
+        </div>
+        
+        <PaymentMethodsSection
+          email={email}
+          API_URL={API_URL}
+          onRefresh={refreshDashboard}
+        />
 
         {subscriptionHistory.length > 0 && (
           <section className="mb-12">
@@ -2239,32 +2128,62 @@ const SubscriptionDashboard = () => {
           </section>
         )}
 
-        {appHistory.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6 flex items-center gap-2">
-              <XCircle className="w-6 h-6 text-red-600" />
-              {t('dashboard.cancellationHistory')}
-            </h2>
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
-              <div className="space-y-3">
-                {appHistory
-                  .filter(hist => hist.status === "CANCELLED")
-                  .map((history, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <XCircle className="w-5 h-5 text-red-600" />
-                    <p className="text-gray-600">
-                      <span className="font-semibold">{history.appName}</span> {t('dashboard.wasCanceledOn')} {' '}
-                      {formatDate(history.actionDate)}
-                    </p>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1">
+            <InvoicesSection
+              email={email}
+              API_URL={API_URL}
+              currencySymbol={dashboardData.currencySymbol}
+              currencyPosition={dashboardData.currencyPosition}
+            />
+          </div>  
+
+          {appHistory.filter(hist => hist.status === "CANCELLED").length > 0 && (
+            <div className="flex-1">
+              <section className="mb-12">
+                {/* Subtle Section Header */}
+                <h2 className="text-sm font-bold text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                  <span className="w-8 h-[1px] bg-gray-300"></span>
+                  {t('dashboard.cancellationHistory')}
+                </h2>
+
+                <div className="bg-gray-50/50 rounded-2xl border border-gray-100 p-2">
+                  <div className="space-y-1">
+                    {appHistory
+                      .filter(hist => hist.status === "CANCELLED")
+                      .map((history, index) => (
+                        <div 
+                          key={index} 
+                          className="group flex items-center justify-between bg-white p-4 rounded-xl border border-transparent hover:border-gray-200 hover:shadow-sm transition-all duration-200"
+                        >
+                          <div className="flex items-center gap-4">
+                            {/* Minimalist Muted Icon */}
+                            <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                              <MinusCircle className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
+                            </div>
+                            
+                            <div>
+                              <p className="text-sm font-bold text-gray-700 group-hover:text-gray-900 transition-colors">
+                                {history.appName}
+                              </p>
+                              <p className="text-xs text-gray-400 font-medium">
+                                {t('dashboard.wasCanceledOn')} {formatDate(history.actionDate)}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Status Badge */}
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                            {t('dashboard.inactive') || 'Inactive'}
+                          </span>
+                        </div>
+                      ))}
                   </div>
-                ))}
-                {appHistory.filter(hist => hist.status === "CANCELLED").length === 0 && (
-                  <p className="text-gray-600">{t('dashboard.noCancellationsYet')}</p>
-                )}
-              </div>
-            </div>
-          </section>
-        )}
+                </div>
+              </section>
+            </div>  
+          )}
+        </div>  
 
         {/* Cancel Selection Modal */}
         {showCancelSelectionModal && (
@@ -2547,12 +2466,6 @@ const SubscriptionDashboard = () => {
                   <p className="text-xl font-bold text-blue-700 mt-1">
                     {previewInfo.proratedFormatted}
                   </p>
-                  {/* <p className="text-xs text-gray-600 mt-2">
-                    {t('dashboard.proratedForRemaining')} (
-                    {previewInfo.remainingRatio ? `${(previewInfo.remainingRatio * 100).toFixed(0)}%` : ''}
-                    )
-                  </p> */}
-
                   <p className="text-xs text-gray-600 mt-1">
                     {t('dashboard.proratedChargeDescription')}
                   </p>

@@ -345,10 +345,11 @@
 
 
 import { useState, useEffect } from 'react';
-import adminApi from '../../services/adminApi';
+import adminApi from '../../../services/adminApi';
 import { Plus, Edit2, Trash2, X, Globe, Loader2, Home } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
+import { getCountries, createCountry, updateCountry, deleteCountry } from '../../../services/adminApi';
 
 export default function CurrencyConfigManager() {
   const [countries, setCountries] = useState([]);
@@ -369,14 +370,22 @@ export default function CurrencyConfigManager() {
   const navigate = useNavigate();
 
   useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+      }
+  }, [navigate]);
+
+  useEffect(() => {
     loadCountries();
   }, []);
 
   const loadCountries = async () => {
     setLoading(true);
     try {
-      const res = await adminApi.get('/api/admin/getCountries');
-      setCountries(res.data || []);
+      // const res = await adminApi.get('/api/admin/getCountries');
+      const data = await getCountries();
+      setCountries(data || []);
     } catch (err) {
       toast.error('Failed to load countries');
     } finally {
@@ -397,12 +406,14 @@ export default function CurrencyConfigManager() {
     setSubmitting(true);
     try {
       if (editingCode) {
-        await adminApi.put('/api/admin/updateCountries', form, {
-          params: { countryCode: editingCode },
-        });
+        // await adminApi.put('/api/admin/updateCountries', form, {
+        //   params: { countryCode: editingCode },
+        // });
+        await updateCountry(editingCode, form);
         toast.success('Updated');
       } else {
-        await adminApi.post('/api/admin/saveCountries', form);
+        // await adminApi.post('/api/admin/saveCountries', form);
+        await createCountry(form);
         toast.success('Added');
       }
       resetForm();
@@ -432,9 +443,10 @@ export default function CurrencyConfigManager() {
   const handleDelete = async (code) => {
     if (!window.confirm(`Delete ${code}?`)) return;
     try {
-      await adminApi.delete('/api/admin/deleteCountries', {
-        params: { countryCode: code },
-      });
+      // await adminApi.delete('/api/admin/deleteCountries', {
+      //   params: { countryCode: code },
+      // });
+      await deleteCountry(code);
       toast.success('Deleted');
       loadCountries();
     } catch {

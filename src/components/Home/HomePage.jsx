@@ -73,7 +73,7 @@ export default function HomePage() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => navigate('/subscription')}
-                className="px-10 py-4 bg-violet-600 text-white font-semibold text-lg rounded-full
+                className="px-10 py-2 bg-violet-600 text-white font-semibold text-lg rounded-full
                            shadow-xl hover:bg-violet-700 hover:shadow-2xl transition-all duration-300 
                            flex items-center gap-3 min-w-[240px] justify-center"
               >
@@ -84,8 +84,8 @@ export default function HomePage() {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('/admin')}
-                className="px-10 py-4 bg-white text-violet-700 font-semibold text-lg rounded-full
+                onClick={() => navigate('/login')}
+                className="px-10 py-2 bg-white text-violet-700 font-semibold text-lg rounded-full
                            border-2 border-violet-200 hover:border-violet-300 hover:bg-violet-50 
                            transition-all flex items-center gap-3 duration-300 min-w-[240px]"
               >
@@ -97,7 +97,7 @@ export default function HomePage() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => navigate('/view-dashboard')}
-                className="px-10 py-4 bg-violet-600 text-white font-semibold text-lg rounded-full
+                className="px-10 py-2 bg-violet-600 text-white font-semibold text-lg rounded-full
                            shadow-xl hover:bg-violet-700 hover:shadow-2xl transition-all duration-300 
                            flex items-center gap-3 min-w-[240px] justify-center"
               >

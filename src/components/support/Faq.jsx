@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import FaqItem from './FaqItem';
 import { HelpCircle, Mail, MessageSquare, ShieldCheck, CreditCard, Zap } from 'lucide-react';
-import Header from '../Header';
+import Header from '../subscription/Header';
 
 const Faq = () => {
   const categories = [
