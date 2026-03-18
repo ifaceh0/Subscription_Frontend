@@ -383,6 +383,7 @@ import {
   Loader, X, Edit, Plus, Home
 } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from '../dashboard/api';
 
 const ToastNotification = ({ message, type, isVisible }) => {
   if (!isVisible) return null;
@@ -476,10 +477,17 @@ const PlanTypeManager = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+      }
+  }, []);
+
+  useEffect(() => {
     const fetchPlanTypes = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`${API_BASE_URL}/api/admin/plan-types`);
+        const res = await apiFetch(`${API_BASE_URL}/api/admin/plan-types`);
         if (!res.ok) throw new Error('Failed to load');
         const data = await res.json();
         setPlanTypes(data || []);
@@ -542,7 +550,7 @@ const PlanTypeManager = () => {
         : `${API_BASE_URL}/api/admin/updatePlanType/${form.id}`;
       const method = isCreatingNew ? 'POST' : 'PUT';
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

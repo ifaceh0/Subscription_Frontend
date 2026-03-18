@@ -5,10 +5,10 @@ import { FiLoader } from "react-icons/fi";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import ChangePlanCard from './ChangePlanCard';
-import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
+import { useLocation as useCountryLocation } from '../../../contexts/LocationContext';
 import { useTranslation } from 'react-i18next';
-import Header from '../../components/Header';
-import FeatureDetailsModal from '../Modal/FeatureDetailsModal';
+import Header from '../../subscription/Header';
+import FeatureDetailsModal from '../../Modal/FeatureDetailsModal';
 
 const ChangePlan = () => {
   const { t } = useTranslation();

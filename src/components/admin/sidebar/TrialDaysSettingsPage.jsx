@@ -311,6 +311,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Loader, Save, Home } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from '../dashboard/api';
 
 const ToastNotification = ({ message, type, isVisible }) => {
   if (!isVisible) return null;
@@ -399,13 +400,21 @@ const TrialDaysSettingsPage = () => {
   }, []);
 
   useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/login");
+        }
+  }, []);
+  
+
+  useEffect(() => {
     loadSetting();
   }, []);
 
   const loadSetting = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/getTrail/subscription.trial-days`, {
+      const res = await apiFetch(`${API_BASE_URL}/api/admin/getTrail/subscription.trial-days`, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
       });
@@ -440,7 +449,7 @@ const TrialDaysSettingsPage = () => {
         description: description.trim() || 'Global trial period in days for first-time subscribers (0 = disabled)',
       };
 
-      const res = await fetch(`${API_BASE_URL}/api/admin/updateTrail`, {
+      const res = await apiFetch(`${API_BASE_URL}/api/admin/updateTrail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

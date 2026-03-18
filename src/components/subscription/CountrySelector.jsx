@@ -50,7 +50,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Globe, ChevronDown, Check, Sparkles } from 'lucide-react';
-import { useLocation } from '../contexts/LocationContext';
+import { useLocation } from '../../contexts/LocationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CountrySelector() {

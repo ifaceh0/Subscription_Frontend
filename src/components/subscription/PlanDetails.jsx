@@ -288,7 +288,7 @@ import { useState } from 'react';
 import { Check, ChevronLeft, Loader2, Zap, ShieldCheck, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { useLocation as useCountryLocation } from '../contexts/LocationContext';
+import { useLocation as useCountryLocation } from '../../contexts/LocationContext';
 import { useTranslation } from 'react-i18next';
 import Header from './Header';
 

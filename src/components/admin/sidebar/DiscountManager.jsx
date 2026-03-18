@@ -257,10 +257,11 @@
 
 
 import { useState, useEffect } from 'react';
-import adminApi from '../../services/adminApi';
+import adminApi from '../../../services/adminApi';
 import { Plus, Trash2, Search, Mail, Tag, Loader2, Calendar, X, Home } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
+import { getDiscounts, assignDiscount, removeDiscount } from '../../../services/adminApi';
 
 export default function DiscountManager() {
   const [discounts, setDiscounts] = useState([]);
@@ -273,14 +274,23 @@ export default function DiscountManager() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     loadDiscounts();
   }, []);
 
   const loadDiscounts = async () => {
     setLoading(true);
     try {
-      const res = await adminApi.get('/api/admin/getDiscounts');
-      setDiscounts(res.data || []);
+      // const res = await adminApi.get('/api/admin/getDiscounts');
+      // setDiscounts(res.data || []);
+      const data = await getDiscounts();
+      setDiscounts(data || []);
     } catch (err) {
       toast.error('Could not load discount list');
     } finally {
@@ -300,7 +310,12 @@ export default function DiscountManager() {
 
     setActionLoading(true);
     try {
-      await adminApi.post('/api/admin/saveDiscounts', {
+      // await adminApi.post('/api/admin/saveDiscounts', {
+      //   email: trimmedEmail,
+      //   couponCode: trimmedCoupon,
+      //   validUntil: validUntil || null,
+      // });
+      await assignDiscount({
         email: trimmedEmail,
         couponCode: trimmedCoupon,
         validUntil: validUntil || null,
@@ -321,9 +336,10 @@ export default function DiscountManager() {
     if (!window.confirm(`Remove discount for ${email}?`)) return;
     setActionLoading(true);
     try {
-      await adminApi.delete('/api/admin/deleteDiscounts', {
-        params: { email },
-      });
+      // await adminApi.delete('/api/admin/deleteDiscounts', {
+      //   params: { email },
+      // });
+      await removeDiscount(email);
       toast.success('Discount removed');
       loadDiscounts();
     } catch {

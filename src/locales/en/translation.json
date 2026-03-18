@@ -359,13 +359,17 @@
     "priceBefore": "Price before change",
     "priceAfter": "Price after change",
     "proratedChargeApplied": "Prorated charge has been applied for the remaining period.",
-    "newPlanFrom": "New plan price from",
+    "newPlanFrom": "New plan price",
     "appsAddedOn": "Apps added on",
 
     "appsAddedTitle": "New Apps Added to Your Plan",
     "previousPrice": "Previous Price",
     "updatedPrice": "Updated Price",
     "prorationNote": "The additional cost has been prorated for the remaining billing period.",
+    "newOfferings": "New Release",
+    "upgrade": "Upgrade",
+    "expansion": "Expansion",
+    "inactive": "Inactive",
 
     "aria": {
       "changePlan": "Change plan for {{planName}}",
@@ -400,6 +404,65 @@
     "month": "Monthly",
     "quarter": "Quarterly",
     "year": "Yearly"
+  },
+
+  "paymentPage": {
+    "paymentMethods": "Payment Methods",
+    "addNewCard": "Add New Card",
+    "noCardsSaved": "No cards saved",
+    "addPaymentDescription": "Add a payment method to ensure your subscriptions stay active and up to date.",
+    "setupPaymentMethod": "Setup Payment Method",
+    "paymentAddedSuccess": "Payment method added successfully",
+    "failedToLoadPayments": "Failed to load payment methods",
+    "networkErrorPayments": "Network error while loading payment methods",
+    "secureAdd": "Securely add your payment method",
+    "initializing": "Initializing Secure Link",
+    "cardInfo": "Card Information",
+    "validatingCard": "Validating Card...",
+    "addPaymentMethod": "Add Payment Method",
+    "pciSecure": "PCI DSS Compliant Encryption",
+    "cardAddedSuccess": "Card added successfully",
+    "prepareCardFailed": "Failed to prepare card form",
+    "networkPrepareError": "Network error while preparing payment form",
+    "unexpectedError": "Unexpected error during card setup",
+    "setDefaultSuccess": "Default payment method updated",
+    "setDefaultFailed": "Failed to set default",
+    "networkError": "Network error",
+    "primary": "Primary",
+    "expiry": "Expiry",
+    "setDefault": "Set Default",
+    "deleteSuccess": "Card removed successfully",
+    "deleteFailed": "Failed to remove card",
+    "confirmDeleteTitle": "Remove this card?",
+    "confirmDeleteDesc": "This will permanently remove the card from your account.",
+    "actionIrreversible": "This action cannot be undone.",
+    "removeCard": "remove",
+    "deleteConfirm": "remove card",
+    "confirmDeleteQuick": "Are you sure you want to remove this card?"
+  },
+
+  "common": {
+    "cancel": "Cancel"
+  },
+
+  "invoicePage": {
+    "billingHistory": "Billing History",
+    "fetchingRecords": "Fetching records...",
+    "noInvoices": "No invoices found yet.",
+    "noInvoicesDesc": "Your billing history will appear here after your first successful transaction.",
+    "failedToLoad": "Failed to load invoices",
+    "networkError": "Network error while loading billing history",
+    "invoice": "Invoice",
+    "processing": "Processing...",
+    "unknown": "Unknown",
+    "paid": "Paid",
+    "open": "Open",
+    "void": "Void",
+    "nextBilling": "Next Billing",
+    "amount": "Amount",
+    "due": "Due",
+    "noActiveSubscription": "No active subscription",
+    "automaticallyCharged": "Will be automatically charged"
   },
 
   "addProductCard": {

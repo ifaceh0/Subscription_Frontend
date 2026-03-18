@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Gavel, UserCheck, CreditCard, Ban, AlertTriangle, Mail } from 'lucide-react';
-import Header from '../Header';
+import Header from '../subscription/Header';
 
 const TermsOfService = () => {
   const currentYear = new Date().getFullYear();

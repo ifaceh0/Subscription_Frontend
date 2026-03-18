@@ -1,6 +1,6 @@
 import { Mail, MessageCircle, HelpCircle, ArrowRight, LifeBuoy, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Header from '../Header';
+import Header from '../subscription/Header';
 
 const Support = () => {
   const currentYear = new Date().getFullYear();
