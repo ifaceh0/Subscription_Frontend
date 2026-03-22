@@ -1502,7 +1502,7 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-  Menu, X, Loader2, Plus, Edit, Trash2, RefreshCw, Check, Layers, Clock, Tag, DollarSign, Globe, Home
+  LayoutDashboard, X, Loader2, Plus, Edit, Trash2, RefreshCw, Check, Layers, Clock, Tag, DollarSign, Globe, Home
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -1550,6 +1550,7 @@ function AdminPlanManager() {
     { label: 'Trial Days Setting', icon: Clock, path: '/admin/trial-days-settings' },
     { label: 'User Discounts',      icon: Tag, path: '/admin/discounts'           },
     { label: 'Currency Config',    icon: DollarSign, path: '/admin/currency-config'     },
+    { label: 'User Dashboard',    icon: LayoutDashboard, path: '/view-dashboard'     },
   ];
 
   // ─── Data conversion & fetching logic remains mostly same ───

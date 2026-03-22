@@ -38,8 +38,8 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/subscription" element={<Subscription />} />
-              <Route path="/login" element={<AdminLogin />} />
-              <Route path="/signup" element={<AdminSignup />} />
+              <Route path="/login-admin" element={<AdminLogin />} />
+              <Route path="/signup-admin" element={<AdminSignup />} />
               {/* <Route path="/admin" element={<AdminLookUp />} /> */}
               {/* <Route path="/admin/add-application" element={<AddApplication />} /> */}
               {/* <Route path="/admin/plan-type" element={<PlanType />} /> */}
