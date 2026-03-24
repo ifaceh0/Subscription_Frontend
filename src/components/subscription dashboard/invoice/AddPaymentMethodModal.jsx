@@ -5,10 +5,7 @@ import { Loader2, X, ShieldCheck, Lock, CreditCard } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 
-const stripePromise = loadStripe("pk_test_51RopDv3Yxcj6F3ytKput3ZZAhcjDwg2IZkKNNS7MaJ1RGX9W0W2YcqAwIh4TTgqaQDnCxSbIxu09czDhQ5LlDoH300YakDVkTu");
-// loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-console.log("Publishable key:", import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-console.log("Type of key:", typeof import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const AddPaymentMethodModal = ({ email, customerId, API_URL, onClose, onSuccess }) => {
   const { t } = useTranslation();
