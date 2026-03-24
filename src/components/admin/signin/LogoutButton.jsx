@@ -22,7 +22,7 @@ const LogoutButton = ({
     }
 
     // Redirect to login
-    navigate("/login", { replace: true });
+    navigate("/login-admin", { replace: true });
   };
 
   // Style variants
