@@ -1898,8 +1898,8 @@ const SubscriptionDashboard = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
 
-      <motion.div className="max-w-full mx-auto px-6 lg:px-16 py-4">
-        <header className="mb-6 text-center border-b border-gray-100">
+      <motion.div className="max-w-full mx-auto px-6 lg:px-16 py-16">
+        <header className="mb-12 text-center border-b border-gray-100">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
             {t('dashboard.welcome', { name: customerName })}
           </h1>
