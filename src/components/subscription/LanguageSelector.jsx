@@ -125,7 +125,7 @@ export default function LanguageSelector() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-200
+          flex items-center gap-2 px-3 py-1 sm:py-1.5 rounded-full border transition-all duration-200
           ${isOpen 
             ? "bg-white border-violet-200 shadow-sm ring-2 ring-violet-50" 
             : "bg-transparent border-slate-200 hover:border-slate-300 hover:bg-slate-50"}
