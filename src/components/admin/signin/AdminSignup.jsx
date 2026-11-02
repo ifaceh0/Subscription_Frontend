@@ -84,7 +84,7 @@ export default function AdminSignup() {
       }
 
       alert("Account created successfully!");
-      navigate("/login");
+      navigate("/login-admin");
     } catch (err) {
       alert(err.message);
     } finally {
